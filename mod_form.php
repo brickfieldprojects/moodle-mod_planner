@@ -105,6 +105,10 @@ class mod_planner_mod_form extends moodleform_mod {
         $whereplanner = "";
         if ($this->_cm) {
             $whereplanner = "WHERE p.id != ".$cm->instance;
+            $checkalreadycompleted = $DB->count_records_sql("SELECT count(pu.id) FROM {planner_userstep} pu
+            JOIN {planner_step} ps ON (ps.id = pu.stepid) WHERE ps.plannerid = '".$planner->id."'");
+        } else {
+            $checkalreadycompleted = null;
         }
         $existcmids = $DB->get_records_sql("SELECT p.activitycmid FROM {planner} p
         JOIN {course_modules} cm ON (cm.instance = p.id ) JOIN {modules} m ON
@@ -125,15 +129,18 @@ class mod_planner_mod_form extends moodleform_mod {
             'disabled' => 'disabled',
             'style' => 'width:200px; background:none;'
         );
-        if(count($activitynames) > 1) {
-            $mform->addElement('autocomplete', 'activitycmid', get_string('selectactivity', 'planner'), $activitynames, $enabledoptions);
-        } else {
-            $activitynames[0] = "No activities";
-            $mform->addElement('select', 'activitycmid', get_string('selectactivity', 'planner'), $activitynames, $disabledoptions);
-        }
-        $mform->addRule('activitycmid', $strrequired, 'required', null, 'server');
-        if ($activitycmid) {
-            $mform->setDefault('activitycmid', $activitycmid);
+
+        if ($checkalreadycompleted == 0 || $checkalreadycompleted == null) {
+            if (count($activitynames) > 1) {
+                $mform->addElement('autocomplete', 'activitycmid', get_string('selectactivity', 'planner'), $activitynames, $enabledoptions);
+            } else {
+                $activitynames[0] = "No activities";
+                $mform->addElement('select', 'activitycmid', get_string('selectactivity', 'planner'), $activitynames, $disabledoptions);
+            }
+            $mform->addRule('activitycmid', $strrequired, 'required', null, 'server');
+            if ($activitycmid) {
+                $mform->setDefault('activitycmid', $activitycmid);
+            }
         }
 
         if (!$this->_cm) {
@@ -158,7 +165,7 @@ class mod_planner_mod_form extends moodleform_mod {
                     $templates[$id] = $template->name;
                 }
             }
-            
+
             $enabledoptions = array(
                 'multiple' => false,
                 'noselectionstring' => get_string('selecttemplate', 'planner'),
