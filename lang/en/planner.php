@@ -29,12 +29,23 @@ $string['modulename_help'] = 'The planner module links assignment and quiz for s
 $string['modulename_link'] = 'mod/planner/view';
 $string['modulenameplural'] = 'Planner';
 $string['privacy:metadata:planner_userstep'] = 'Information about the user\'s steps for a given planner activity';
-$string['privacy:metadata:planner_userstep:stepid'] = 'The ID of the particular step of planner activity';
-$string['privacy:metadata:planner_userstep:userid'] = 'The ID of the user for planner activity';
-$string['privacy:metadata:planner_userstep:timestart'] = 'The timestamp indicating when the step was started by the user';
+$string['privacy:metadata:planner_userstep:stepid'] = 'The ID of the particular step of planner activity.';
+$string['privacy:metadata:planner_userstep:userid'] = 'The ID of the user for planner activity.';
+$string['privacy:metadata:planner_userstep:timestart'] = 'The timestamp indicating when the step was started by the user.';
 $string['privacy:metadata:planner_userstep:duedate'] = 'The timestamp indicating when the planner step going to due.';
 $string['privacy:metadata:planner_userstep:completionstatus'] = 'The ID of the completionstatus that the user selected.';
-$string['privacy:metadata:planner_userstep:timemodified'] = 'The timestamp indicating when the step was modified by the user';
+$string['privacy:metadata:planner_userstep:timemodified'] = 'The timestamp indicating when the step was modified by the user.';
+
+$string['privacy:metadata:planner_template'] = 'Information about the templates for the planner activity';
+$string['privacy:metadata:planner_template:userid'] = 'The ID of the particular step of planner activity.';
+$string['privacy:metadata:planner_template:name'] = 'The name of the template for planner activity.';
+$string['privacy:metadata:planner_template:disclaimer'] = 'The disclaimer of the template.';
+$string['privacy:metadata:planner_template:personal'] = 'The switch indicating if the planner is global or personal.';
+$string['privacy:metadata:planner_template:status'] = 'The status indicating if a template is enabled or disabled.';
+$string['privacy:metadata:planner_template:copied'] = 'The count indicating how many times the template has been copied.';
+$string['privacy:metadata:planner_template:timecreated'] = 'The timestamp indicating when the template was created by the user';
+$string['privacy:metadata:planner_template:timemodified'] = 'The timestamp indicating when the template was modified by the user';
+
 $string['pluginadministration'] = 'Planner administration';
 $string['pluginname'] = 'Planner';
 $string['search:activity'] = 'Planner';
