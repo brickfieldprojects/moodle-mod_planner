@@ -193,12 +193,7 @@ class mod_planner_mod_form extends moodleform_mod {
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }
-    
-    function definition_after_data(){
-        $mform = $this->_form;
-        $mform->validate();
-    }
-    
+
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         if ((isset($data['submitbutton2'])) OR (isset($data['submitbutton']))) {
