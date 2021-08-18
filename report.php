@@ -29,13 +29,13 @@ $format = optional_param('format', '', PARAM_RAW);
 $group  = optional_param('group', 0, PARAM_ALPHANUMEXT); // Group selected.
 
 if (! $cm = get_coursemodule_from_id('planner', $id)) {
-    print_error('invalidcoursemodule');
+    throw new moodle_exception('invalidcoursemodule');
 }
 if (! $course = $DB->get_record("course", array("id" => $cm->course))) {
-    print_error('coursemisconf');
+    throw new moodle_exception('coursemisconf');
 }
 if (! $planner = $DB->get_record("planner", array("id" => $cm->instance))) {
-    print_error('invalidcoursemodule');
+    throw new moodle_exception('invalidcoursemodule');
 }
 
 require_login($course, true, $cm);
@@ -43,7 +43,7 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 
 if (!has_capability('mod/planner:manageplanner', $context)) {
-    print_error('invalidpermission');
+    throw new moodle_exception('invalidpermission');
 }
 
 $PAGE->set_context($context);
@@ -218,10 +218,12 @@ if ($plannersteps) {
             JOIN {planner_step} ps ON (ps.id = pus.stepid) WHERE ps.plannerid = '".$planner->id."'
             AND pus.userid = '".$studentdata->id."' ORDER BY pus.stepid ASC");
             $data = array();
+            $params = array('id' => $studentdata->id);
+            $params['course'] = $course->id;
             if ($studentdata->idnumber) {
                 $data[] = fullname($studentdata).'<br/>('.$studentdata->idnumber.')';
             } else {
-                $data[] = fullname($studentdata);
+                $data[] = \html_writer::link(new \moodle_url("/user/view.php", $params), fullname($studentdata));
             }
             $data[] = $studentdata->email;
             foreach ($getusersteps as $step) {
