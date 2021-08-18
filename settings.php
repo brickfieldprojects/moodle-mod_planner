@@ -106,6 +106,4 @@ if (has_capability('mod/planner:managetemplates', context_system::instance())) {
         );
 }
 
-
-
 $settings = null;
