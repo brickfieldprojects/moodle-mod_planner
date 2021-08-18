@@ -27,6 +27,14 @@
     box-shadow: none;
 }
 
+.felement .form-autocomplete-suggestions {
+    min-width: 200px;
+}
+
+.felement .d-md-inline-block .form-control {
+    width: 200px;
+}
+
 #dashboard{
     min-height:auto;
 }
