@@ -23,6 +23,8 @@
  */
 
 $string['planner:addinstance'] = 'Add a new Planner';
+$string['planner:manageplanner'] = 'Manage Planner';
+$string['planner:managetemplates'] = 'Manage Planner templates';
 $string['planner:view'] = 'View planner';
 $string['plannertext'] = 'Planner text';
 $string['modulename'] = 'Planner';
