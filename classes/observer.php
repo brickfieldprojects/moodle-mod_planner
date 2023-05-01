@@ -23,6 +23,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+use mod_planner\planner;
 
 /**
  * Event observer for mod_forum.
@@ -59,7 +60,8 @@ class mod_planner_observer {
                             $endtime = $defaultenddate;
                         }
                         if ($endtime > time()) {
-                            planner_user_step($planner, $userid, $starttime, $endtime);
+                            $planner = new planner();
+                            $planner->planner_user_step($planner, $userid, $starttime, $endtime);
                         }
                     }
                 }
@@ -97,7 +99,8 @@ class mod_planner_observer {
                             $endtime = $defaultenddate;
                         }
                         if ($endtime > time()) {
-                            planner_user_step($planner, $userid, $starttime, $endtime);
+                            $planner = new planner();
+                            $planner->planner_user_step($planner, $userid, $starttime, $endtime);
                         }
                     }
                 }
@@ -124,7 +127,8 @@ class mod_planner_observer {
                     $endtime = $assignment->duedate;
                     $userid = $event->relateduserid;
                     if ($endtime > time()) {
-                        planner_user_step_delete($planner, $userid, $starttime, $endtime);
+                        $planner = new planner();
+                        $planner->planner_user_step_delete($planner, $userid, $starttime, $endtime);
                     }
                 }
             }
@@ -163,7 +167,8 @@ class mod_planner_observer {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
                                 if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                    planner_user_step($planner, $userid, $starttime, $endtime);
+                                    $planner = new planner();
+                                    $planner->planner_user_step($planner, $userid, $starttime, $endtime);
                                 }
                             }
                         }
@@ -206,7 +211,8 @@ class mod_planner_observer {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
                                 if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                    planner_user_step($planner, $userid, $starttime, $endtime);
+                                    $planner = new planner();
+                                    $planner->planner_user_step($planner, $userid, $starttime, $endtime);
                                 }
                             }
                         }
@@ -237,7 +243,8 @@ class mod_planner_observer {
                         foreach ($groupmembers as $groupkey => $user) {
                             $userid = $user->id;
                             if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                planner_user_step_delete($planner, $userid, $starttime, $endtime);
+                                $planner = new planner();
+                                $planner->planner_user_step_delete($planner, $userid, $starttime, $endtime);
                             }
                         }
                     }
@@ -276,7 +283,8 @@ class mod_planner_observer {
                             $endtime = $defaultenddate;
                         }
                         if ($endtime > time()) {
-                            planner_user_step($planner, $userid, $starttime, $endtime);
+                            $planner = new planner();
+                            $planner->planner_user_step($planner, $userid, $starttime, $endtime);
                         }
                     }
                 }
@@ -314,7 +322,8 @@ class mod_planner_observer {
                             $endtime = $defaultenddate;
                         }
                         if ($endtime > time()) {
-                            planner_user_step($planner, $userid, $starttime, $endtime);
+                            $planner = new planner();
+                            $planner->planner_user_step($planner, $userid, $starttime, $endtime);
                         }
                     }
                 }
@@ -341,7 +350,8 @@ class mod_planner_observer {
                     $endtime = $quiz->timeclose;
                     $userid = $event->relateduserid;
                     if ($endtime > time()) {
-                        planner_user_step_delete($planner, $userid, $starttime, $endtime);
+                        $planner = new planner();
+                        $planner->planner_user_step_delete($planner, $userid, $starttime, $endtime);
                     }
                 }
             }
@@ -381,7 +391,8 @@ class mod_planner_observer {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
                                 if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                    planner_user_step($planner, $userid, $starttime, $endtime);
+                                    $planner = new planner();
+                                    $planner->planner_user_step($planner, $userid, $starttime, $endtime);
                                 }
                             }
                         }
@@ -424,7 +435,8 @@ class mod_planner_observer {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
                                 if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                    planner_user_step($planner, $userid, $starttime, $endtime);
+                                    $planner = new planner();
+                                    $planner->planner_user_step($planner, $userid, $starttime, $endtime);
                                 }
                             }
                         }
@@ -455,7 +467,8 @@ class mod_planner_observer {
                         foreach ($groupmembers as $groupkey => $user) {
                             $userid = $user->id;
                             if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                planner_user_step_delete($planner, $userid, $starttime, $endtime);
+                                $planner = new planner();
+                                $planner->planner_user_step_delete($planner, $userid, $starttime, $endtime);
                             }
                         }
                     }
@@ -516,7 +529,8 @@ class mod_planner_observer {
                                     $insertstep->timemodified = 0;
                                     $DB->insert_record('planner_userstep', $insertstep);
                                 }
-                                planner_update_events($planner, $userid, $stepsdata, false);
+                                $planner = new planner();
+                                $planner->planner_update_events($planner, $userid, $stepsdata, false);
                             }
                         }
                     }

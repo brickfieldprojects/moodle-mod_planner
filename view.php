@@ -24,6 +24,8 @@
 
 require_once("../../config.php");
 
+use mod_planner\planner;
+
 $id = optional_param('id', 0, PARAM_INT);    // Course Module ID, or.
 $l = optional_param('l', 0, PARAM_INT);     // Planner ID.
 $action = optional_param('action', '', PARAM_RAW);
@@ -123,7 +125,8 @@ if (($action == "studentsteps") OR ($action == "recalculatesteps")) {
                 $DB->insert_record('planner_userstep', $insertstudentstep);
             }
         }
-        planner_update_events($planner, $students, $stepsdata, true);
+        $plannerclass = new planner();
+        $plannerclass->planner_update_events($planner, $students, $stepsdata, true);
         if ($action == "recalculatesteps") {
             redirect($redirecturl, get_string('recalculatedstudentsteps', 'planner'),
             null, \core\output\notification::NOTIFY_SUCCESS);
@@ -241,7 +244,8 @@ if ($templatedata = $templateform->get_data()) {
             $DB->update_record('planner_userstep', $updatestep);
             $i++;
         }
-        planner_update_events($planner, $USER->id, $stepsdata, false);
+        $plannerclass = new planner();
+        $plannerclass->planner_update_events($planner, $USER->id, $stepsdata, false);
 
         $params = array(
             'objectid' => $planner->id,
