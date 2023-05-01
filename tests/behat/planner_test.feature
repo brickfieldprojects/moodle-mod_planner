@@ -19,6 +19,8 @@ Feature: Test the plugin
             | section                             | 1                       |
             | name                                | Test assignment name    |
             | completion                          | 1                       |
+            | allowsubmissionsfromdate            | 1424908800              |
+            | duedate                             | 1424908800              |
         And the following "activity" exists:
             | activity                            | quiz                    |
             | course                              | C1                      |
@@ -93,15 +95,11 @@ Feature: Test the plugin
         And I set the field "Template name" to "Template 1"
         And I press "Submit"
         And I am on "Course 1" course homepage with editing mode on
-        And I add a "Quiz" to section "1"
-        And I set the field "Name" to "Test quiz name"
-        And I set the field "Description" to "Test quiz description"
-        And I press "Save and return to course"
-        And I wait "10" seconds
         And I add a "Planner" to section "1"
         And I set the field "Name" to "Test planner name"
         And I set the field "Description" to "Test planner description"
-        And I pause
         And I select "Task number, title and due date" from the "Information on course page" singleselect
-        And I select "Test assignment name" from the "select activity" singleselect
+        And I select "Test assignment name" from the "Select activity" singleselect
+        And I select "Template 1" from the "Template" singleselect
+        And I press "Save and return to course"
         Then I should see "Test planner name"
