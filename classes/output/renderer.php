@@ -169,8 +169,8 @@ class renderer extends \plugin_renderer_base {
             if (($time->starttime != $planner->timeopen) || ($time->endtime != $planner->timeclose)) {
                 $out .= '<br/>';
                 $out .= '<div style="text-align:center">';
-                $out .= $this->output->single_button(new \moodle_url('view.php', array('id' => $id, 'action' => 'recalculatesteps'))
-                ,get_string('recalculatestudentsteps', 'planner'));
+                $out .= $this->output->single_button(new \moodle_url('view.php',
+                    array('id' => $id, 'action' => 'recalculatesteps')), get_string('recalculatestudentsteps', 'planner'));
                 $out .= '</div>';
             } else {
                 $checkalreadycompleted = $DB->count_records_sql("SELECT count(pu.id) FROM {planner_userstep} pu
@@ -178,8 +178,8 @@ class renderer extends \plugin_renderer_base {
                 if ($checkalreadycompleted == 0) {
                     $out .= '<br/>';
                     $out .= '<div style="text-align:center">';
-                    $out .= $this->output->single_button(new \moodle_url('view.php', array('id' => $id, 'action' => 'studentsteps'))
-                    ,get_string('calculatestudentsteps', 'planner'));
+                    $out .= $this->output->single_button(new \moodle_url('view.php',
+                        array('id' => $id, 'action' => 'studentsteps')), get_string('calculatestudentsteps', 'planner'));
                     $out .= '</div>';
                 }
             }

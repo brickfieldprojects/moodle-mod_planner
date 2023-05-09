@@ -54,7 +54,8 @@ class planner {
     public function planner_user_step($planner, $userid, $starttime, $endtime) {
         global $DB;
 
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" . $planner->id . "' ORDER BY id ASC");
+        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" .
+            $planner->id . "' ORDER BY id ASC");
         $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
         JOIN {planner_step} ps ON (ps.id = pu.stepid)
         WHERE ps.plannerid = '" . $planner->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
@@ -112,7 +113,8 @@ class planner {
     public function planner_user_step_delete($planner, $userid, $starttime, $endtime) {
         global $DB;
 
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" . $planner->id . "' ORDER BY id ASC");
+        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" .
+            $planner->id . "' ORDER BY id ASC");
         $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
         JOIN {planner_step} ps ON (ps.id = pu.stepid)
         WHERE ps.plannerid = '" . $planner->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
@@ -214,7 +216,7 @@ class planner {
 
         $plannertemplatedata = $DB->get_record('plannertemplate', array('id' => $id));
         $renderer = $PAGE->get_renderer('mod_planner');
-        if (($action == 'delete') and confirm_sesskey()) {
+        if (($action == 'delete') && confirm_sesskey()) {
             if ($plannertemplatedata) {
                 if ($confirm != md5($id)) {
                     $renderer->display_template_delete_page($plannertemplatedata, $pageurl, $id, $cid);
@@ -232,14 +234,14 @@ class planner {
                     }
                 }
             }
-        } else if (($action == 'enable') and confirm_sesskey()) {
+        } else if (($action == 'enable') && confirm_sesskey()) {
             if ($plannertemplatedata) {
                 $updatestatus = new stdClass();
                 $updatestatus->id = $id;
                 $updatestatus->status = 1;
                 $DB->update_record('plannertemplate', $updatestatus);
             }
-        } else if (($action == 'disable') and confirm_sesskey()) {
+        } else if (($action == 'disable') && confirm_sesskey()) {
             if ($plannertemplatedata) {
                 $updatestatus = new stdClass();
                 $updatestatus->id = $id;
@@ -497,16 +499,18 @@ class planner {
             $time->defaultstarttime = $modulename->timeopen;
             $time->defaultendtime = $modulename->timeclose;
         }
-        $time->userstartdate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)
-         WHERE ps.plannerid = '" . $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id ASC LIMIT 1");
+        $time->userstartdate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps
+            ON (ps.id = pu.stepid) WHERE ps.plannerid = '" .
+            $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id ASC LIMIT 1");
 
         if ($time->userstartdate) {
             if ($time->userstartdate->timestart) {
                 $$time->starttime = $time->userstartdate->timestart;
             }
         }
-        $time->userenddate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)
-         WHERE ps.plannerid = '" . $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id DESC LIMIT 1");
+        $time->userenddate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps
+            ON (ps.id = pu.stepid) WHERE ps.plannerid = '" .
+            $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id DESC LIMIT 1");
 
         $datediff = $time->endtime - $time->starttime;
         $time->days = round($datediff / (60 * 60 * 24));
@@ -527,9 +531,10 @@ class planner {
     public function planner_crud_handler($action, $planner, $course, $redirecturl, $context, $cm) {
         global $DB, $USER;
 
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" . $planner->id . "' ORDER BY id ASC");
+        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" .
+            $planner->id . "' ORDER BY id ASC");
         $time = $this->get_planner_times($planner, $cm);
-        if (($action == "studentsteps") or ($action == "recalculatesteps")) {
+        if (($action == "studentsteps") || ($action == "recalculatesteps")) {
             if ($action == "recalculatesteps") {
                 $updaterecord = new stdClass();
                 $updaterecord->id = $planner->id;
@@ -574,7 +579,8 @@ class planner {
                         \core\output\notification::NOTIFY_SUCCESS
                     );
                 } else {
-                    redirect($redirecturl, get_string('studentstepupdated', 'planner'), null, \core\output\notification::NOTIFY_SUCCESS);
+                    redirect($redirecturl, get_string('studentstepupdated', 'planner'), null,
+                        \core\output\notification::NOTIFY_SUCCESS);
                 }
             }
         }
@@ -705,7 +711,8 @@ class planner {
                 $event = \mod_planner\event\step_updated::create($params);
                 $event->trigger();
 
-                redirect($redirecturl, get_string('studentstepupdated', 'planner'), null, \core\output\notification::NOTIFY_SUCCESS);
+                redirect($redirecturl, get_string('studentstepupdated', 'planner'), null,
+                    \core\output\notification::NOTIFY_SUCCESS);
             }
         }
         return $templateform;
@@ -766,7 +773,8 @@ class planner {
 
         $table->pagesize($perpage, $matchcount);
 
-        $templatelist = $DB->get_recordset_sql("$select $from $where $sort", $params, $table->get_page_start(), $table->get_page_size());
+        $templatelist = $DB->get_recordset_sql("$select $from $where $sort", $params, $table->get_page_start(),
+            $table->get_page_size());
         return $templatelist;
     }
 }
