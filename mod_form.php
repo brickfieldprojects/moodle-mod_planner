@@ -30,7 +30,7 @@ class mod_planner_mod_form extends moodleform_mod {
      * Function definition for moodle form
      */
     public function definition() {
-        global $PAGE, $DB, $USER, $course;
+        global $PAGE, $DB, $USER, $course, $CFG;
 
         $PAGE->force_settings_menu();
         $mform = $this->_form;
