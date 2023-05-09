@@ -31,8 +31,6 @@ class template_form extends \moodleform {
      * Define the form.
      */
     public function definition() {
-        global $CFG;
-
         $mform = $this->_form;
         $strrequired = get_string('required');
         $id = $this->_customdata['id'];
@@ -137,7 +135,7 @@ class template_form extends \moodleform {
                 $totalsteps = count($data['stepallocation']);
                 $totaltimeallocation = 0;
                 for ($i = 0; $i <= $totalsteps; $i++) {
-                    if (isset($data['stepname'][$i]) AND (!empty($data['stepname'][$i]))) {
+                    if (isset($data['stepname'][$i]) && (!empty($data['stepname'][$i]))) {
                         if (isset($data['stepallocation'][$i])) {
                             $totaltimeallocation = $totaltimeallocation + $data['stepallocation'][$i];
                         }
@@ -151,7 +149,7 @@ class template_form extends \moodleform {
                 }
                 if ($totaltimeallocation != '100') {
                     for ($i = 0; $i <= $totalsteps; $i++) {
-                        if (isset($data['stepname'][$i]) AND (!empty($data['stepname'][$i]))) {
+                        if (isset($data['stepname'][$i]) && (!empty($data['stepname'][$i]))) {
                             if (isset($data['stepallocation'][$i])) {
                                 $errors['stepallocation['.$i.']'] = get_string('totaltimeallocated', 'planner');
                             }

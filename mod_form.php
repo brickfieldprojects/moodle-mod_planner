@@ -244,7 +244,7 @@ class mod_planner_mod_form extends moodleform_mod {
      */
     public function validation ($data, $files) {
         $errors = parent::validation($data, $files);
-        if ((isset($data['submitbutton2'])) OR (isset($data['submitbutton']))) {
+        if ((isset($data['submitbutton2'])) || (isset($data['submitbutton']))) {
             if ($data['update'] == 0) {
                 $activitycmid = isset($data['activitycmid']) ? $data['activitycmid'] : 0;
                 $templateid = isset($data['templateid']) ? $data['templateid'] : 0;
@@ -261,7 +261,7 @@ class mod_planner_mod_form extends moodleform_mod {
                 $totalsteps = count($data['stepallocation']);
                 $totaltimeallocation = 0;
                 for ($i = 0; $i <= $totalsteps; $i++) {
-                    if (isset($data['stepname'][$i]) AND (!empty($data['stepname'][$i]))) {
+                    if (isset($data['stepname'][$i]) && (!empty($data['stepname'][$i]))) {
                         if (isset($data['stepallocation'][$i])) {
                             $totaltimeallocation = $totaltimeallocation + $data['stepallocation'][$i];
                         }
@@ -275,7 +275,7 @@ class mod_planner_mod_form extends moodleform_mod {
                 }
                 if ($totaltimeallocation != '100') {
                     for ($i = 0; $i <= $totalsteps; $i++) {
-                        if (isset($data['stepname'][$i]) AND (!empty($data['stepname'][$i]))) {
+                        if (isset($data['stepname'][$i]) && (!empty($data['stepname'][$i]))) {
                             if (isset($data['stepallocation'][$i])) {
                                 $errors['stepallocation['.$i.']'] = get_string('totaltimeallocated', 'planner');
                             }

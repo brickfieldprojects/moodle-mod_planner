@@ -16,7 +16,10 @@
 
 namespace mod_planner;
 
+defined('MOODLE_INTERNAL') || die();
+
 use stdClass;
+
 require_once("{$CFG->libdir}/csvlib.class.php");
 
 /**
@@ -35,8 +38,8 @@ class planner {
      * @return string
      */
     public function get_planner_name($planner) {
-       $name = get_string('modulename', 'planner');
-       return $name;
+        $name = get_string('modulename', 'planner');
+        return $name;
     }
 
     /**
@@ -49,52 +52,52 @@ class planner {
      * @return void
      */
     public function planner_user_step($planner, $userid, $starttime, $endtime) {
-       global $DB;
+        global $DB;
 
-       $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '".$planner->id."' ORDER BY id ASC");
-       $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
+        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" . $planner->id . "' ORDER BY id ASC");
+        $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
         JOIN {planner_step} ps ON (ps.id = pu.stepid)
-        WHERE ps.plannerid = '".$planner->id."' AND pu.userid = '".$userid."' ORDER BY pu.id ASC ");
-       $totaltime = $endtime - $starttime;
-       $exsitingsteptime = $starttime;
-       $stepsdata = array();
-       foreach ($templatestepdata as $stepkey => $stepval) {
-           $existingsteptemp = ($totaltime * $stepval->timeallocation) / 100;
-           $exsitingsteptime = $existingsteptemp + $exsitingsteptime;
-           $stepsdata[$stepkey]['name'] = $stepval->name;
-           $stepsdata[$stepkey]['timedue'] = $exsitingsteptime;
-       }
-       if ($templateuserstepdata) {
-           $i = 0;
-           foreach ($templateuserstepdata as $stepid => $stepdata) {
-               $updatestep = new stdClass();
-               $updatestep->id = $stepdata->id;
-               $updatestep->duedate = $stepsdata[$stepdata->stepid]['timedue'];
-               if ($i == 0) {
-                   $updatestep->timestart = $starttime;
-               }
-               $updatestep->completionstatus = 0;
-               $updatestep->timemodified = 0;
-               $DB->update_record('planner_userstep', $updatestep);
-               $i++;
-           }
-       } else {
-           $i = 0;
-           foreach ($stepsdata as $stepid => $stepdata) {
-               $insertstep = new stdClass();
-               $insertstep->stepid = $stepid;
-               $insertstep->userid = $userid;
-               $insertstep->duedate = $stepdata['timedue'];
-               if ($i == 0) {
-                   $insertstep->timestart = $starttime;
-               }
-               $insertstep->completionstatus = 0;
-               $insertstep->timemodified = 0;
-               $DB->insert_record('planner_userstep', $insertstep);
-               $i++;
-           }
-       }
-       $this->planner_update_events($planner, $userid, $stepsdata, false);
+        WHERE ps.plannerid = '" . $planner->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
+        $totaltime = $endtime - $starttime;
+        $exsitingsteptime = $starttime;
+        $stepsdata = array();
+        foreach ($templatestepdata as $stepkey => $stepval) {
+            $existingsteptemp = ($totaltime * $stepval->timeallocation) / 100;
+            $exsitingsteptime = $existingsteptemp + $exsitingsteptime;
+            $stepsdata[$stepkey]['name'] = $stepval->name;
+            $stepsdata[$stepkey]['timedue'] = $exsitingsteptime;
+        }
+        if ($templateuserstepdata) {
+            $i = 0;
+            foreach ($templateuserstepdata as $stepid => $stepdata) {
+                $updatestep = new stdClass();
+                $updatestep->id = $stepdata->id;
+                $updatestep->duedate = $stepsdata[$stepdata->stepid]['timedue'];
+                if ($i == 0) {
+                    $updatestep->timestart = $starttime;
+                }
+                $updatestep->completionstatus = 0;
+                $updatestep->timemodified = 0;
+                $DB->update_record('planner_userstep', $updatestep);
+                $i++;
+            }
+        } else {
+            $i = 0;
+            foreach ($stepsdata as $stepid => $stepdata) {
+                $insertstep = new stdClass();
+                $insertstep->stepid = $stepid;
+                $insertstep->userid = $userid;
+                $insertstep->duedate = $stepdata['timedue'];
+                if ($i == 0) {
+                    $insertstep->timestart = $starttime;
+                }
+                $insertstep->completionstatus = 0;
+                $insertstep->timemodified = 0;
+                $DB->insert_record('planner_userstep', $insertstep);
+                $i++;
+            }
+        }
+        $this->planner_update_events($planner, $userid, $stepsdata, false);
     }
 
     /**
@@ -106,13 +109,13 @@ class planner {
      * @param int $endtime
      * @return void
      */
-    public function planner_user_step_delete ($planner, $userid, $starttime, $endtime) {
+    public function planner_user_step_delete($planner, $userid, $starttime, $endtime) {
         global $DB;
 
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '".$planner->id."' ORDER BY id ASC");
+        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" . $planner->id . "' ORDER BY id ASC");
         $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
         JOIN {planner_step} ps ON (ps.id = pu.stepid)
-        WHERE ps.plannerid = '".$planner->id."' AND pu.userid = '".$userid."' ORDER BY pu.id ASC ");
+        WHERE ps.plannerid = '" . $planner->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
         $totaltime = $endtime - $starttime;
         $exsitingsteptime = $starttime;
         $stepsdata = array();
@@ -159,7 +162,7 @@ class planner {
                 foreach ($stepsdata as $stepid => $stepval) {
                     $event = new stdClass();
                     $event->name = format_string($planner->name);
-                    $event->description = get_string('step', 'planner').' '.$i.' : '.$stepval['name'];
+                    $event->description = get_string('step', 'planner') . ' ' . $i . ' : ' . $stepval['name'];
                     $event->format = FORMAT_HTML;
                     $event->userid = $studentkey;
                     $event->modulename = 'planner';
@@ -173,13 +176,15 @@ class planner {
                 }
             }
         } else {
-            $DB->delete_records('event', array('instance' => $planner->id, 'modulename' => 'planner',
-            'eventtype' => 'due', 'userid' => $students));
+            $DB->delete_records('event', array(
+                'instance' => $planner->id, 'modulename' => 'planner',
+                'eventtype' => 'due', 'userid' => $students
+            ));
             $i = 1;
             foreach ($stepsdata as $stepid => $stepval) {
                 $event = new stdClass();
                 $event->name = format_string($planner->name);
-                $event->description = get_string('step', 'planner').' '.$i.' : '.$stepval['name'];
+                $event->description = get_string('step', 'planner') . ' ' . $i . ' : ' . $stepval['name'];
                 $event->format = FORMAT_HTML;
                 $event->userid = $students;
                 $event->modulename = 'planner';
@@ -218,8 +223,12 @@ class planner {
                     if ($DB->delete_records('plannertemplate', array('id' => $id))) {
                         redirect($pageurl);
                     } else {
-                        redirect($pageurl, get_string('deletednottemplate', 'planner', $plannertemplatedata->name),
-                        null, \core\output\notification::NOTIFY_ERROR);
+                        redirect(
+                            $pageurl,
+                            get_string('deletednottemplate', 'planner', $plannertemplatedata->name),
+                            null,
+                            \core\output\notification::NOTIFY_ERROR
+                        );
                     }
                 }
             }
@@ -372,12 +381,12 @@ class planner {
             $groupjoin = 'JOIN {groups_members} g ON (g.groupid = :groupselected AND g.userid = u.id)';
             $params['groupselected'] = $groupid;
         } else if ((substr($group, 0, 9) == 'grouping-') && ($groupingid = intval(substr($group, 9)))) {
-            $groupjoin = 'JOIN {groups_members} g ON '.
-                        '(g.groupid IN (SELECT DISTINCT groupid FROM {groupings_groups} WHERE groupingid = :groupingselected) '.
-                        'AND g.userid = u.id)';
+            $groupjoin = 'JOIN {groups_members} g ON ' .
+                '(g.groupid IN (SELECT DISTINCT groupid FROM {groupings_groups} WHERE groupingid = :groupingselected) ' .
+                'AND g.userid = u.id)';
             $params['groupingselected'] = $groupingid;
         } else if ($groupuserid != 0 && !empty($groupidnums)) {
-            $groupjoin = 'JOIN {groups_members} g ON (g.groupid IN ('.implode(',', $groupidnums).') AND g.userid = u.id)';
+            $groupjoin = 'JOIN {groups_members} g ON (g.groupid IN (' . implode(',', $groupidnums) . ') AND g.userid = u.id)';
         }
 
         // Get the list of users enrolled in the course.
@@ -416,7 +425,7 @@ class planner {
         }
 
         $export = new \csv_export_writer();
-        $export->set_filename(format_string($planner->name)."_". $cmname);
+        $export->set_filename(format_string($planner->name) . "_" . $cmname);
         $row = array();
         $row[] = get_string('studentname', 'planner');
         $row[] = get_string('email', 'planner');
@@ -427,11 +436,11 @@ class planner {
         if ($students) {
             foreach ($students as $studentdata) {
                 $getusersteps = $DB->get_records_sql("SELECT pus.*  FROM {planner_userstep} pus
-                JOIN {planner_step} ps ON (ps.id = pus.stepid) WHERE ps.plannerid = '".$planner->id."'
-                AND pus.userid = '".$studentdata->id."' ORDER BY pus.stepid ASC");
+                JOIN {planner_step} ps ON (ps.id = pus.stepid) WHERE ps.plannerid = '" . $planner->id . "'
+                AND pus.userid = '" . $studentdata->id . "' ORDER BY pus.stepid ASC");
                 $row = array();
                 if ($studentdata->idnumber) {
-                    $row[] = fullname($studentdata).' ('.$studentdata->idnumber.')';
+                    $row[] = fullname($studentdata) . ' (' . $studentdata->idnumber . ')';
                 } else {
                     $row[] = fullname($studentdata);
                 }
@@ -453,12 +462,13 @@ class planner {
      * Returns the planner times.
      *
      * @param object $planner
+     * @param object $cm
      * @return object
      */
     public function get_planner_times($planner, $cm) {
         global $DB, $USER;
         $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
-        JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$planner->activitycmid."'");
+        JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '" . $planner->activitycmid . "'");
 
         $modinfo = get_fast_modinfo($planner->course);
         foreach ($modinfo->instances as $modname => $modinstances) {
@@ -466,8 +476,11 @@ class planner {
                 if ($cmnew->deletioninprogress == 0 && $cmnew->id == $planner->activitycmid) {
                     $modulename = $DB->get_record($cminfoactivity->name, array('id' => $cminfoactivity->instance));
                 } else if ($cmnew->deletioninprogress == 1 && $cmnew->id == $planner->activitycmid) {
-                    throw new \moodle_exception('relatedactivitynotexistdelete', 'planner',
-                    new \moodle_url("/course/view.php?id=$planner->course"));
+                    throw new \moodle_exception(
+                        'relatedactivitynotexistdelete',
+                        'planner',
+                        new \moodle_url("/course/view.php?id=$planner->course")
+                    );
                 }
             }
         }
@@ -485,7 +498,7 @@ class planner {
             $time->defaultendtime = $modulename->timeclose;
         }
         $time->userstartdate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)
-         WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC LIMIT 1");
+         WHERE ps.plannerid = '" . $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id ASC LIMIT 1");
 
         if ($time->userstartdate) {
             if ($time->userstartdate->timestart) {
@@ -493,7 +506,7 @@ class planner {
             }
         }
         $time->userenddate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)
-         WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id DESC LIMIT 1");
+         WHERE ps.plannerid = '" . $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id DESC LIMIT 1");
 
         $datediff = $time->endtime - $time->starttime;
         $time->days = round($datediff / (60 * 60 * 24));
@@ -514,9 +527,9 @@ class planner {
     public function planner_crud_handler($action, $planner, $course, $redirecturl, $context, $cm) {
         global $DB, $USER;
 
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '".$planner->id."' ORDER BY id ASC");
+        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" . $planner->id . "' ORDER BY id ASC");
         $time = $this->get_planner_times($planner, $cm);
-        if (($action == "studentsteps") OR ($action == "recalculatesteps")) {
+        if (($action == "studentsteps") or ($action == "recalculatesteps")) {
             if ($action == "recalculatesteps") {
                 $updaterecord = new stdClass();
                 $updaterecord->id = $planner->id;
@@ -554,8 +567,12 @@ class planner {
                 $plannerclass = new planner();
                 $plannerclass->planner_update_events($planner, $students, $stepsdata, true);
                 if ($action == "recalculatesteps") {
-                    redirect($redirecturl, get_string('recalculatedstudentsteps', 'planner'),
-                    null, \core\output\notification::NOTIFY_SUCCESS);
+                    redirect(
+                        $redirecturl,
+                        get_string('recalculatedstudentsteps', 'planner'),
+                        null,
+                        \core\output\notification::NOTIFY_SUCCESS
+                    );
                 } else {
                     redirect($redirecturl, get_string('studentstepupdated', 'planner'), null, \core\output\notification::NOTIFY_SUCCESS);
                 }
@@ -566,7 +583,7 @@ class planner {
             $uncheckstep = optional_param('uncheckstep', 0, PARAM_INT);
 
             $checkexistingstep = $DB->get_record_sql("SELECT * from {planner_userstep}
-            WHERE id = '".$stepid."' AND userid = '".$USER->id."'");
+            WHERE id = '" . $stepid . "' AND userid = '" . $USER->id . "'");
 
             if ($checkexistingstep) {
                 $updateuserstep = new stdClass();
@@ -594,20 +611,28 @@ class planner {
                 if ($uncheckstep == 1) {
                     $event = \mod_planner\event\step_pending::create($params);
                     $event->trigger();
-                    redirect($redirecturl, get_string('studentstepmarkpending', 'planner'),
-                    null, \core\output\notification::NOTIFY_SUCCESS);
+                    redirect(
+                        $redirecturl,
+                        get_string('studentstepmarkpending', 'planner'),
+                        null,
+                        \core\output\notification::NOTIFY_SUCCESS
+                    );
                 } else {
                     $event = \mod_planner\event\step_completed::create($params);
                     $event->trigger();
-                    redirect($redirecturl, get_string('studentstepmarkcompleted', 'planner'),
-                    null, \core\output\notification::NOTIFY_SUCCESS);
+                    redirect(
+                        $redirecturl,
+                        get_string('studentstepmarkcompleted', 'planner'),
+                        null,
+                        \core\output\notification::NOTIFY_SUCCESS
+                    );
                 }
             }
         }
 
         $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
          JOIN {planner_step} ps ON (ps.id = pu.stepid)
-         WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC ");
+         WHERE ps.plannerid = '" . $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id ASC ");
 
         $data = new stdClass();
         $data->templateuserstepdata = $templateuserstepdata;
@@ -632,9 +657,13 @@ class planner {
         global $DB, $USER;
 
         $time = $this->get_planner_times($planner, $cm);
-        $templateform = new \mod_planner\form\user_form('view.php',
-            array('id' => $id, 'startdate' => $time->defaultstarttime,
-            'studentstartime' => $time->starttime, 'enddate' => $time->defaultendtime));
+        $templateform = new \mod_planner\form\user_form(
+            'view.php',
+            array(
+                'id' => $id, 'startdate' => $time->defaultstarttime,
+                'studentstartime' => $time->starttime, 'enddate' => $time->defaultendtime
+            )
+        );
 
         if ($templatedata = $templateform->get_data()) {
             $plannerid = $templatedata->id;
@@ -668,7 +697,7 @@ class planner {
                     'objectid' => $planner->id,
                     'relateduserid' => $USER->id,
                     'courseid' => $course->id,
-                    'context' => $context ,
+                    'context' => $context,
                     'other' => array(
                         'plannerid' => $planner->id,
                     )
@@ -677,7 +706,6 @@ class planner {
                 $event->trigger();
 
                 redirect($redirecturl, get_string('studentstepupdated', 'planner'), null, \core\output\notification::NOTIFY_SUCCESS);
-
             }
         }
         return $templateform;
@@ -711,7 +739,7 @@ class planner {
         $wheresearch = "";
         $whereteacher = "";
         if (!$isadmin) {
-            $whereteacher = "((pt.userid = '".$USER->id."' AND pt.personal = 1) OR (pt.personal = 0))";
+            $whereteacher = "((pt.userid = '" . $USER->id . "' AND pt.personal = 1) OR (pt.personal = 0))";
         }
         if ($searchclauses) {
             $wheres[] = $DB->sql_like('name', ':search1', false, false);
@@ -723,11 +751,11 @@ class planner {
             $wheresearch = implode(" OR ", $wheres);
         }
         if ($whereteacher && $wheresearch) {
-            $where = "WHERE " .$whereteacher. " AND ".$wheresearch;
+            $where = "WHERE " . $whereteacher . " AND " . $wheresearch;
         } else if ($wheresearch) {
-            $where = "WHERE " .$wheresearch;
+            $where = "WHERE " . $wheresearch;
         } else if ($whereteacher) {
-            $where = "WHERE " .$whereteacher;
+            $where = "WHERE " . $whereteacher;
         }
         if ($table->get_sql_sort()) {
             $sort = ' ORDER BY ' . $table->get_sql_sort();

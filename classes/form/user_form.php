@@ -27,7 +27,7 @@ require_once($CFG->dirroot.'/lib/formslib.php');
  * @package mod_planner
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class user_form extends \moodleform  {
+class user_form extends \moodleform {
 
     /**
      * Define the form.

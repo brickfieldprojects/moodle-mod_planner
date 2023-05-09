@@ -37,7 +37,7 @@ require_once($CFG->dirroot.'/calendar/lib.php');
 function planner_add_instance($planner) {
     global $DB, $CFG;
 
-    if ((!isset($planner->submitbutton2)) AND (!isset($planner->submitbutton))) {
+    if ((!isset($planner->submitbutton2)) && (!isset($planner->submitbutton))) {
         $url = $CFG->wwwroot.'/course/modedit.php?add=planner&type=';
         $url .= '&course='.$planner->course.'&section='.$planner->section.'&return='.$planner->return.'&sr='.$planner->sr;
         if (isset($planner->activitycmid)) {
@@ -253,7 +253,7 @@ function planner_extend_settings_navigation(settings_navigation $settings, navig
     $keys = $navref->get_children_key_list();
     $beforekey = null;
     $i = array_search('modedit', $keys);
-    if ($i === false and array_key_exists(0, $keys)) {
+    if ($i === false && array_key_exists(0, $keys)) {
         $beforekey = $keys[0];
     } else if (array_key_exists($i + 1, $keys)) {
         $beforekey = $keys[$i + 1];
@@ -336,7 +336,7 @@ function planner_cm_info_view(cm_info $cm) {
     if (!$planner = $DB->get_record('planner', $dbparams, $fields)) {
         return false;
     }
-    if (($planner->stepview == '1') OR ($planner->stepview == '2')) {
+    if (($planner->stepview == '1') || ($planner->stepview == '2')) {
         $templatestepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
         JOIN {planner_step} ps ON (ps.id = pu.stepid) WHERE ps.plannerid = '".$cm->instance."'
         AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC ");

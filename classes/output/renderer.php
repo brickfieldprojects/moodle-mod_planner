@@ -49,7 +49,7 @@ class renderer extends \plugin_renderer_base {
         $time = $plan->get_planner_times($planner, $cm);
 
         if (!html_is_blank($planner->intro)) {
-            $out .=  $this->output->box(format_module_intro('planner', $planner, $cm->id), 'generalbox', 'intro');
+            $out .= $this->output->box(format_module_intro('planner', $planner, $cm->id), 'generalbox', 'intro');
         }
 
         $params = array('id' => $cm->id);
@@ -77,7 +77,8 @@ class renderer extends \plugin_renderer_base {
 
         $out .= '<h3>'.get_string('plannerdefaultstartingon', 'planner').' : '
         .userdate($time->defaultstarttime, get_string('strftimedatefullshort')).'</h3>';
-        $out .= '<h3>'.get_string('plannerdefaultendingon', 'planner').' : '.userdate($time->endtime, get_string('strftimedatefullshort')).'</h3>';
+        $out .= '<h3>'.get_string('plannerdefaultendingon', 'planner').' : '.
+                userdate($time->endtime, get_string('strftimedatefullshort')).'</h3>';
         if (isset($time->userstartdate->timestart)) {
             $out .= '<h3>'.get_string('startingon', 'planner').' : '
             .userdate($time->starttime, get_string('strftimedatefullshort')).'</h3>';
@@ -165,11 +166,11 @@ class renderer extends \plugin_renderer_base {
             $out .= $planner->disclaimer;
         }
         if (has_capability('mod/planner:manageplanner', $context)) {
-            if (($time->starttime != $planner->timeopen) OR ($time->endtime != $planner->timeclose)) {
+            if (($time->starttime != $planner->timeopen) || ($time->endtime != $planner->timeclose)) {
                 $out .= '<br/>';
                 $out .= '<div style="text-align:center">';
-                $out .= $this->output->single_button(new \moodle_url('view.php', array('id' => $id, 'action' => 'recalculatesteps')),
-                get_string('recalculatestudentsteps', 'planner'));
+                $out .= $this->output->single_button(new \moodle_url('view.php', array('id' => $id, 'action' => 'recalculatesteps'))
+                ,get_string('recalculatestudentsteps', 'planner'));
                 $out .= '</div>';
             } else {
                 $checkalreadycompleted = $DB->count_records_sql("SELECT count(pu.id) FROM {planner_userstep} pu
@@ -177,8 +178,8 @@ class renderer extends \plugin_renderer_base {
                 if ($checkalreadycompleted == 0) {
                     $out .= '<br/>';
                     $out .= '<div style="text-align:center">';
-                    $out .= $this->output->single_button(new \moodle_url('view.php', array('id' => $id, 'action' => 'studentsteps')),
-                    get_string('calculatestudentsteps', 'planner'));
+                    $out .= $this->output->single_button(new \moodle_url('view.php', array('id' => $id, 'action' => 'studentsteps'))
+                    ,get_string('calculatestudentsteps', 'planner'));
                     $out .= '</div>';
                 }
             }
@@ -338,15 +339,17 @@ class renderer extends \plugin_renderer_base {
         // Get necessary data.
         $plan = new planner();
         $time = $plan->get_planner_times($planner, $cm);
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '".$planner->id."' ORDER BY id ASC");
+        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '".
+                                                 $planner->id."' ORDER BY id ASC");
         $userstartdate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)
             WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC LIMIT 1");
         $userenddate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)
             WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id DESC LIMIT 1");
         $datediff = $time->endtime - $time->starttime;
         $days = round($datediff / (60 * 60 * 24));
-        $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu JOIN {planner_step}
-            ps ON (ps.id = pu.stepid) WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC ");
+        $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
+            JOIN {planner_step} ps ON (ps.id = pu.stepid)
+            WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC ");
         if ($userstartdate) {
             if ($userstartdate->timestart) {
                 $time->starttime = $userstartdate->timestart;
@@ -373,7 +376,8 @@ class renderer extends \plugin_renderer_base {
         . ' ('. format_string($course->shortname) . ')</span>';
         $out .= \html_writer::tag('div', $coursename, array('class' => 'coursename'));
 
-        $modname = get_string("modulename", "planner") . ': <span class="strong">' . format_string($planner->name, true) . '</span>';
+        $modname = get_string("modulename", "planner") . ': <span class="strong">' .
+                   format_string($planner->name, true) . '</span>';
         $out .= \html_writer::tag('div', $modname, array('class' => 'modname'));
 
         if (!html_is_blank($planner->intro)) {
