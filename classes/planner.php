@@ -37,7 +37,7 @@ class planner {
      * @param object $planner
      * @return string
      */
-    public function get_planner_name($planner) {
+    public function get_planner_name() {
         $name = get_string('modulename', 'planner');
         return $name;
     }
@@ -724,7 +724,7 @@ class planner {
      * @param object $table
      * @param array $searchclauses
      * @param int $perpage
-     * @return array
+     * @return object
      */
     public function get_templatelist($table, $searchclauses, $perpage) {
 
