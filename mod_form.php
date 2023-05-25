@@ -171,7 +171,7 @@ class mod_planner_mod_form extends moodleform_mod {
             }
             $templates = array();
             $templates[0] = '';
-            $alltemplates = $DB->get_records_sql("SELECT id,name,disclaimer FROM {plannertemplate}  $whereteacher");
+            $alltemplates = $DB->get_records_sql("SELECT id,name,disclaimer,personal FROM {plannertemplate}  $whereteacher");
             if ($alltemplates) {
                 foreach ($alltemplates as $id => $template) {
                     $templates[$id] = $template->name;
@@ -230,6 +230,10 @@ class mod_planner_mod_form extends moodleform_mod {
                 $mform->addElement('editor', 'disclaimer', get_string('disclaimer', 'planner'));
                 $mform->settype('disclaimer', PARAM_RAW);
             }
+            $mform->addElement('button', 'savenewtemplate', get_string('savenewtemplate', 'planner'));
+            $templatedata = $this->get_current();
+            $personal = $alltemplates[$templateid]->personal;
+            $PAGE->requires->js_call_amd('mod_planner/savenewtemplate', 'init', array($templatedata, $repeatno, $personal));
         }
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();

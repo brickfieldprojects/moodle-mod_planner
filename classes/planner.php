@@ -727,7 +727,6 @@ class planner {
      * @return object
      */
     public function get_templatelist($table, $searchclauses, $perpage) {
-
         global $USER, $DB;
 
         $admins = get_admins();
@@ -776,5 +775,44 @@ class planner {
         $templatelist = $DB->get_recordset_sql("$select $from $where $sort", $params, $table->get_page_start(),
             $table->get_page_size());
         return $templatelist;
+    }
+
+    /**
+     * Validate the form data.
+     * @param array $data
+     * @return array|bool
+     */
+    public function validation($data) {
+        if (isset($data['submitbutton'])) {
+            if (isset($data['stepname'])) {
+                $stepname = $data['stepname'][0];
+                $stepallocation = $data['stepallocation'][0];
+                $totalsteps = count($data['stepallocation']);
+                $totaltimeallocation = 0;
+                for ($i = 0; $i <= $totalsteps; $i++) {
+                    if (isset($data['stepname'][$i]) && (!empty($data['stepname'][$i]))) {
+                        if (isset($data['stepallocation'][$i])) {
+                            $totaltimeallocation = $totaltimeallocation + $data['stepallocation'][$i];
+                        }
+                    }
+                }
+                if (!$stepname) {
+                    $errors['stepname[0]'] = get_string('required');
+                }
+                if (!$stepallocation) {
+                    $errors['stepallocation[0]'] = get_string('required');
+                }
+                if ($totaltimeallocation != '100') {
+                    for ($i = 0; $i <= $totalsteps; $i++) {
+                        if (isset($data['stepname'][$i]) && (!empty($data['stepname'][$i]))) {
+                            if (isset($data['stepallocation'][$i])) {
+                                $errors['stepallocation['.$i.']'] = get_string('totaltimeallocated', 'planner');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $errors;
     }
 }
