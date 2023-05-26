@@ -472,6 +472,9 @@ class mod_planner_observer {
      */
     public static function role_assigned(\core\event\role_assigned $event) {
         global $DB, $CFG;
+        if ($event->courseid == 0) {
+            return; // Do a void return, in case of any third-party role_assigned phpunit testing.
+        }
         $context = context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         $studentroleid = $DB->get_record('role', array('shortname' => 'student'));
