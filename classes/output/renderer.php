@@ -215,14 +215,22 @@ class renderer extends \plugin_renderer_base {
      * @param string $pageurl
      * @param array $searchclauses
      * @param int $perpage
+     * @param bool $mytemplates
      * @return string
      */
-    public function display_template_table($cid, $mform, $pageurl, $searchclauses, $perpage) {
+    public function display_template_table($cid, $mform, $pageurl, $searchclauses, $perpage, $mytemplates = false) {
         global $USER;
 
-        $mform->display();
-        $out = "</div>";
-        echo $out;
+        if ($mytemplates) {
+            $mform->display();
+            $out = "</div>";
+            $out .= '<h3>'.get_string('mytemplates', 'planner').'</h3>';
+            echo $out;
+            $table = new \flexible_table('my-planner-templates');
+        } else {
+            echo '<h3>'.get_string('alltemplates', 'planner').'</h3>';
+            $table = new \flexible_table('all-planner-templates');
+        }
         $tablecolumns = array();
         $tableheaders = array();
         $tablecolumns[] = 'name';
@@ -239,7 +247,6 @@ class renderer extends \plugin_renderer_base {
         $tableheaders[] = get_string('status', 'planner');
         $tableheaders[] = get_string('action', 'planner');
 
-        $table = new \flexible_table('planner-template');
         $table->define_columns($tablecolumns);
         $table->define_headers($tableheaders);
         $table->column_style('name', 'text-align', 'left');
@@ -271,7 +278,11 @@ class renderer extends \plugin_renderer_base {
         $table->setup();
 
         $plan = new planner();
-        $templatelist = $plan->get_templatelist($table, $searchclauses, $perpage);
+        if ($mytemplates) {
+            $templatelist = $plan->get_templatelist($table, $searchclauses, $perpage, $mytemplates);
+        } else {
+            $templatelist = $plan->get_templatelist($table, $searchclauses, $perpage);
+        }
 
         $admins = get_admins();
         $isadmin = false;
@@ -286,6 +297,7 @@ class renderer extends \plugin_renderer_base {
             $data = array();
             $data[] = $template->name;
             $data[] = fullname($template);
+            $statuslink = '';
             if ($template->personal == '0') {
                 $data[] = get_string('global', 'planner');
             } else {
@@ -294,14 +306,17 @@ class renderer extends \plugin_renderer_base {
             $data[] = $template->copied;
             if ($template->status == '1') {
                 $data[] = get_string('enabled', 'planner');
-                $statuslink = $this->output->action_icon($pageurl.'&id='.$template->id.'&action=disable&sesskey='.sesskey(),
-                new \pix_icon('t/hide', get_string('disabletemplate', 'planner')));
             } else {
                 $data[] = get_string('disabled', 'planner');
-                $statuslink = $this->output->action_icon($pageurl.'&id='.$template->id.'&action=enable&sesskey='.sesskey(),
-                new \pix_icon('t/show', get_string('enabletemplate', 'planner')));
             }
             if ($template->userid == $USER->id || $isadmin) {
+                if ($template->status == '1') {
+                    $statuslink = $this->output->action_icon($pageurl.'&id='.$template->id.'&action=disable&sesskey='.sesskey(),
+                    new \pix_icon('t/hide', get_string('disabletemplate', 'planner')));
+                } else {
+                    $statuslink = $this->output->action_icon($pageurl.'&id='.$template->id.'&action=enable&sesskey='.sesskey(),
+                    new \pix_icon('t/show', get_string('enabletemplate', 'planner')));
+                }
                 $editlink = $this->output->action_icon(new \moodle_url('/mod/planner/managetemplate.php', array('id' => $template->id,
                 'cid' => $cid)), new \pix_icon('t/edit', get_string('edit')));
                 $deletelink = $this->output->action_icon(new \moodle_url('/mod/planner/template.php', array('id' => $template->id,
@@ -313,8 +328,10 @@ class renderer extends \plugin_renderer_base {
             $table->add_data($data);
         }
         $table->finish_output();
-        echo $this->output->box_end();
-        echo $this->output->footer();
+        if (!$mytemplates) {
+            echo $this->output->box_end();
+            echo $this->output->footer();
+        }
     }
 
     /**

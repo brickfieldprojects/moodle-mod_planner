@@ -724,9 +724,10 @@ class planner {
      * @param object $table
      * @param array $searchclauses
      * @param int $perpage
+     * @param bool $mytemplates
      * @return object
      */
-    public function get_templatelist($table, $searchclauses, $perpage) {
+    public function get_templatelist($table, $searchclauses, $perpage, $mytemplates = false) {
         global $USER, $DB;
 
         $admins = get_admins();
@@ -756,7 +757,11 @@ class planner {
             $params['search3'] = "%$searchclauses%";
             $wheresearch = implode(" OR ", $wheres);
         }
-        if ($whereteacher && $wheresearch) {
+        if ($mytemplates && $wheresearch) {
+            $where = "WHERE pt.userid = '" . $USER->id . "' AND " . $wheresearch;
+        } else if ($mytemplates) {
+            $where = "WHERE pt.userid = '" . $USER->id . "'";
+        } else if ($whereteacher && $wheresearch) {
             $where = "WHERE " . $whereteacher . " AND " . $wheresearch;
         } else if ($wheresearch) {
             $where = "WHERE " . $wheresearch;

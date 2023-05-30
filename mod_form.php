@@ -208,10 +208,12 @@ class mod_planner_mod_form extends moodleform_mod {
             $repeatno = count($templatestepdata);
             if ($repeatno > 0) {
                 $repeatarray = array();
-                $repeatarray[] = $mform->createElement('text', 'stepname', get_string('stepname', 'planner'), 'size="50" ');
+                $repeatarray[] = $mform->createElement('text', 'stepname', get_string('stepname', 'planner'),
+                    ['size' =>"50", 'selector' => 'planner_stepname']);
                 $repeatarray[] = $mform->createElement('text', 'stepallocation', get_string('steptimeallocation', 'planner'),
-                'size="3" ');
-                $repeatarray[] = $mform->createElement('editor', 'stepdescription', get_string('stepdescription', 'planner'));
+                    ['size' => "3", 'selector' => 'planner_stepallocation']);
+                $repeatarray[] = $mform->createElement('editor', 'stepdescription', get_string('stepdescription', 'planner'),
+                    ['selector' => 'planner_stepdescription']);
                 $repeatno = count($templatestepdata);
                 $repeateloptions = array();
                 $repeateloptions['stepname']['type'] = PARAM_RAW;
@@ -231,9 +233,10 @@ class mod_planner_mod_form extends moodleform_mod {
                 $mform->settype('disclaimer', PARAM_RAW);
             }
             $mform->addElement('button', 'savenewtemplate', get_string('savenewtemplate', 'planner'));
-            $templatedata = $this->get_current();
-            $personal = $alltemplates[$templateid]->personal;
-            $PAGE->requires->js_call_amd('mod_planner/savenewtemplate', 'init', array($templatedata, $repeatno, $personal));
+            if ($alltemplates) {
+                $personal = $alltemplates[$templateid]->personal;
+            }
+            $PAGE->requires->js_call_amd('mod_planner/savenewtemplate', 'init', array($personal));
         }
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();

@@ -213,6 +213,8 @@ $string['changedateemailsubject'] = 'Activity date change email notification for
 $string['addstepstoform'] = 'Add {no} step to the form';
 $string['savenewtemplate'] = 'Save as new template';
 $string['enternewname'] = 'Enter a new name for the template';
+$string['alltemplates'] = 'All templates';
+$string['mytemplates'] = 'My templates';
 
 $string['activitiesenabled'] = 'selecting a activity';
 $string['activitiesenabled_help'] = '* Select an assignment or quiz activity for the planner.';

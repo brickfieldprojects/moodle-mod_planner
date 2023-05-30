@@ -31,13 +31,13 @@ import Notification from "core/notification";
 /**
  * Register event listeners for the module.
  */
-const registerEventListeners = (templateData,) => {
+const registerEventListeners = () => {
     document.addEventListener('click', e => {
         const trigger = e.target.closest('#id_savenewtemplate');
         if (trigger) {
             e.preventDefault();
 
-            show(trigger, { focusOnClose: e.target }, templateData, repeatNo);
+            show(trigger, { focusOnClose: e.target });
         }
     });
 };
@@ -45,11 +45,9 @@ const registerEventListeners = (templateData,) => {
 /**
  * Shows the gateway selector modal.
  *
- * @param {HTMLElement} rootNode
- * @param {Object} options - Additional options
- * @param {HTMLElement} options.focusOnClose The element to focus on when the modal is closed.
+ * @param {HTMLElement} focusOnClose The element to focus on when the modal is closed.
  */
-const show = async (rootNode, { focusOnClose = null } = {}) => {
+const show = async ({ focusOnClose = null } = {}) => {
     const modal = await ModalFactory.create({ type: ModalSaveNewTemplate.TYPE });
 
     modal.show();
@@ -64,17 +62,18 @@ const show = async (rootNode, { focusOnClose = null } = {}) => {
         }
     });
 
-    modal.getRoot().on(PlannerEvents.savenewtemplate, (e) => {
+    modal.getRoot().on(PlannerEvents.savenewtemplate, () => {
         // Get value from input field.
         const templateName = document.getElementById('newTemplateName').value;
         const disclaimer = document.getElementById('id_disclaimereditable').innerHTML;
         const stepName = [];
         const stepAllocation = [];
         const stepDescription = [];
-        for (let i = 0; i < repeatNo; i++) {
-            let str = ''.concat('id_stepname_', + i);
-            stepName.push(document.getElementById(''.concat('id_stepname_', + i)).value);
-            stepAllocation.push(document.getElementById('id_stepallocation_' + i).value);
+        const names = document.querySelectorAll('[selector="planner_stepname"]');
+        const allocs = document.querySelectorAll('[selector="planner_stepallocation"]');
+        for (let i = 0; i < names.length; i++) {
+            stepName.push(names[i].value);
+            stepAllocation.push(allocs[i].value);
             stepDescription.push(document.getElementById('id_stepdescription_' + i + 'editable').innerHTML);
         }
         Ajax.call([{
@@ -86,7 +85,7 @@ const show = async (rootNode, { focusOnClose = null } = {}) => {
                 stepname: stepName,
                 stepallocation: stepAllocation,
                 stepdescription: stepDescription,
-                optionrepeats: repeatNo,
+                optionrepeats: names.length,
             },
             fail: Notification.exception,
         }]);
@@ -96,10 +95,9 @@ const show = async (rootNode, { focusOnClose = null } = {}) => {
 
 /**
  * Set up the payment actions.
+ * @param {string} personal Whether the template is personal or global.
  */
-export const init = (templatedata, repeatno, personal) => {
-    templateData = templatedata;
-    repeatNo = repeatno;
+export const init = (personal) => {
     isPersonal = personal;
     if (!init.initialised) {
         // Event listeners should only be registered once.
@@ -108,9 +106,11 @@ export const init = (templatedata, repeatno, personal) => {
     }
 };
 
-let templateData = '';
-let repeatNo = 0;
+/**
+ * Whether the template is global or personal.
+ */
 let isPersonal = '';
+
 /**
  * Whether the init function was called before.
  *

@@ -68,4 +68,5 @@ $PAGE->set_title("{$SITE->shortname}: " . get_string('manage_templates', 'planne
 
 $output = $renderer->setup_template($cid);
 echo $output;
+$renderer->display_template_table($cid, $mform, $pageurl, $searchclauses, $perpage, true);
 $renderer->display_template_table($cid, $mform, $pageurl, $searchclauses, $perpage);
