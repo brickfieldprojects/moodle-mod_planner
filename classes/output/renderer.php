@@ -309,6 +309,10 @@ class renderer extends \plugin_renderer_base {
             } else {
                 $data[] = get_string('disabled', 'planner');
             }
+            $viewlink = \html_writer::link('#', $this->output->pix_icon('t/viewdetails', get_string('view')), array(
+                'data-action' => 'viewtemplate',
+                'data-templateid' => $template->id,
+                'id' => 'toggle-template-modal-' . $template->id));
             if ($template->userid == $USER->id || $isadmin) {
                 if ($template->status == '1') {
                     $statuslink = $this->output->action_icon($pageurl.'&id='.$template->id.'&action=disable&sesskey='.sesskey(),
@@ -321,9 +325,9 @@ class renderer extends \plugin_renderer_base {
                 'cid' => $cid)), new \pix_icon('t/edit', get_string('edit')));
                 $deletelink = $this->output->action_icon(new \moodle_url('/mod/planner/template.php', array('id' => $template->id,
                 'action' => 'delete', 'cid' => $cid, 'sesskey' => sesskey())), new \pix_icon('t/delete', get_string('delete')));
-                $data[] = $statuslink.' '.$editlink.''.$deletelink;
+                $data[] = $viewlink . $statuslink . ' ' . $editlink . '' . $deletelink;
             } else {
-                $data[] = $statuslink;
+                $data[] = $viewlink . $statuslink;
             }
             $table->add_data($data);
         }

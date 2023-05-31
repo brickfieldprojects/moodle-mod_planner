@@ -358,6 +358,20 @@ class planner {
     }
 
     /**
+     * Get a template and template steps.
+     *
+     * @param int $id
+     * @return array
+     */
+    public function get_planner_template_step($id) {
+        global $DB;
+
+        $plannertemplate = $DB->get_record('plannertemplate', array('id' => $id));
+        $plannertemplatesteps = $DB->get_records('plannertemplate_step', array('plannerid' => $id), 'id ASC');
+        return ['plannertemplate' => $plannertemplate, 'plannertemplatesteps' => $plannertemplatesteps];
+    }
+
+    /**
      * Returns the students and groups for a course.
      *
      * @param string $group

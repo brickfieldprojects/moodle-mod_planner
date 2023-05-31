@@ -21,7 +21,6 @@ use external_function_parameters;
 use external_multiple_structure;
 use external_value;
 use mod_planner\planner;
-use mod_planner\form\template_form;
 
 /**
  * External service definitions for mod_planner.

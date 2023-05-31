@@ -33,12 +33,21 @@ $functions = [
         'ajax'        => true,
         'capabilities' => 'mod/planner:managetemplates',
     ],
+    'mod_planner_fetch_template_data' => [
+        'classname'   => 'mod_planner\external\fetch_template_data',
+        'methodname'  => 'execute',
+        'description' => 'Fetches a template record, and the steps associated with it',
+        'type'        => 'read',
+        'ajax'        => true,
+        'capabilities' => 'mod/planner:managetemplates',
+    ],
 ];
 
 $services = [
     'mod_planner' => [
         'functions' => [
             'mod_planner_save_new_template',
+            'mod_planner_fetch_template_data',
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Creates the modals for the guide tips.
+ * Creates the modal for the saving a new template.
  *
  * @author      Jay Churchward <jay@brickfieldlabs.ie>
  * @copyright   2021 Brickfield Education Labs <jay@brickfieldlabs.ie>
@@ -43,7 +43,7 @@ const registerEventListeners = () => {
 };
 
 /**
- * Shows the gateway selector modal.
+ * Shows the save new template modal.
  *
  * @param {HTMLElement} focusOnClose The element to focus on when the modal is closed.
  */
@@ -90,11 +90,10 @@ const show = async ({ focusOnClose = null } = {}) => {
             fail: Notification.exception,
         }]);
     });
-
 };
 
 /**
- * Set up the payment actions.
+ * Set up the save new template actions.
  * @param {string} personal Whether the template is personal or global.
  */
 export const init = (personal) => {
