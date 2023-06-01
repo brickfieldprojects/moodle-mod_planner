@@ -49,7 +49,6 @@ const registerEventListeners = () => {
  */
 const show = async ({ focusOnClose = null } = {}) => {
     const modal = await ModalFactory.create({ type: ModalSaveNewTemplate.TYPE });
-
     modal.show();
 
     modal.getRoot().on(ModalEvents.hidden, () => {
@@ -62,15 +61,18 @@ const show = async ({ focusOnClose = null } = {}) => {
         }
     });
 
-    modal.getRoot().on(PlannerEvents.savenewtemplate, () => {
+    modal.getRoot().on(PlannerEvents.savenewtemplate, (e) => {
+        e.preventDefault();
         // Get value from input field.
-        const templateName = document.getElementById('newTemplateName').value;
+        const templateNameElement = document.getElementById('newTemplateName');
+        const templateName = templateNameElement.value;
         const disclaimer = document.getElementById('id_disclaimereditable').innerHTML;
         const stepName = [];
         const stepAllocation = [];
         const stepDescription = [];
         const names = document.querySelectorAll('[selector="planner_stepname"]');
         const allocs = document.querySelectorAll('[selector="planner_stepallocation"]');
+        const errorMessage = document.getElementById('id_error_message');
         for (let i = 0; i < names.length; i++) {
             stepName.push(names[i].value);
             stepAllocation.push(allocs[i].value);
@@ -86,6 +88,20 @@ const show = async ({ focusOnClose = null } = {}) => {
                 stepallocation: stepAllocation,
                 stepdescription: stepDescription,
                 optionrepeats: names.length,
+            },
+            done: (data) => {
+                if (data !== '') {
+                    templateNameElement.classList.add('is-invalid');
+                    errorMessage.innerText = data;
+                    errorMessage.style.display = 'block';
+                } else {
+                    modal.destroy();
+                    try {
+                        focusOnClose.focus();
+                    } catch (e) {
+                        // eslint-disable-line
+                    }
+                }
             },
             fail: Notification.exception,
         }]);

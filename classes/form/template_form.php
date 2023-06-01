@@ -126,7 +126,7 @@ class template_form extends \moodleform {
      * @return array|bool
      */
     public function validation($data, $files) {
-        global $CFG, $DB;
+        global $DB;
         $errors = parent::validation($data, $files);
         if (isset($data['submitbutton'])) {
             if (isset($data['stepname'])) {
@@ -143,6 +143,11 @@ class template_form extends \moodleform {
                 }
                 if (!$stepname) {
                     $errors['stepname[0]'] = get_string('required');
+                }
+                $name = $data['name'];
+                $nameunique = $DB->get_records('plannertemplate', array('name' => $name));
+                if ($nameunique) {
+                    $errors['name'] = get_string('templatenameunique', 'planner');
                 }
                 if (!$stepallocation) {
                     $errors['stepallocation[0]'] = get_string('required');

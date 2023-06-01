@@ -88,13 +88,13 @@ class save_new_template extends external_api {
             'stepallocation' => $params['stepallocation'],
             'stepdescription' => $params['stepdescription'],
             'optionrepeats' => $params['optionrepeats'],
-            'sumbitbutton' => 'Save',
+            'submitbutton' => true,
         ];
         $planner = new planner();
-        $errors = $planner->validation($data, []);
+        $errors = $planner->validation($data);
 
-        if (!empty($errors)) {
-            throw new \moodle_exception('invalid_data', 'planner', '', $errors);
+        if (!empty($errors['name'])) {
+            return $errors['name'];
         } else {
             // Create the template object to be passed to the insert function.
             $templatedata = new \stdClass();
@@ -109,6 +109,7 @@ class save_new_template extends external_api {
             $templatedata->option_repeats = $params['optionrepeats'];
 
             $planner->insert_planner_template_step($templatedata);
+            return '';
         }
     }
 
@@ -116,5 +117,6 @@ class save_new_template extends external_api {
      * Describes the return structure of the service.
      */
     public static function execute_returns() {
+        return new external_value(PARAM_TEXT, 'An error message if there is one.');
     }
 }

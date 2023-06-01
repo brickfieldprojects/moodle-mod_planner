@@ -802,6 +802,8 @@ class planner {
      * @return array|bool
      */
     public function validation($data) {
+        global $DB;
+        $errors = [];
         if (isset($data['submitbutton'])) {
             if (isset($data['stepname'])) {
                 $stepname = $data['stepname'][0];
@@ -817,6 +819,11 @@ class planner {
                 }
                 if (!$stepname) {
                     $errors['stepname[0]'] = get_string('required');
+                }
+                $name = $data['name'];
+                $nameunique = $DB->get_records('plannertemplate', array('name' => $name));
+                if ($nameunique) {
+                    $errors['name'] = get_string('templatenameunique', 'planner');
                 }
                 if (!$stepallocation) {
                     $errors['stepallocation[0]'] = get_string('required');

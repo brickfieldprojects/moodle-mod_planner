@@ -227,9 +227,11 @@ class renderer extends \plugin_renderer_base {
             $out .= '<h3>'.get_string('mytemplates', 'planner').'</h3>';
             echo $out;
             $table = new \flexible_table('my-planner-templates');
+            $table->set_attribute('class', 'mytemplates');
         } else {
             echo '<h3>'.get_string('alltemplates', 'planner').'</h3>';
             $table = new \flexible_table('all-planner-templates');
+            $table->set_attribute('class', 'alltemplates');
         }
         $tablecolumns = array();
         $tableheaders = array();
@@ -262,7 +264,11 @@ class renderer extends \plugin_renderer_base {
 
         $table->set_attribute('cellspacing', '0');
         $table->set_attribute('id', 'dashboard');
-        $table->set_attribute('class', 'generaltable generalbox');
+        if ($mytemplates) {
+            $table->set_attribute('class', 'generaltable generalbox mytemplates');
+        } else {
+            $table->set_attribute('class', 'generaltable generalbox alltemplates');
+        }
 
         $table->set_control_variables(array(
             TABLE_VAR_SORT => 'ssort',

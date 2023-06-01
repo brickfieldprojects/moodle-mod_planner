@@ -215,6 +215,7 @@ $string['savenewtemplate'] = 'Save as new template';
 $string['enternewname'] = 'Enter a new name for the template';
 $string['alltemplates'] = 'All templates';
 $string['mytemplates'] = 'My templates';
+$string['templatenameunique'] = 'The template name must be unique';
 
 $string['activitiesenabled'] = 'selecting a activity';
 $string['activitiesenabled_help'] = '* Select an assignment or quiz activity for the planner.';

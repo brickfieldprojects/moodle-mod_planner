@@ -155,6 +155,7 @@ class mod_planner_mod_form extends moodleform_mod {
             }
         }
 
+        $alltemplates = '';
         if (!$this->_cm) {
             $admins = get_admins();
             $isadmin = false;
@@ -235,13 +236,14 @@ class mod_planner_mod_form extends moodleform_mod {
             $mform->addElement('button', 'savenewtemplate', get_string('savenewtemplate', 'planner'));
             if ($alltemplates) {
                 $personal = $alltemplates[$templateid]->personal;
+            } else {
+                $personal = 0;
             }
             $PAGE->requires->js_call_amd('mod_planner/savenewtemplate', 'init', array($personal));
         }
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }
-
     /**
      * Moodle form validation
      *
