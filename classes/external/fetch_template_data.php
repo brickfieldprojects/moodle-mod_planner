@@ -59,7 +59,7 @@ class fetch_template_data extends external_api {
         $data = planner::get_planner_template_step($params['templateid']);
         $data['plannertemplate'] = (array) $data['plannertemplate'];
         $i = 1;
-        foreach($data['plannertemplatesteps'] as $val) {
+        foreach ($data['plannertemplatesteps'] as $val) {
             $val = (array) $val;
             $val['stepnumber'] = $i;
             $steps[] = $val;

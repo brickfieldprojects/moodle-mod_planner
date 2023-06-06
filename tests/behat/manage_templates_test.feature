@@ -86,41 +86,41 @@ Feature: Test adding, editing, deleting, and searching for templates
     And I should not see "Template 1" in the "mytemplates" "table"
     And I should see "Template 1" in the "alltemplates" "table"
 
-Scenario: Test that a non-admin user can only edit/delete their own templates
-  Given the following "users" exist:
-    | username | firstname | lastname | email                |
-    | teacher1 | Darrell   | Teacher1 | teacher1@example.com |
-  And the following "courses" exist:
-    | fullname | shortname | category | enablecompletion | showcompletionconditions |
-    | Course 1 | C1        | 0        | 1                | 1                        |
-  And the following "course enrolments" exist:
-    | user     | course | role           |
-    | teacher1 | C1     | editingteacher |
-  When I log in as "admin"
-  And I navigate to "Plugins > Activity modules > Planner > Manage Templates" in site administration
-  And I press "Add new template"
-  And I set the field "Template name" to "Template 1"
-  And I press "Submit"
-  Then "View" "link" should be visible
-  And "Disable this template" "link" should be visible
-  And "Edit" "link" should be visible
-  And "Delete" "link" should be visible
-  When I log in as "teacher1"
-  And I am on "Course 1" course homepage
-  And I navigate to "Manage Templates" in current page administration
-  Then "View" "link" should be visible
-  And "Disable this template" "link" should not be visible
-  And "Edit" "link" should not be visible
-  And "Delete" "link" should not be visible
+  Scenario: Test that a non-admin user can only edit/delete their own templates
+    Given the following "users" exist:
+      | username | firstname | lastname | email                |
+      | teacher1 | Darrell   | Teacher1 | teacher1@example.com |
+    And the following "courses" exist:
+      | fullname | shortname | category | enablecompletion | showcompletionconditions |
+      | Course 1 | C1        | 0        | 1                | 1                        |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+    When I log in as "admin"
+    And I navigate to "Plugins > Activity modules > Planner > Manage Templates" in site administration
+    And I press "Add new template"
+    And I set the field "Template name" to "Template 1"
+    And I press "Submit"
+    Then "View" "link" should be visible
+    And "Disable this template" "link" should be visible
+    And "Edit" "link" should be visible
+    And "Delete" "link" should be visible
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I navigate to "Manage Templates" in current page administration
+    Then "View" "link" should be visible
+    And "Disable this template" "link" should not be visible
+    And "Edit" "link" should not be visible
+    And "Delete" "link" should not be visible
 
-Scenario: Test the view template modal
-  Given I log in as "admin"
-  And I navigate to "Plugins > Activity modules > Planner > Manage Templates" in site administration
-  And I press "Add new template"
-  And I set the field "Template name" to "Template 1"
-  And I press "Submit"
-  When I click on "View" "link"
-  Then I should see "Template 1"
-  And I should see "Step 1 name: Understanding your assignment"
-  And I should see "Step 1 time allocation: 5"
-  And I should see "Step 1 description:"
+  Scenario: Test the view template modal
+    Given I log in as "admin"
+    And I navigate to "Plugins > Activity modules > Planner > Manage Templates" in site administration
+    And I press "Add new template"
+    And I set the field "Template name" to "Template 1"
+    And I press "Submit"
+    When I click on "View" "link"
+    Then I should see "Template 1"
+    And I should see "Step 1 name: Understanding your assignment"
+    And I should see "Step 1 time allocation: 5"
+    And I should see "Step 1 description:"

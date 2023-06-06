@@ -66,39 +66,39 @@ Feature: Test adding, deleting, and editing planner activities
     Then I should not see "Template 1"
     And I should not see "Select activity"
 
-Scenario: Test the save as new template button
-  Given I am on "Course 1" course homepage with editing mode on
-  And I add a "Planner" to section "1"
-  And I set the field "Name" to "Test planner name"
-  And I set the field "Description" to "Test planner description"
-  And I select "Task number, title and due date" from the "Information on course page" singleselect
-  And I select "Test assignment name" from the "Select activity" singleselect
-  And I select "Template 1" from the "Template" singleselect
-  When I set the field "Step 1 description" to "Test step 1 description new"
-  And I set the field "Step 1 name" to "Test step 1 name new"
-  And I press "Save as new template"
-  And I set the field "Template name" to "Template 2"
-  And I click on "Save as new template" "button" in the "Save as new template" "dialogue"
-  And I navigate to "Plugins > Activity modules > Planner > Manage Templates" in site administration
-  Then I should see "Template 1"
-  And I should see "Template 2"
-  When I click on "View" "link" in the "Template 2" "table_row"
-  Then I should see "Test step 1 description new"
-  And I should see "Test step 1 name new"
+  Scenario: Test the save as new template button
+    Given I am on "Course 1" course homepage with editing mode on
+    And I add a "Planner" to section "1"
+    And I set the field "Name" to "Test planner name"
+    And I set the field "Description" to "Test planner description"
+    And I select "Task number, title and due date" from the "Information on course page" singleselect
+    And I select "Test assignment name" from the "Select activity" singleselect
+    And I select "Template 1" from the "Template" singleselect
+    When I set the field "Step 1 description" to "Test step 1 description new"
+    And I set the field "Step 1 name" to "Test step 1 name new"
+    And I press "Save as new template"
+    And I set the field "Template name" to "Template 2"
+    And I click on "Save as new template" "button" in the "Save as new template" "dialogue"
+    And I navigate to "Plugins > Activity modules > Planner > Manage Templates" in site administration
+    Then I should see "Template 1"
+    And I should see "Template 2"
+    When I click on "View" "link" in the "Template 2" "table_row"
+    Then I should see "Test step 1 description new"
+    And I should see "Test step 1 name new"
 
-Scenario: Test that the save as new template button does not save if the name isn't unique
-  Given I navigate to "Plugins > Activity modules > Planner > Manage Templates" in site administration
-  And I press "Add new template"
-  And I set the field "Template name" to "Template 1"
-  And I press "Submit"
-  And I am on "Course 1" course homepage with editing mode on
-  And I add a "Planner" to section "1"
-  And I set the field "Name" to "Test planner name"
-  And I set the field "Description" to "Test planner description"
-  And I select "Task number, title and due date" from the "Information on course page" singleselect
-  And I select "Test assignment name" from the "Select activity" singleselect
-  When I select "Template 1" from the "Template" singleselect
-  And I press "Save as new template"
-  And I set the field "Template name" to "Template 1"
-  And I click on "Save as new template" "button" in the "Save as new template" "dialogue"
-  Then I should see "The template name must be unique"
+  Scenario: Test that the save as new template button does not save if the name isn't unique
+    Given I navigate to "Plugins > Activity modules > Planner > Manage Templates" in site administration
+    And I press "Add new template"
+    And I set the field "Template name" to "Template 1"
+    And I press "Submit"
+    And I am on "Course 1" course homepage with editing mode on
+    And I add a "Planner" to section "1"
+    And I set the field "Name" to "Test planner name"
+    And I set the field "Description" to "Test planner description"
+    And I select "Task number, title and due date" from the "Information on course page" singleselect
+    And I select "Test assignment name" from the "Select activity" singleselect
+    When I select "Template 1" from the "Template" singleselect
+    And I press "Save as new template"
+    And I set the field "Template name" to "Template 1"
+    And I click on "Save as new template" "button" in the "Save as new template" "dialogue"
+    Then I should see "The template name must be unique"

@@ -210,7 +210,7 @@ class mod_planner_mod_form extends moodleform_mod {
             if ($repeatno > 0) {
                 $repeatarray = array();
                 $repeatarray[] = $mform->createElement('text', 'stepname', get_string('stepname', 'planner'),
-                    ['size' =>"50", 'selector' => 'planner_stepname']);
+                    ['size' => "50", 'selector' => 'planner_stepname']);
                 $repeatarray[] = $mform->createElement('text', 'stepallocation', get_string('steptimeallocation', 'planner'),
                     ['size' => "3", 'selector' => 'planner_stepallocation']);
                 $repeatarray[] = $mform->createElement('editor', 'stepdescription', get_string('stepdescription', 'planner'),

@@ -27,7 +27,7 @@ require_once("{$CFG->libdir}/csvlib.class.php");
  *
  * @package    mod_planner
  * @copyright  2020 onward Brickfield Education Labs Ltd, https://www.brickfield.ie
-  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class planner {
 
@@ -67,8 +67,8 @@ class planner {
      * @param int $stepview
      * @param int $introformat
      */
-    public function __construct(int $id, int $courseid, string $intro, string $name, string $disclaimer, int $activitycmid, int $timeopen, int $timeclose,
-                                int $stepview = 0, int $introformat = 1) {
+    public function __construct(int $id, int $courseid, string $intro, string $name, string $disclaimer, int $activitycmid,
+                                int $timeopen, int $timeclose, int $stepview = 0, int $introformat = 1) {
         $this->id = $id;
         $this->courseid = $courseid;
         $this->intro = $intro;
@@ -85,9 +85,9 @@ class planner {
      * Creates a planner object by id
      *
      * @param int $id
-     * @return object|bool
+     * @return object|null
      */
-    public static function create_planner_by_id(int $id): object|bool {
+    public static function create_planner_by_id(int $id): ?object {
         global $DB;
         $record = $DB->get_record('planner', array('id' => $id));
         if ($record) {
@@ -95,7 +95,7 @@ class planner {
                                    $record->activitycmid, $record->timeopen, $record->timeclose,
                                    $record->stepview, $record->introformat);
         } else {
-            $planner = false;
+            $planner = null;
         }
         return $planner;
     }
@@ -103,7 +103,6 @@ class planner {
     /**
      * Returns the Planner name
      *
-     * @param object $planner
      * @return string
      */
     public function get_planner_name(): string {
@@ -214,7 +213,7 @@ class planner {
     /**
      * Updates events for Planner activity
      *
-     * @param ?int $userid
+     * @param int|null $userid
      * @param array $students
      * @param array $stepsdata
      * @param bool $alluser
@@ -238,8 +237,8 @@ class planner {
                     $event->instance = $this->id;
                     $event->type = CALENDAR_EVENT_TYPE_ACTION;
                     $event->eventtype = 'due';
-                    $event->timestart = $stepval['timedue'];
-                    $event->timesort = $stepval['timedue'];
+                    $event->timestart = round($stepval['timedue']);
+                    $event->timesort = round($stepval['timedue']);
                     \calendar_event::create($event, false);
                     $i++;
                 }
@@ -260,8 +259,8 @@ class planner {
                 $event->instance = $this->id;
                 $event->type = CALENDAR_EVENT_TYPE_ACTION;
                 $event->eventtype = 'due';
-                $event->timestart = $stepval['timedue'];
-                $event->timesort = $stepval['timedue'];
+                $event->timestart = round($stepval['timedue']);
+                $event->timesort = round($stepval['timedue']);
                 \calendar_event::create($event, false);
                 $i++;
             }
@@ -271,8 +270,8 @@ class planner {
     /**
      * Update or delete a template based on input.
      *
-     * @param ?string $action
-     * @param ?int $id
+     * @param string|null $action
+     * @param int|null $id
      * @param string $confirm
      * @param string $pageurl
      * @param int $cid
@@ -601,7 +600,7 @@ class planner {
     /**
      * Handles the CRUD actions for userstep table.
      *
-     * @param ?string $action
+     * @param string|null $action
      * @param string $redirecturl
      * @param object $context
      * @param object $cm
@@ -642,7 +641,7 @@ class planner {
 
                         $insertstudentstep = new stdClass();
                         $insertstudentstep->stepid = $stepid;
-                        $insertstudentstep->duedate = $stepval['timedue'];
+                        $insertstudentstep->duedate = round($stepval['timedue']);
                         $insertstudentstep->userid = $studentkey;
                         $insertstudentstep->completionstatus = 0;
                         $DB->insert_record('planner_userstep', $insertstudentstep);

@@ -24,9 +24,15 @@ defined('MOODLE_INTERNAL') || die();
  * @author     Jay Churchward (jay@brickfieldlabs.ie)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class mod_planner_generator extends testing_module_generator {
 
+    /**
+     * Create a new instance of the module.
+     *
+     * @param object $record
+     * @param array $options
+     * @return stdClass
+     */
     public function create_instance($record = null, array $options = null) {
         global $CFG;
         require_once($CFG->dirroot . '/lib/resourcelib.php');
@@ -77,6 +83,11 @@ class mod_planner_generator extends testing_module_generator {
         return parent::create_instance($record, (array)$options);
     }
 
+    /**
+     * Creates and inserts a template record.
+     *
+     * @return int
+     */
     public function create_template() {
         global $DB;
 

@@ -16,8 +16,6 @@
 
 namespace mod_planner;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for mod_planner planner.php.
  *
@@ -215,7 +213,7 @@ class planner_test extends \advanced_testcase {
 
         $output = $object->get_templatelist($table, '', 10);
         $template = '';
-        foreach ($output as $temp){
+        foreach ($output as $temp) {
             $template = $temp;
         }
         $this->assertIsObject($template);
@@ -223,7 +221,7 @@ class planner_test extends \advanced_testcase {
 
         $output = $object->get_templatelist($table, 'Test', 10);
         $template = '';
-        foreach ($output as $temp){
+        foreach ($output as $temp) {
             $template = $temp;
         }
         $this->assertIsObject($template);
@@ -231,7 +229,7 @@ class planner_test extends \advanced_testcase {
 
         $output = $object->get_templatelist($table, 'template', 10);
         $template = '';
-        foreach ($output as $temp){
+        foreach ($output as $temp) {
             $template = $temp;
         }
         $this->assertIsObject($template);
@@ -239,7 +237,7 @@ class planner_test extends \advanced_testcase {
 
         $output = $object->get_templatelist($table, 'planner', 10);
         $template = '';
-        foreach ($output as $temp){
+        foreach ($output as $temp) {
             $template = $temp;
         }
         $this->assertIsObject($template);
@@ -247,7 +245,7 @@ class planner_test extends \advanced_testcase {
 
         $output = $object->get_templatelist($table, 'Test planner template', 10);
         $template = '';
-        foreach ($output as $temp){
+        foreach ($output as $temp) {
             $template = $temp;
         }
         $this->assertIsObject($template);
@@ -255,7 +253,7 @@ class planner_test extends \advanced_testcase {
 
         $output = $object->get_templatelist($table, 'sdfsdfsdf', 10);
         $template = '';
-        foreach ($output as $temp){
+        foreach ($output as $temp) {
             $template = $temp;
         }
         $this->assertEmpty($template);
@@ -270,7 +268,7 @@ class planner_test extends \advanced_testcase {
         // Create a course, quiz, template, and planner.
         $course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));
         $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id,
-            'grade' => 100.0, 'sumgrades' => 2, 'layout' => '1,2,0,3,4,0,5,6,0', 'navmethod' => QUIZ_NAVMETHOD_FREE]);
+            'grade' => 100.0, 'sumgrades' => 2, 'layout' => '1,2,0,3,4,0,5,6,0', 'navmethod' => 'free']);
         $templateid = $this->getDataGenerator()->get_plugin_generator('mod_planner')->create_template();
         $planner = $this->getDataGenerator()->create_module('planner',
             array('course' => $course->id, 'activitycmid' => $quiz->cmid, 'templateid' => $templateid));
@@ -304,6 +302,10 @@ class planner_test extends \advanced_testcase {
 
     /**
      * Returns the user step data for the given course module.
+     *
+     * @param object $cm
+     * @param object $student1
+     * @return array
      */
     private function get_user_step_data($cm, $student1) {
         global $DB;
@@ -316,6 +318,8 @@ class planner_test extends \advanced_testcase {
 
     /**
      * Creates a test table.
+     *
+     * @return \flexible_table
      */
     private function create_test_table() {
         $pageurl = new \moodle_url('/mod/planner/template.php', array(

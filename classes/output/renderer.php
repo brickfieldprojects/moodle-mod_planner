@@ -307,7 +307,7 @@ class renderer extends \plugin_renderer_base {
             } else {
                 $data[] = get_string('personal', 'planner');
             }
-            $data[] = ($template->copied) ? get_string('yes') : get_string('no');
+            $data[] = $template->copied;
             if ($template->status == '1') {
                 $data[] = get_string('enabled', 'planner');
             } else {
@@ -325,8 +325,8 @@ class renderer extends \plugin_renderer_base {
                     $statuslink = $this->output->action_icon($pageurl.'&id='.$template->id.'&action=enable&sesskey='.sesskey(),
                     new \pix_icon('t/show', get_string('enabletemplate', 'planner')));
                 }
-                $editlink = $this->output->action_icon(new \moodle_url('/mod/planner/managetemplate.php', array('id' => $template->id,
-                'cid' => $cid)), new \pix_icon('t/edit', get_string('edit')));
+                $editlink = $this->output->action_icon(new \moodle_url('/mod/planner/managetemplate.php',
+                    array('id' => $template->id, 'cid' => $cid)), new \pix_icon('t/edit', get_string('edit')));
                 $deletelink = $this->output->action_icon(new \moodle_url('/mod/planner/template.php', array('id' => $template->id,
                 'action' => 'delete', 'cid' => $cid, 'sesskey' => sesskey())), new \pix_icon('t/delete', get_string('delete')));
                 $data[] = $viewlink . $statuslink . ' ' . $editlink . '' . $deletelink;
@@ -619,7 +619,8 @@ class renderer extends \plugin_renderer_base {
 
         if (count($students) > 0) {
             $out .= '<div style="text-align:center">';
-            $out .= $this->output->single_button(new \moodle_url('report.php', array('id' => $id, 'format' => 'csv', 'group' => $group)),
+            $out .= $this->output->single_button(new \moodle_url('report.php',
+                array('id' => $id, 'format' => 'csv', 'group' => $group)),
             get_string('downloadcsv', 'planner'));
             $out .= '</div>';
         }

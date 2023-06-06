@@ -40,7 +40,8 @@ class save_new_template extends external_api {
         return new external_function_parameters([
             'name' => new external_value(PARAM_TEXT, 'The name of the template.', VALUE_REQUIRED),
             'disclaimer' => new external_value(PARAM_RAW, 'The disclaimer of the template.', VALUE_REQUIRED),
-            'personal' => new external_value(PARAM_INT, 'A value representing if the template is personal or global.', VALUE_REQUIRED),
+            'personal' => new external_value(PARAM_INT, 'A value representing if the template is personal or global.',
+                                             VALUE_REQUIRED),
             'stepname' => new external_multiple_structure(
                 new external_value(PARAM_TEXT, 'The name of the step.'),
             ),
@@ -102,7 +103,7 @@ class save_new_template extends external_api {
             $templatedata->personal = $params['personal'];
             $templatedata->stepname = $params['stepname'];
             $templatedata->stepallocation = $params['stepallocation'];
-            foreach($params['stepdescription'] as $value) {
+            foreach ($params['stepdescription'] as $value) {
                 $templatedata->stepdescription[]['text'] = $value;
             }
             $templatedata->option_repeats = $params['optionrepeats'];

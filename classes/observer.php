@@ -100,7 +100,7 @@ class observer {
                             $endtime = $defaultenddate;
                         }
                         if ($endtime > time()) {
-                           $planner = planner::create_planner_by_id($planner->id);
+                            $planner = planner::create_planner_by_id($planner->id);
                             $planner->planner_user_step($userid, $starttime, $endtime);
                         }
                     }

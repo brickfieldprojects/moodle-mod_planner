@@ -44,10 +44,10 @@ const registerEventListeners = () => {
 /**
  * Shows the view template modal.
  *
+ * @param {HTMLElement} trigger The element that triggered the modal.
  * @param {HTMLElement} focusOnClose The element to focus on when the modal is closed.
  */
 const show = async (trigger, { focusOnClose = null } = {}) => {
-    console.log(trigger.dataset.templateid);
     Ajax.call([{
         methodname: 'mod_planner_fetch_template_data',
         args: {
@@ -72,7 +72,6 @@ const show = async (trigger, { focusOnClose = null } = {}) => {
                     // eslint-disable-line
                 }
             });
-            console.log(data);
         },
         fail: Notification.exception,
     }]);
