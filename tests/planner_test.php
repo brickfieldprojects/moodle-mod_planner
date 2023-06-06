@@ -27,14 +27,16 @@ defined('MOODLE_INTERNAL') || die();
  * @author     Jay Churchward (jay@brickfieldlabs.ie)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class accessibility_test extends \advanced_testcase {
+class planner_test extends \advanced_testcase {
 
     /**
      * Test the get_planner_name function.
      */
     public function test_get_planner_name() {
         $this->resetAfterTest();
-        $object = new planner();
+        $data = $this->setup_test_data();
+        $object = $data->planner;
+
         $output = $object->get_planner_name();
         $this->assertEquals('Planner', $output);
     }
@@ -44,7 +46,9 @@ class accessibility_test extends \advanced_testcase {
      */
     public function test_create_template_search_form() {
         $this->resetAfterTest();
-        $object = new planner();
+        $data = $this->setup_test_data();
+        $object = $data->planner;
+
         $output = $object->create_template_search_form(1);
         $this->assertIsArray($output);
         $this->assertEquals($output['searchclauses'], '');
@@ -59,7 +63,7 @@ class accessibility_test extends \advanced_testcase {
 
         // The group paramater is always passed as group-<groupid>.
         // Test with a group that doesn't follow that naming convention.
-        $object = new planner();
+        $object = $data->planner;
         $output = $object->get_students_and_groups($data->group->name, $data->course, $data->context,
             $data->coursecontext, $data->student1->id);
         $this->assertIsArray($output);
@@ -86,8 +90,8 @@ class accessibility_test extends \advanced_testcase {
     public function test_get_planner_times() {
         $this->resetAfterTest();
         $data = $this->setup_test_data();
-        $object = new planner();
-        $output = $object->get_planner_times($data->planner, $data->cm);
+        $object = $data->planner;
+        $output = $object->get_planner_times($data->cm);
 
         $this->assertIsObject($output);
     }
@@ -99,11 +103,10 @@ class accessibility_test extends \advanced_testcase {
         $this->resetAfterTest();
         $data = $this->setup_test_data();
         $redirecturl = new \moodle_url('/mod/planner/view.php', array('id' => $data->cm->id));
-        $object = new planner();
+        $object = $data->planner;
 
         // Test with empty action.
-        $output = $object->planner_crud_handler('', $data->planner, $data->course, $redirecturl,
-            $data->context, $data->cm);
+        $output = $object->planner_crud_handler('', $redirecturl, $data->context, $data->cm);
         $output->templatestepdata = array_values($output->templatestepdata);
         $this->assertIsObject($output);
         $this->assertEquals($output->templatestepdata[0]->name, 'Step 1');
@@ -112,8 +115,7 @@ class accessibility_test extends \advanced_testcase {
 
         // Test with 'recalculatesteps' action.
         try {
-            $output = $object->planner_crud_handler('recalculatesteps', $data->planner, $data->course, $redirecturl,
-                $data->context, $data->cm);
+            $output = $object->planner_crud_handler('recalculatesteps', $redirecturl, $data->context, $data->cm);
         } catch (\exception $e) {
             // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
             $this->assertInstanceOf(\moodle_exception::class, $e);
@@ -134,8 +136,7 @@ class accessibility_test extends \advanced_testcase {
 
         // Test with 'studentsteps' action.
         try {
-            $output = $object->planner_crud_handler('studentsteps', $data->planner, $data->course, $redirecturl,
-                $data->context, $data->cm);
+            $output = $object->planner_crud_handler('studentsteps', $redirecturl, $data->context, $data->cm);
         } catch (\exception $e) {
             // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
             $this->assertInstanceOf(\moodle_exception::class, $e);
@@ -156,8 +157,7 @@ class accessibility_test extends \advanced_testcase {
 
         // Test with 'stepsubmit' action.
         try {
-             $output = $object->planner_crud_handler('stepsubmit', $data->planner, $data->course, $redirecturl,
-                $data->context, $data->cm);
+             $output = $object->planner_crud_handler('stepsubmit', $redirecturl, $data->context, $data->cm);
         } catch (\exception $e) {
             // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
             $this->assertInstanceOf(\moodle_exception::class, $e);
@@ -184,12 +184,10 @@ class accessibility_test extends \advanced_testcase {
         $this->resetAfterTest();
         $testdata = $this->setup_test_data();
         $redirecturl = new \moodle_url('/mod/planner/view.php', array('id' => $testdata->cm->id));
-        $object = new planner();
-        $data = $object->planner_crud_handler('', $testdata->planner, $testdata->course, $redirecturl,
-            $testdata->context, $testdata->cm);
+        $object = $testdata->planner;
+        $data = $object->planner_crud_handler('', $redirecturl, $testdata->context, $testdata->cm);
         try {
-            $data = $object->planner_crud_handler('recalculatesteps', $testdata->planner, $testdata->course, $redirecturl,
-                $testdata->context, $testdata->cm);
+            $data = $object->planner_crud_handler('recalculatesteps', $redirecturl, $testdata->context, $testdata->cm);
         } catch (\exception $e) {
             // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
             $this->assertInstanceOf(\moodle_exception::class, $e);
@@ -200,8 +198,8 @@ class accessibility_test extends \advanced_testcase {
             $data->templateuserstepdata = array_values($data->templateuserstepdata);
         }
 
-        $output = $object->create_planner_user_form($testdata->planner, $data, $testdata->cm->id, $testdata->cm, $testdata->course,
-        $testdata->context, $redirecturl);
+        $output = $object->create_planner_user_form($data, $testdata->cm->id, $testdata->cm, $testdata->course,
+            $testdata->context, $redirecturl);
         $this->assertIsObject($output);
         $this->assertInstanceOf(\moodleform::class, $output);
     }
@@ -213,7 +211,7 @@ class accessibility_test extends \advanced_testcase {
         $this->resetAfterTest();
         $data = $this->setup_test_data();
         $table = $this->create_test_table();
-        $object = new planner();
+        $object = $data->planner;
 
         $output = $object->get_templatelist($table, '', 10);
         $template = '';
@@ -269,12 +267,14 @@ class accessibility_test extends \advanced_testcase {
      * @return \stdClass
      */
     private function setup_test_data() {
+        // Create a course, quiz, template, and planner.
         $course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));
         $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id,
             'grade' => 100.0, 'sumgrades' => 2, 'layout' => '1,2,0,3,4,0,5,6,0', 'navmethod' => QUIZ_NAVMETHOD_FREE]);
         $templateid = $this->getDataGenerator()->get_plugin_generator('mod_planner')->create_template();
         $planner = $this->getDataGenerator()->create_module('planner',
             array('course' => $course->id, 'activitycmid' => $quiz->cmid, 'templateid' => $templateid));
+        $planner = planner::create_planner_by_id($planner->id);
         $cm = get_coursemodule_from_instance('planner', $planner->id, $course->id, false, MUST_EXIST);
         $context = \context_module::instance($cm->id);
         $coursecontext = \context_course::instance($course->id);
