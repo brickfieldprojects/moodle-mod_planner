@@ -40,7 +40,8 @@ if ($id) {
         throw new moodle_exception('coursemisconf');
     }
 
-    if (! $planner = $DB->get_record("planner", array("id" => $cm->instance))) {
+
+    if (! $planner = planner::create_planner_by_id($cm->instance)) {
         throw new moodle_exception('invalidplanner', 'planner');
     }
 
@@ -50,10 +51,10 @@ if ($id) {
 
 } else {
     $PAGE->set_url('/mod/planner/view.php', array('l' => $plannerid));
-    if (! $planner = $DB->get_record("planner", array("id" => $plannerid))) {
+    if (! $planner = planner::create_planner_by_id($cm->instance)) {
         throw new moodle_exception('invalidcoursemodule');
     }
-    if (! $course = $DB->get_record("course", array("id" => $planner->course))) {
+    if (! $course = $DB->get_record("course", array("id" => $planner->courseid))) {
         throw new moodle_exception('coursemisconf');
     }
     if (! $cm = get_coursemodule_from_instance("planner", $planner->id, $course->id)) {
@@ -62,12 +63,11 @@ if ($id) {
 }
 
 require_login($course, true, $cm);
-$plannerclass = new planner();
 $context = context_module::instance($cm->id);
 $redirecturl = new moodle_url("/mod/planner/view.php?id=$id");
 
-$data = $plannerclass->planner_crud_handler($action, $planner, $course, $redirecturl, $context, $cm);
-$form = $plannerclass->create_planner_user_form($planner, $data, $id, $cm, $course, $context, $redirecturl);
+$data = $planner->planner_crud_handler($action, $redirecturl, $context, $cm);
+$form = $planner->create_planner_user_form($data, $id, $cm, $course, $context, $redirecturl);
 
 $PAGE->set_context($context);
 $PAGE->set_title($course->shortname.":".format_string($planner->name));

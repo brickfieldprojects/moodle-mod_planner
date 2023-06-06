@@ -50,9 +50,8 @@ if ($cid) {
     admin_externalpage_setup('planner/template');
 }
 $renderer = $PAGE->get_renderer('mod_planner');
-$planner = new planner();
 
-$searchform = $planner->create_template_search_form($cid);
+$searchform = planner::create_template_search_form($cid);
 $searchclauses = $searchform['searchclauses'];
 $mform = $searchform['mform'];
 
@@ -61,7 +60,7 @@ $pageurl = new moodle_url('/mod/planner/template.php', array(
     'cid' => $cid,
     'setting' => $searchclauses));
 
-$planner->template_crud_handler($action, $id, $confirm, $pageurl, $cid);
+planner::template_crud_handler($action, $id, $confirm, $pageurl, $cid);
 
 $PAGE->set_url($pageurl);
 $PAGE->set_title("{$SITE->shortname}: " . get_string('manage_templates', 'planner'));

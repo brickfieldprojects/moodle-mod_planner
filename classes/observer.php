@@ -22,12 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_planner;
+
 use mod_planner\planner;
 
 /**
  * Event observer for mod_forum.
  */
-class mod_planner_observer {
+class observer {
 
     /**
      * Triggered via user_override_created event.
@@ -36,7 +38,7 @@ class mod_planner_observer {
      */
     public static function assign_user_override_created(\mod_assign\event\user_override_created $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('assign', $event->contextinstanceid);
@@ -59,8 +61,8 @@ class mod_planner_observer {
                             $endtime = $defaultenddate;
                         }
                         if ($endtime > time()) {
-                            $planner = new planner();
-                            $planner->planner_user_step($planner, $userid, $starttime, $endtime);
+                            $planner = planner::create_planner_by_id($planner->id);
+                            $planner->planner_user_step($userid, $starttime, $endtime);
                         }
                     }
                 }
@@ -75,7 +77,7 @@ class mod_planner_observer {
      */
     public static function assign_user_override_updated(\mod_assign\event\user_override_updated $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('assign', $event->contextinstanceid);
@@ -98,8 +100,8 @@ class mod_planner_observer {
                             $endtime = $defaultenddate;
                         }
                         if ($endtime > time()) {
-                            $planner = new planner();
-                            $planner->planner_user_step($planner, $userid, $starttime, $endtime);
+                           $planner = planner::create_planner_by_id($planner->id);
+                            $planner->planner_user_step($userid, $starttime, $endtime);
                         }
                     }
                 }
@@ -114,7 +116,7 @@ class mod_planner_observer {
      */
     public static function assign_user_override_deleted(\mod_assign\event\user_override_deleted $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('assign', $event->contextinstanceid);
@@ -126,8 +128,8 @@ class mod_planner_observer {
                     $endtime = $assignment->duedate;
                     $userid = $event->relateduserid;
                     if ($endtime > time()) {
-                        $planner = new planner();
-                        $planner->planner_user_step_delete($planner, $userid, $starttime, $endtime);
+                        $planner = planner::create_planner_by_id($planner->id);
+                        $planner->planner_user_step_delete($userid, $starttime, $endtime);
                     }
                 }
             }
@@ -140,7 +142,7 @@ class mod_planner_observer {
      */
     public static function assign_group_override_created(\mod_assign\event\group_override_created $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('assign', $event->contextinstanceid);
             if ($cm) {
@@ -166,8 +168,8 @@ class mod_planner_observer {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
                                 if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                    $planner = new planner();
-                                    $planner->planner_user_step($planner, $userid, $starttime, $endtime);
+                                    $$planner = planner::create_planner_by_id($planner->id);
+                                    $planner->planner_user_step($userid, $starttime, $endtime);
                                 }
                             }
                         }
@@ -184,7 +186,7 @@ class mod_planner_observer {
      */
     public static function assign_group_override_updated(\mod_assign\event\group_override_updated $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('assign', $event->contextinstanceid);
             if ($cm) {
@@ -210,8 +212,8 @@ class mod_planner_observer {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
                                 if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                    $planner = new planner();
-                                    $planner->planner_user_step($planner, $userid, $starttime, $endtime);
+                                    $planner = planner::create_planner_by_id($planner->id);
+                                    $planner->planner_user_step($userid, $starttime, $endtime);
                                 }
                             }
                         }
@@ -228,7 +230,7 @@ class mod_planner_observer {
      */
     public static function assign_group_override_deleted(\mod_assign\event\group_override_deleted $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('assign', $event->contextinstanceid);
             if ($cm) {
@@ -242,8 +244,8 @@ class mod_planner_observer {
                         foreach ($groupmembers as $groupkey => $user) {
                             $userid = $user->id;
                             if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                $planner = new planner();
-                                $planner->planner_user_step_delete($planner, $userid, $starttime, $endtime);
+                                $planner = planner::create_planner_by_id($planner->id);
+                                $planner->planner_user_step_delete($userid, $starttime, $endtime);
                             }
                         }
                     }
@@ -259,7 +261,7 @@ class mod_planner_observer {
      */
     public static function quiz_user_override_created(\mod_quiz\event\user_override_created $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('quiz', $event->contextinstanceid);
@@ -282,8 +284,8 @@ class mod_planner_observer {
                             $endtime = $defaultenddate;
                         }
                         if ($endtime > time()) {
-                            $planner = new planner();
-                            $planner->planner_user_step($planner, $userid, $starttime, $endtime);
+                            $planner = planner::create_planner_by_id($planner->id);
+                            $planner->planner_user_step($userid, $starttime, $endtime);
                         }
                     }
                 }
@@ -298,7 +300,7 @@ class mod_planner_observer {
      */
     public static function quiz_user_override_updated(\mod_quiz\event\user_override_updated $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('quiz', $event->contextinstanceid);
@@ -321,8 +323,8 @@ class mod_planner_observer {
                             $endtime = $defaultenddate;
                         }
                         if ($endtime > time()) {
-                            $planner = new planner();
-                            $planner->planner_user_step($planner, $userid, $starttime, $endtime);
+                            $planner = planner::create_planner_by_id($planner->id);
+                            $planner->planner_user_step($userid, $starttime, $endtime);
                         }
                     }
                 }
@@ -337,7 +339,7 @@ class mod_planner_observer {
      */
     public static function quiz_user_override_deleted(\mod_quiz\event\user_override_deleted $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('quiz', $event->contextinstanceid);
@@ -349,8 +351,8 @@ class mod_planner_observer {
                     $endtime = $quiz->timeclose;
                     $userid = $event->relateduserid;
                     if ($endtime > time()) {
-                        $planner = new planner();
-                        $planner->planner_user_step_delete($planner, $userid, $starttime, $endtime);
+                            $planner = planner::create_planner_by_id($planner->id);
+                            $planner->planner_user_step_delete($userid, $starttime, $endtime);
                     }
                 }
             }
@@ -364,7 +366,7 @@ class mod_planner_observer {
      */
     public static function quiz_group_override_created(\mod_quiz\event\group_override_created $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('quiz', $event->contextinstanceid);
             if ($cm) {
@@ -390,8 +392,8 @@ class mod_planner_observer {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
                                 if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                    $planner = new planner();
-                                    $planner->planner_user_step($planner, $userid, $starttime, $endtime);
+                                    $planner = planner::create_planner_by_id($planner->id);
+                                    $planner->planner_user_step($userid, $starttime, $endtime);
                                 }
                             }
                         }
@@ -408,7 +410,7 @@ class mod_planner_observer {
      */
     public static function quiz_group_override_updated(\mod_quiz\event\group_override_updated $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('quiz', $event->contextinstanceid);
             if ($cm) {
@@ -434,8 +436,8 @@ class mod_planner_observer {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
                                 if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                    $planner = new planner();
-                                    $planner->planner_user_step($planner, $userid, $starttime, $endtime);
+                                    $planner = planner::create_planner_by_id($planner->id);
+                                    $planner->planner_user_step($userid, $starttime, $endtime);
                                 }
                             }
                         }
@@ -452,7 +454,7 @@ class mod_planner_observer {
      */
     public static function quiz_group_override_deleted(\mod_quiz\event\group_override_deleted $event) {
         global $DB;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         if ( $planner = $DB->get_record("planner", array("activitycmid" => $event->contextinstanceid))) {
             $cm = get_coursemodule_from_id('quiz', $event->contextinstanceid);
             if ($cm) {
@@ -466,8 +468,8 @@ class mod_planner_observer {
                         foreach ($groupmembers as $groupkey => $user) {
                             $userid = $user->id;
                             if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
-                                $planner = new planner();
-                                $planner->planner_user_step_delete($planner, $userid, $starttime, $endtime);
+                                $planner = planner::create_planner_by_id($planner->id);
+                                $planner->planner_user_step_delete($userid, $starttime, $endtime);
                             }
                         }
                     }
@@ -484,7 +486,7 @@ class mod_planner_observer {
      */
     public static function role_assigned(\core\event\role_assigned $event) {
         global $DB, $CFG;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         $studentroleid = $DB->get_record('role', array('shortname' => 'student'));
         if ($event->objectid == $studentroleid->id) {
@@ -520,7 +522,7 @@ class mod_planner_observer {
                             }
                             if (!$templateuserstepdata) {
                                 foreach ($stepsdata as $stepid => $stepdata) {
-                                    $insertstep = new stdClass();
+                                    $insertstep = new \stdClass();
                                     $insertstep->stepid = $stepid;
                                     $insertstep->userid = $userid;
                                     $insertstep->duedate = $stepdata['timedue'];
@@ -528,8 +530,8 @@ class mod_planner_observer {
                                     $insertstep->timemodified = 0;
                                     $DB->insert_record('planner_userstep', $insertstep);
                                 }
-                                $planner = new planner();
-                                $planner->planner_update_events($planner, $userid, $stepsdata, false);
+                                $planner = planner::create_planner_by_id($planner->id);
+                                $planner->planner_update_events($userid, $stepsdata, false);
                             }
                         }
                     }
@@ -546,7 +548,7 @@ class mod_planner_observer {
      */
     public static function role_unassigned(\core\event\role_unassigned $event) {
         global $DB, $CFG;
-        $context = context_course::instance($event->courseid);
+        $context = \context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         $studentroleid = $DB->get_record('role', array('shortname' => 'student'));
         if ($event->objectid == $studentroleid->id) {

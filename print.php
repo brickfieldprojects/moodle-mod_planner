@@ -25,6 +25,8 @@
 require_once("../../config.php");
 require_once("lib.php");
 
+use mod_planner\planner;
+
 $id = required_param('id', PARAM_INT);  // Course Module ID.
 $url = new moodle_url('/mod/print/print.php', array('id' => $id));
 
@@ -35,7 +37,7 @@ if (! $cm = get_coursemodule_from_id('planner', $id)) {
 if (! $course = $DB->get_record("course", array("id" => $cm->course))) {
     throw new moodle_exception('coursemisconf');
 }
-if (! $planner = $DB->get_record("planner", array("id" => $cm->instance))) {
+if (! $planner = planner::create_planner_by_id($cm->instance)) {
     throw new moodle_exception('invalidid', 'planner');
 }
 

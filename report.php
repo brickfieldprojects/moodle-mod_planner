@@ -36,7 +36,7 @@ if (! $cm = get_coursemodule_from_id('planner', $id)) {
 if (! $course = $DB->get_record("course", array("id" => $cm->course))) {
     throw new moodle_exception('coursemisconf');
 }
-if (! $planner = $DB->get_record("planner", array("id" => $cm->instance))) {
+if (! $planner = planner::create_planner_by_id($cm->instance)) {
     throw new moodle_exception('invalidcoursemodule');
 }
 
@@ -58,16 +58,15 @@ $PAGE->set_pagelayout('report');
 $pageurl = new moodle_url("/mod/planner/report.php");
 
 $PAGE->set_url('/mod/planner/report.php', array('id' => $id));
-$plan = new planner();
 
 $plannersteps = $DB->count_records('planner_step', array('plannerid' => $planner->id));
 $coursecontext = \context_course::instance($course->id);
 
 $groupuserid = $USER->id;
-$students = $plan->get_students_and_groups($group, $course, $context, $coursecontext, $groupuserid);
+$students = $planner->get_students_and_groups($group, $course, $context, $coursecontext, $groupuserid);
 
 if ($format) {
-    $plan->export_report_to_csv($planner, $plannersteps, $students, $course);
+    $planner->export_report_to_csv($plannersteps, $students, $course);
 }
 
 $renderer = $PAGE->get_renderer('mod_planner');

@@ -27,9 +27,78 @@ require_once("{$CFG->libdir}/csvlib.class.php");
  *
  * @package    mod_planner
  * @copyright  2020 onward Brickfield Education Labs Ltd, https://www.brickfield.ie
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class planner {
+
+    /** @var int The id of the planner */
+    public $id;
+    /** @var int The id of the course the planner belongs to */
+    public $courseid;
+    /** @var string The intro text for the planner */
+    public $intro;
+    /** @var int The format of the intro text */
+    public $introformat;
+    /** @var string The name of the planner */
+    public $name;
+    /** @var string The disclaimer text for the planner */
+    public $disclaimer;
+    /** @var int The id of the activity the planner is associated with */
+    public $activitycmid;
+    /** @var int The step view setting for the planner */
+    public $stepview;
+    /** @var int The time the planner opens */
+    public $timeopen;
+    /** @var int The time the planner closes */
+    public $timeclose;
+
+
+    /**
+     * Constructor
+     *
+     * @param int $id
+     * @param int $courseid
+     * @param string $intro
+     * @param string $name
+     * @param string $disclaimer
+     * @param int $activitycmid
+     * @param int $timeopen
+     * @param int $timeclose
+     * @param int $stepview
+     * @param int $introformat
+     */
+    public function __construct(int $id, int $courseid, string $intro, string $name, string $disclaimer, int $activitycmid, int $timeopen, int $timeclose,
+                                int $stepview = 0, int $introformat = 1) {
+        $this->id = $id;
+        $this->courseid = $courseid;
+        $this->intro = $intro;
+        $this->introformat = $introformat;
+        $this->name = $name;
+        $this->disclaimer = $disclaimer;
+        $this->activitycmid = $activitycmid;
+        $this->stepview = $stepview;
+        $this->timeopen = $timeopen;
+        $this->timeclose = $timeclose;
+    }
+
+    /**
+     * Creates a planner object by id
+     *
+     * @param int $id
+     * @return object|bool
+     */
+    public static function create_planner_by_id(int $id): object|bool {
+        global $DB;
+        $record = $DB->get_record('planner', array('id' => $id));
+        if ($record) {
+            $planner = new planner($record->id, $record->course, $record->intro, $record->name, $record->disclaimer,
+                                   $record->activitycmid, $record->timeopen, $record->timeclose,
+                                   $record->stepview, $record->introformat);
+        } else {
+            $planner = false;
+        }
+        return $planner;
+    }
 
     /**
      * Returns the Planner name
@@ -37,7 +106,7 @@ class planner {
      * @param object $planner
      * @return string
      */
-    public function get_planner_name() {
+    public function get_planner_name(): string {
         $name = get_string('modulename', 'planner');
         return $name;
     }
@@ -45,20 +114,19 @@ class planner {
     /**
      * Creates user steps for planner
      *
-     * @param object $planner
      * @param int $userid
      * @param int $starttime
      * @param int $endtime
      * @return void
      */
-    public function planner_user_step($planner, $userid, $starttime, $endtime) {
+    public function planner_user_step(int $userid, int $starttime, int $endtime): void {
         global $DB;
 
         $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" .
-            $planner->id . "' ORDER BY id ASC");
+            $this->id . "' ORDER BY id ASC");
         $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
         JOIN {planner_step} ps ON (ps.id = pu.stepid)
-        WHERE ps.plannerid = '" . $planner->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
+        WHERE ps.plannerid = '" . $this->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
         $totaltime = $endtime - $starttime;
         $exsitingsteptime = $starttime;
         $stepsdata = array();
@@ -98,26 +166,25 @@ class planner {
                 $i++;
             }
         }
-        $this->planner_update_events($planner, $userid, $stepsdata, false);
+        $this->planner_update_events($userid, [], $stepsdata, false);
     }
 
     /**
      * Deleting a user step for a planner
      *
-     * @param object $planner
      * @param int $userid
      * @param int $starttime
      * @param int $endtime
      * @return void
      */
-    public function planner_user_step_delete($planner, $userid, $starttime, $endtime) {
+    public function planner_user_step_delete(int $userid, int $starttime, int $endtime): void {
         global $DB;
 
         $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" .
-            $planner->id . "' ORDER BY id ASC");
+            $this->id . "' ORDER BY id ASC");
         $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
         JOIN {planner_step} ps ON (ps.id = pu.stepid)
-        WHERE ps.plannerid = '" . $planner->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
+        WHERE ps.plannerid = '" . $this->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
         $totaltime = $endtime - $starttime;
         $exsitingsteptime = $starttime;
         $stepsdata = array();
@@ -141,34 +208,34 @@ class planner {
                 $DB->update_record('planner_userstep', $updatestep);
             }
         }
-        $this->planner_update_events($planner, $userid, $stepsdata, false);
+        $this->planner_update_events($userid, [], $stepsdata, false);
     }
 
     /**
      * Updates events for Planner activity
      *
-     * @param object $planner
-     * @param object $students
-     * @param object $stepsdata
-     * @param boolean $alluser
+     * @param ?int $userid
+     * @param array $students
+     * @param array $stepsdata
+     * @param bool $alluser
      * @return void
      */
-    public function planner_update_events($planner, $students, $stepsdata, $alluser = true) {
+    public function planner_update_events(?int $userid, array $students, array $stepsdata, bool $alluser = true): void {
         global $DB;
 
         if ($alluser) {
-            $DB->delete_records('event', array('instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'due'));
+            $DB->delete_records('event', array('instance' => $this->id, 'modulename' => 'planner', 'eventtype' => 'due'));
 
             foreach ($students as $studentkey => $studentdata) {
                 $i = 1;
                 foreach ($stepsdata as $stepid => $stepval) {
                     $event = new stdClass();
-                    $event->name = format_string($planner->name);
+                    $event->name = format_string($this->name);
                     $event->description = get_string('step', 'planner') . ' ' . $i . ' : ' . $stepval['name'];
                     $event->format = FORMAT_HTML;
                     $event->userid = $studentkey;
                     $event->modulename = 'planner';
-                    $event->instance = $planner->id;
+                    $event->instance = $this->id;
                     $event->type = CALENDAR_EVENT_TYPE_ACTION;
                     $event->eventtype = 'due';
                     $event->timestart = $stepval['timedue'];
@@ -179,18 +246,18 @@ class planner {
             }
         } else {
             $DB->delete_records('event', array(
-                'instance' => $planner->id, 'modulename' => 'planner',
-                'eventtype' => 'due', 'userid' => $students
+                'instance' => $this->id, 'modulename' => 'planner',
+                'eventtype' => 'due', 'userid' => $userid
             ));
             $i = 1;
             foreach ($stepsdata as $stepid => $stepval) {
                 $event = new stdClass();
-                $event->name = format_string($planner->name);
+                $event->name = format_string($this->name);
                 $event->description = get_string('step', 'planner') . ' ' . $i . ' : ' . $stepval['name'];
                 $event->format = FORMAT_HTML;
-                $event->userid = $students;
+                $event->userid = $userid;
                 $event->modulename = 'planner';
-                $event->instance = $planner->id;
+                $event->instance = $this->id;
                 $event->type = CALENDAR_EVENT_TYPE_ACTION;
                 $event->eventtype = 'due';
                 $event->timestart = $stepval['timedue'];
@@ -204,14 +271,14 @@ class planner {
     /**
      * Update or delete a template based on input.
      *
-     * @param string $action
-     * @param int $id
+     * @param ?string $action
+     * @param ?int $id
      * @param string $confirm
      * @param string $pageurl
      * @param int $cid
      * @return void
      */
-    public function template_crud_handler($action, $id, $confirm, $pageurl, $cid) {
+    public static function template_crud_handler(?string $action, ?int $id, string $confirm, string $pageurl, int $cid): void {
         global $DB, $PAGE;
 
         $plannertemplatedata = $DB->get_record('plannertemplate', array('id' => $id));
@@ -257,7 +324,7 @@ class planner {
      * @param int $cid
      * @return array
      */
-    public function create_template_search_form($cid) {
+    public static function create_template_search_form(int $cid): array {
         $mform = new \mod_planner\form\search(null, array('cid' => $cid));
 
         /** @var cache_session $cache */
@@ -287,7 +354,7 @@ class planner {
      * @param object $templatedata
      * @return void
      */
-    public function update_planner_template_step($templatedata) {
+    public static function update_planner_template_step(object $templatedata): void {
         global $DB;
 
         // Update case.
@@ -325,7 +392,7 @@ class planner {
      * @param object $templatedata
      * @return void
      */
-    public function insert_planner_template_step($templatedata) {
+    public static function insert_planner_template_step(object $templatedata): void {
         global $DB, $USER;
 
         // Insert case.
@@ -363,7 +430,7 @@ class planner {
      * @param int $id
      * @return array
      */
-    public function get_planner_template_step($id) {
+    public static function get_planner_template_step(int $id): array {
         global $DB;
 
         $plannertemplate = $DB->get_record('plannertemplate', array('id' => $id));
@@ -382,7 +449,8 @@ class planner {
      *
      * @return array
      */
-    public function get_students_and_groups($group, $course, $context, $coursecontext, $groupuserid) {
+    public function get_students_and_groups(string $group, object $course, object $context,
+                                            object $coursecontext, int $groupuserid): array {
         global $DB;
 
         // Apply group restrictions.
@@ -423,25 +491,25 @@ class planner {
     /**
      * Downloads the report as a CSV file.
      *
-     * @param object $planner
      * @param int $plannersteps
      * @param array $students
      * @param object $course
+     * @return void
      */
-    public function export_report_to_csv($planner, $plannersteps, $students, $course) {
+    public function export_report_to_csv(int $plannersteps, array $students, object $course): void {
         global $DB;
 
         $modinfo = get_fast_modinfo($course);
         foreach ($modinfo->instances as $modulename => $modinstances) {
             foreach ($modinstances as $cm) {
-                if ($cm->id == $planner->activitycmid) {
+                if ($cm->id == $this->activitycmid) {
                     $cmname = $cm->name;
                 }
             }
         }
 
         $export = new \csv_export_writer();
-        $export->set_filename(format_string($planner->name) . "_" . $cmname);
+        $export->set_filename(format_string($this->name) . "_" . $cmname);
         $row = array();
         $row[] = get_string('studentname', 'planner');
         $row[] = get_string('email', 'planner');
@@ -452,7 +520,7 @@ class planner {
         if ($students) {
             foreach ($students as $studentdata) {
                 $getusersteps = $DB->get_records_sql("SELECT pus.*  FROM {planner_userstep} pus
-                JOIN {planner_step} ps ON (ps.id = pus.stepid) WHERE ps.plannerid = '" . $planner->id . "'
+                JOIN {planner_step} ps ON (ps.id = pus.stepid) WHERE ps.plannerid = '" . $this->id . "'
                 AND pus.userid = '" . $studentdata->id . "' ORDER BY pus.stepid ASC");
                 $row = array();
                 if ($studentdata->idnumber) {
@@ -477,25 +545,24 @@ class planner {
     /**
      * Returns the planner times.
      *
-     * @param object $planner
      * @param object $cm
      * @return object
      */
-    public function get_planner_times($planner, $cm) {
+    public function get_planner_times(object $cm): object {
         global $DB, $USER;
         $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
-        JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '" . $planner->activitycmid . "'");
+        JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '" . $this->activitycmid . "'");
 
-        $modinfo = get_fast_modinfo($planner->course);
+        $modinfo = get_fast_modinfo($this->courseid);
         foreach ($modinfo->instances as $modname => $modinstances) {
             foreach ($modinstances as $cmnew) {
-                if ($cmnew->deletioninprogress == 0 && $cmnew->id == $planner->activitycmid) {
+                if ($cmnew->deletioninprogress == 0 && $cmnew->id == $this->activitycmid) {
                     $modulename = $DB->get_record($cminfoactivity->name, array('id' => $cminfoactivity->instance));
-                } else if ($cmnew->deletioninprogress == 1 && $cmnew->id == $planner->activitycmid) {
+                } else if ($cmnew->deletioninprogress == 1 && $cmnew->id == $this->activitycmid) {
                     throw new \moodle_exception(
                         'relatedactivitynotexistdelete',
                         'planner',
-                        new \moodle_url("/course/view.php?id=$planner->course")
+                        new \moodle_url("/course/view.php?id=$this->courseid")
                     );
                 }
             }
@@ -534,24 +601,22 @@ class planner {
     /**
      * Handles the CRUD actions for userstep table.
      *
-     * @param string $action
-     * @param object $planner
-     * @param object $course
+     * @param ?string $action
      * @param string $redirecturl
      * @param object $context
      * @param object $cm
      * @return object
      */
-    public function planner_crud_handler($action, $planner, $course, $redirecturl, $context, $cm) {
+    public function planner_crud_handler(?string $action, string $redirecturl, object $context, object $cm): object {
         global $DB, $USER;
 
         $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" .
-            $planner->id . "' ORDER BY id ASC");
-        $time = $this->get_planner_times($planner, $cm);
+            $this->id . "' ORDER BY id ASC");
+        $time = $this->get_planner_times($cm);
         if (($action == "studentsteps") || ($action == "recalculatesteps")) {
             if ($action == "recalculatesteps") {
                 $updaterecord = new stdClass();
-                $updaterecord->id = $planner->id;
+                $updaterecord->id = $this->id;
                 $updaterecord->timeopen = $time->starttime;
                 $updaterecord->timeclose = $time->endtime;
                 $DB->update_record('planner', $updaterecord);
@@ -567,7 +632,7 @@ class planner {
                 $stepsdata[$stepkey]['timedue'] = $exsitingsteptime;
             }
 
-            $coursecontext = \context_course::instance($course->id);
+            $coursecontext = \context_course::instance($this->courseid);
             $studentroleid = $DB->get_record('role', array('shortname' => 'student'));
             $students = get_role_users($studentroleid->id, $coursecontext);
             if ($students) {
@@ -583,8 +648,7 @@ class planner {
                         $DB->insert_record('planner_userstep', $insertstudentstep);
                     }
                 }
-                $plannerclass = new planner();
-                $plannerclass->planner_update_events($planner, $students, $stepsdata, true);
+                $this->planner_update_events(null, $students, $stepsdata, true);
                 if ($action == "recalculatesteps") {
                     redirect(
                         $redirecturl,
@@ -618,12 +682,12 @@ class planner {
                 $DB->update_record('planner_userstep', $updateuserstep);
 
                 $params = array(
-                    'objectid' => $planner->id,
+                    'objectid' => $this->id,
                     'relateduserid' => $USER->id,
-                    'courseid' => $course->id,
+                    'courseid' => $this->courseid,
                     'context' => $context,
                     'other' => array(
-                        'plannerid' => $planner->id,
+                        'plannerid' => $this->id,
                         'stepid' => $checkexistingstep->stepid,
                         'stepname' => $templatestepdata[$checkexistingstep->stepid]->name
                     )
@@ -664,7 +728,6 @@ class planner {
     /**
      * Create the planner user form.
      *
-     * @param object $planner
      * @param object $data
      * @param int $id
      * @param object $cm
@@ -673,10 +736,10 @@ class planner {
      * @param string $redirecturl
      * @return object
      */
-    public function create_planner_user_form($planner, $data, $id, $cm, $course, $context, $redirecturl) {
+    public function create_planner_user_form($data, $id, $cm, $course, $context, $redirecturl) {
         global $DB, $USER;
 
-        $time = $this->get_planner_times($planner, $cm);
+        $time = $this->get_planner_times($cm);
         $templateform = new \mod_planner\form\user_form(
             'view.php',
             array(
@@ -711,15 +774,15 @@ class planner {
                     $DB->update_record('planner_userstep', $updatestep);
                     $i++;
                 }
-                $this->planner_update_events($planner, $USER->id, $stepsdata, false);
+                $this->planner_update_events($USER->id, [], $stepsdata, false);
 
                 $params = array(
-                    'objectid' => $planner->id,
+                    'objectid' => $this->id,
                     'relateduserid' => $USER->id,
                     'courseid' => $course->id,
                     'context' => $context,
                     'other' => array(
-                        'plannerid' => $planner->id,
+                        'plannerid' => $this->id,
                     )
                 );
                 $event = \mod_planner\event\step_updated::create($params);
@@ -736,12 +799,12 @@ class planner {
      * Returns a list of created templates.
      *
      * @param object $table
-     * @param array $searchclauses
+     * @param string $searchclauses
      * @param int $perpage
      * @param bool $mytemplates
      * @return object
      */
-    public function get_templatelist($table, $searchclauses, $perpage, $mytemplates = false) {
+    public static function get_templatelist(object $table, string $searchclauses, int $perpage, bool $mytemplates = false): object {
         global $USER, $DB;
 
         $admins = get_admins();
@@ -798,10 +861,11 @@ class planner {
 
     /**
      * Validate the form data.
+     *
      * @param array $data
-     * @return array|bool
+     * @return array
      */
-    public function validation($data) {
+    public static function validation(array $data): array {
         global $DB;
         $errors = [];
         if (isset($data['submitbutton'])) {

@@ -90,8 +90,7 @@ class save_new_template extends external_api {
             'optionrepeats' => $params['optionrepeats'],
             'submitbutton' => true,
         ];
-        $planner = new planner();
-        $errors = $planner->validation($data);
+        $errors = planner::validation($data);
 
         if (!empty($errors['name'])) {
             return $errors['name'];
@@ -108,7 +107,7 @@ class save_new_template extends external_api {
             }
             $templatedata->option_repeats = $params['optionrepeats'];
 
-            $planner->insert_planner_template_step($templatedata);
+            planner::insert_planner_template_step($templatedata);
             return '';
         }
     }

@@ -67,7 +67,7 @@ class provider implements
                 'timemodified'      => 'privacy:metadata:planner_template:timemodified',
             ];
             $collection->add_database_table('planner_userstep', $planneruserstep, 'privacy:metadata:planner_userstep');
-            $collection->add_database_table('planner_template', $plannertemplate, 'privacy:metadata:planner_template');
+            $collection->add_database_table('plannertemplate', $plannertemplate, 'privacy:metadata:planner_template');
             return $collection;
     }
 
@@ -84,7 +84,7 @@ class provider implements
             INNER JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
             INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
             INNER JOIN {planner} p ON p.id = cm.instance
-            INNER JOIN {planner_step} ps ps.plannerid = p.id
+            INNER JOIN {planner_step} ps ON ps.plannerid = p.id
             INNER JOIN {planner_userstep} pu ON pu.stepid = ps.id
                  WHERE pu.userid = :userid";
 

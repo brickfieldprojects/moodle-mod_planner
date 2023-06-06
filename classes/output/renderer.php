@@ -45,8 +45,7 @@ class renderer extends \plugin_renderer_base {
         $out .= $this->output->heading($planner->name);
 
         // Get necessary data.
-        $plan = new planner();
-        $time = $plan->get_planner_times($planner, $cm);
+        $time = $planner->get_planner_times($cm);
 
         if (!html_is_blank($planner->intro)) {
             $out .= $this->output->box(format_module_intro('planner', $planner, $cm->id), 'generalbox', 'intro');
@@ -213,7 +212,7 @@ class renderer extends \plugin_renderer_base {
      * @param int $cid
      * @param object $mform
      * @param string $pageurl
-     * @param array $searchclauses
+     * @param string $searchclauses
      * @param int $perpage
      * @param bool $mytemplates
      * @return string
@@ -283,11 +282,10 @@ class renderer extends \plugin_renderer_base {
 
         $table->setup();
 
-        $plan = new planner();
         if ($mytemplates) {
-            $templatelist = $plan->get_templatelist($table, $searchclauses, $perpage, $mytemplates);
+            $templatelist = planner::get_templatelist($table, $searchclauses, $perpage, $mytemplates);
         } else {
-            $templatelist = $plan->get_templatelist($table, $searchclauses, $perpage);
+            $templatelist = planner::get_templatelist($table, $searchclauses, $perpage);
         }
 
         $admins = get_admins();
@@ -379,8 +377,7 @@ class renderer extends \plugin_renderer_base {
         global $DB, $USER;
 
         // Get necessary data.
-        $plan = new planner();
-        $time = $plan->get_planner_times($planner, $cm);
+        $time = $planner->get_planner_times($cm);
         $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '".
                                                  $planner->id."' ORDER BY id ASC");
         $userstartdate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)

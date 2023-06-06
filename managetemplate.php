@@ -46,7 +46,6 @@ if ($cid) {
     $PAGE->set_context($context);
     admin_externalpage_setup('planner/template');
 }
-$planner = new planner();
 
 $redirecturl = new moodle_url("/mod/planner/template.php", array('cid' => $cid));
 
@@ -76,10 +75,10 @@ if ($templateform->is_cancelled()) {
     redirect($redirecturl);
 } else if ($templatedata = $templateform->get_data()) {
     if ($templatedata->id) {
-        $planner->update_planner_template_step($templatedata);
+        planner::update_planner_template_step($templatedata);
         redirect($redirecturl, get_string('successfullyupdated', 'planner'), null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
-        $planner->insert_planner_template_step($templatedata);
+        planner::insert_planner_template_step($templatedata);
         redirect($redirecturl, get_string('successfullyadded', 'planner'), null, \core\output\notification::NOTIFY_SUCCESS);
     }
 }
