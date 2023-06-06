@@ -307,7 +307,7 @@ class renderer extends \plugin_renderer_base {
             } else {
                 $data[] = get_string('personal', 'planner');
             }
-            $data[] = $template->copied;
+            $data[] = ($template->copied) ? get_string('yes') : get_string('no');
             if ($template->status == '1') {
                 $data[] = get_string('enabled', 'planner');
             } else {
