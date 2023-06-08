@@ -153,7 +153,7 @@ class renderer extends \plugin_renderer_base {
                 $out .= $html;
                 $out .= '<br/>';
                 $out .= '</div></div><div class="col-md-5"><h2>'.get_string('differentdates', 'planner').'</h2>';
-                $out .= $templateform->display();
+                $out .= $templateform->render();
                 $out .= '</div>';
                 $out .= '</div>';
             } else {
