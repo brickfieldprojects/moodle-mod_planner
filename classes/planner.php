@@ -585,7 +585,7 @@ class planner {
 
         if ($time->userstartdate) {
             if ($time->userstartdate->timestart) {
-                $$time->starttime = $time->userstartdate->timestart;
+                $time->starttime = $time->userstartdate->timestart;
             }
         }
         $time->userenddate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps
