@@ -153,6 +153,12 @@ class mod_planner_mod_form extends moodleform_mod {
             if ($activitycmid) {
                 $mform->setDefault('activitycmid', $activitycmid);
             }
+        } else {
+            if ($activity = get_coursemodule_from_id('assign', $cminfoactivity->id)) {
+                $mform->addElement('static', 'activityname', get_string('activityname', 'planner'), $activity->name);
+            } else if ($activity = get_coursemodule_from_id('quiz', $cminfoactivity->id)) {
+                $mform->addElement('static', 'activityname', get_string('activityname', 'planner'), $activity->name);
+            }
         }
 
         $alltemplates = '';

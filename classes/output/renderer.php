@@ -44,6 +44,12 @@ class renderer extends \plugin_renderer_base {
         $out .= $this->output->header();
         $out .= $this->output->heading($planner->name);
 
+        if ($activity = get_coursemodule_from_id('assign', $planner->activitycmid)) {
+            $out .= '<h3>' . get_string('activityname_param', 'planner', $activity->name) . '</h3>';
+        } else if ($activity = get_coursemodule_from_id('quiz', $planner->activitycmid)) {
+            $out .= '<h3>' . get_string('activityname_param', 'planner', $activity->name) . '</h3>';
+        }
+
         // Get necessary data.
         $time = $planner->get_planner_times($cm);
 
