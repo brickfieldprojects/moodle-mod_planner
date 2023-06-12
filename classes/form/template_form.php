@@ -66,16 +66,28 @@ class template_form extends \moodleform {
         if ($repeatno > 0) {
             $repeatarray = [];
             $repeatarray[] = $mform->createElement('text', 'stepname', get_string('stepname', 'planner'), 'size="50" ');
-            $repeatarray[] = $mform->createElement('text', 'stepallocation', get_string('steptimeallocation', 'planner'),
-            'size="3" ');
+            $repeatarray[] = $mform->createElement(
+                'text',
+                'stepallocation',
+                get_string('steptimeallocation', 'planner'),
+                'size="3" '
+            );
             $repeatarray[] = $mform->createElement('editor', 'stepdescription', get_string('stepdescription', 'planner'));
             $repeateloptions = [];
             $repeateloptions['stepname']['type'] = PARAM_RAW;
             $repeateloptions['stepname']['helpbutton'] = ['helpinstruction', 'planner'];
             $repeateloptions['stepallocation']['type'] = PARAM_INT;
             $repeateloptions['stepdescription']['type'] = PARAM_RAW;
-            $this->repeat_elements($repeatarray, $repeatno,
-                        $repeateloptions, 'option_repeats', 'option_add_fields', 1, get_string('addstepstoform', 'planner'), true);
+            $this->repeat_elements(
+                $repeatarray,
+                $repeatno,
+                $repeateloptions,
+                'option_repeats',
+                'option_add_fields',
+                1,
+                get_string('addstepstoform', 'planner'),
+                true
+            );
             $i = 0;
             if ($templatestepdata) {
                 foreach ($templatestepdata as $templatestep) {

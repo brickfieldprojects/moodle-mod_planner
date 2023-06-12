@@ -68,8 +68,10 @@ if ($id) {
     $PAGE->set_heading("{$SITE->shortname}");
 }
 
-$templateform = new mod_planner\form\template_form('managetemplate.php', ['id' => $id, 'cid' => $cid,
-'templatedata' => $templatedata, 'templatestepdata' => $templatestepdata]);
+$templateform = new mod_planner\form\template_form(
+    'managetemplate.php',
+    ['id' => $id, 'cid' => $cid, 'templatedata' => $templatedata, 'templatestepdata' => $templatestepdata]
+);
 
 if ($templateform->is_cancelled()) {
     redirect($redirecturl);

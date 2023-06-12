@@ -41,8 +41,12 @@ class user_form extends \moodleform {
         $studentstartime = $this->_customdata['studentstartime'];
         $starttime = $this->_customdata['startdate'];
         $endtime = $this->_customdata['enddate'];
-        $mform->addElement('date_selector', 'userstartdate', get_string('startdate', 'planner'),
-        ['startyear' => userdate($starttime, '%Y'), 'stopyear' => userdate($endtime, '%Y')]);
+        $mform->addElement(
+            'date_selector',
+            'userstartdate',
+            get_string('startdate', 'planner'),
+            ['startyear' => userdate($starttime, '%Y'), 'stopyear' => userdate($endtime, '%Y')]
+        );
         if ($studentstartime) {
             $mform->setDefault('userstartdate', $studentstartime);
         } else {

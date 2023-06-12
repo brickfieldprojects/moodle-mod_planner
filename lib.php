@@ -68,13 +68,20 @@ function planner_add_instance($planner) {
     }
     $planner->timemodified = time();
 
-    $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
-    JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$planner->activitycmid."'");
+    $cminfoactivity = $DB->get_record_sql(
+        "SELECT cm.id,cm.instance,cm.module,m.name
+        FROM {course_modules} cm
+        JOIN {modules} m ON (m.id = cm.module)
+        WHERE cm.id = '".$planner->activitycmid."'"
+    );
     if ($cminfoactivity) {
         $modulename = $DB->get_record($cminfoactivity->name, ['id' => $cminfoactivity->instance]);
     } else {
-        throw new moodle_exception('relatedactivitynotexistdelete', 'planner',
-            new moodle_url("/course/view.php?id=$planner->course"));
+        throw new moodle_exception(
+            'relatedactivitynotexistdelete',
+            'planner',
+            new moodle_url("/course/view.php?id=$planner->course")
+        );
     }
     if ($cminfoactivity->name == 'assign') {
         $planner->timeopen = $modulename->allowsubmissionsfromdate;
@@ -337,9 +344,13 @@ function planner_cm_info_view(cm_info $cm) {
         return false;
     }
     if (($planner->stepview == '1') || ($planner->stepview == '2')) {
-        $templatestepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-        JOIN {planner_step} ps ON (ps.id = pu.stepid) WHERE ps.plannerid = '".$cm->instance."'
-        AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC ");
+        $templatestepdata = $DB->get_records_sql(
+            "SELECT pu.*,ps.name,ps.description
+            FROM {planner_userstep} pu
+            JOIN {planner_step} ps ON (ps.id = pu.stepid)
+            WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."'
+            ORDER BY pu.id ASC "
+        );
 
         if ($templatestepdata) {
             $i = 0;
@@ -463,9 +474,11 @@ function planner_check_updates_since(cm_info $cm, $from, $filter = []) {
  * @param int $userid User id to use for all capability checks, etc. Set to 0 for current user (default).
  * @return \core_calendar\local\event\entities\action_interface|null
  */
-function mod_planner_core_calendar_provide_event_action(calendar_event $event,
-                                                      \core_calendar\action_factory $factory,
-                                                      int $userid = 0) {
+function mod_planner_core_calendar_provide_event_action(
+    calendar_event $event,
+    \core_calendar\action_factory $factory,
+    int $userid = 0
+) {
     $cm = get_fast_modinfo($event->courseid, $userid)->instances['planner'][$event->instance];
 
     if (!$cm->uservisible) {

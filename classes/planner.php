@@ -67,8 +67,18 @@ class planner {
      * @param int $stepview
      * @param int $introformat
      */
-    public function __construct(int $id, int $courseid, string $intro, string $name, string $disclaimer, int $activitycmid,
-                                int $timeopen, int $timeclose, int $stepview = 0, int $introformat = 1) {
+    public function __construct(
+        int $id,
+        int $courseid,
+        string $intro,
+        string $name,
+        string $disclaimer,
+        int $activitycmid,
+        int $timeopen,
+        int $timeclose,
+        int $stepview = 0,
+        int $introformat = 1
+    ) {
         $this->id = $id;
         $this->courseid = $courseid;
         $this->intro = $intro;
@@ -91,9 +101,18 @@ class planner {
         global $DB;
         $record = $DB->get_record('planner', ['id' => $id]);
         if ($record) {
-            $planner = new planner($record->id, $record->course, $record->intro, $record->name, $record->disclaimer,
-                                   $record->activitycmid, $record->timeopen, $record->timeclose,
-                                   $record->stepview, $record->introformat);
+            $planner = new planner(
+                $record->id,
+                $record->course,
+                $record->intro,
+                $record->name,
+                $record->disclaimer,
+                $record->activitycmid,
+                $record->timeopen,
+                $record->timeclose,
+                $record->stepview,
+                $record->introformat
+            );
         } else {
             $planner = null;
         }
@@ -245,8 +264,10 @@ class planner {
             }
         } else {
             $DB->delete_records('event', [
-                'instance' => $this->id, 'modulename' => 'planner',
-                'eventtype' => 'due', 'userid' => $userid
+                'instance' => $this->id,
+                'modulename' => 'planner',
+                'eventtype' => 'due',
+                'userid' => $userid
             ]);
             $i = 1;
             foreach ($stepsdata as $stepid => $stepval) {
@@ -448,8 +469,13 @@ class planner {
      *
      * @return array
      */
-    public function get_students_and_groups(string $group, object $course, object $context,
-                                            object $coursecontext, int $groupuserid): array {
+    public function get_students_and_groups(
+        string $group,
+        object $course,
+        object $context,
+        object $coursecontext,
+        int $groupuserid
+    ): array {
         global $DB;
 
         // Apply group restrictions.
@@ -742,8 +768,10 @@ class planner {
         $templateform = new \mod_planner\form\user_form(
             'view.php',
             [
-                'id' => $id, 'startdate' => $time->defaultstarttime,
-                'studentstartime' => $time->starttime, 'enddate' => $time->defaultendtime
+                'id' => $id,
+                'startdate' => $time->defaultstarttime,
+                'studentstartime' => $time->starttime,
+                'enddate' => $time->defaultendtime
             ]
         );
 
@@ -853,8 +881,12 @@ class planner {
 
         $table->pagesize($perpage, $matchcount);
 
-        $templatelist = $DB->get_recordset_sql("$select $from $where $sort", $params, $table->get_page_start(),
-            $table->get_page_size());
+        $templatelist = $DB->get_recordset_sql(
+            "$select $from $where $sort",
+            $params,
+            $table->get_page_start(),
+            $table->get_page_size()
+        );
         return $templatelist;
     }
 

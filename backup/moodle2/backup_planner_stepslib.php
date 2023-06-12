@@ -48,19 +48,37 @@ class backup_planner_activity_structure_step extends backup_activity_structure_s
         $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated.
-        $planner = new backup_nested_element('planner', ['id'], [
-            'name', 'intro', 'introformat', 'disclaimer',
-            'activitycmid', 'stepview', 'timeopen', 'timeclose', 'timemodified']);
+        $planner = new backup_nested_element(
+            'planner',
+            ['id'],
+            [
+                'name',
+                'intro',
+                'introformat',
+                'disclaimer',
+                'activitycmid',
+                'stepview',
+                'timeopen',
+                'timeclose',
+                'timemodified'
+            ]
+        );
 
         $plannersteps = new backup_nested_element('plannersteps');
 
-        $plannerstep = new backup_nested_element('plannerstep', ['id'], [
-            'name', 'timeallocation', 'description']);
+        $plannerstep = new backup_nested_element(
+            'plannerstep',
+            ['id'],
+            ['name', 'timeallocation', 'description']
+        );
 
         $plannerusersteps = new backup_nested_element('plannerusersteps');
 
-        $planneruserstep = new backup_nested_element('planneruserstep', ['id'], [
-            'userid', 'timestart', 'duedate', 'completionstatus', 'timemodified']);
+        $planneruserstep = new backup_nested_element('
+            planneruserstep',
+            ['id'],
+            ['userid', 'timestart', 'duedate', 'completionstatus', 'timemodified']
+        );
 
         // Build the tree.
         $planner->add_child($plannersteps);

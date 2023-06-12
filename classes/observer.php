@@ -486,14 +486,17 @@ class observer {
      */
     public static function role_assigned(\core\event\role_assigned $event) {
         global $DB, $CFG;
-        $context = \context_course::instance($event->courseid);
         $userid = $event->relateduserid;
         $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
         if ($event->objectid == $studentroleid->id) {
             if ( $planners = $DB->get_records("planner", ["course" => $event->courseid])) {
                 foreach ($planners as $planner) {
-                    $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
-                     JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$planner->activitycmid."'");
+                    $cminfoactivity = $DB->get_record_sql(
+                        "SELECT cm.id,cm.instance,cm.module,m.name
+                        FROM {course_modules} cm
+                        JOIN {modules} m ON (m.id = cm.module)
+                        WHERE cm.id = '".$planner->activitycmid."'"
+                    );
                     if ($cminfoactivity) {
                         $modulename = $DB->get_record($cminfoactivity->name, ['id' => $cminfoactivity->instance]);
                         if ($cminfoactivity->name == 'assign') {
@@ -508,9 +511,12 @@ class observer {
                             require_once($CFG->dirroot.'/calendar/lib.php');
                             $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE
                             plannerid = '".$planner->id."' ORDER BY id ASC");
-                            $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description
-                            FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)
-                            WHERE ps.plannerid = '".$planner->id."' AND pu.userid = '".$userid."' ORDER BY pu.id ASC ");
+                            $templateuserstepdata = $DB->get_records_sql(
+                                "SELECT pu.*,ps.name,ps.description
+                                FROM {planner_userstep} pu
+                                JOIN {planner_step} ps ON (ps.id = pu.stepid)
+                                WHERE ps.plannerid = '".$planner->id."' AND pu.userid = '".$userid."' ORDER BY pu.id ASC "
+                            );
                             $totaltime = $endtime - $starttime;
                             $exsitingsteptime = $starttime;
                             $stepsdata = [];
@@ -547,24 +553,28 @@ class observer {
      * @return void
      */
     public static function role_unassigned(\core\event\role_unassigned $event) {
-        global $DB, $CFG;
-        $context = \context_course::instance($event->courseid);
+        global $DB;
         $userid = $event->relateduserid;
         $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
         if ($event->objectid == $studentroleid->id) {
             if ( $planners = $DB->get_records("planner", ["course" => $event->courseid])) {
                 foreach ($planners as $planner) {
-                    $templateuserstepdata = $DB->get_records_sql("SELECT pu.* FROM {planner_userstep} pu
+                    $templateuserstepdata = $DB->get_records_sql(
+                        "SELECT pu.* FROM {planner_userstep} pu
                         JOIN {planner_step} ps ON (ps.id = pu.stepid)
-                        WHERE ps.plannerid = '".$planner->id."' AND pu.userid = '".$userid."' ORDER BY pu.id ASC ");
+                        WHERE ps.plannerid = '".$planner->id."' AND pu.userid = '".$userid."'
+                        ORDER BY pu.id ASC "
+                    );
 
                     if ($templateuserstepdata) {
                         foreach ($templateuserstepdata as $step) {
                             $DB->delete_records('planner_userstep', ['id' => $step->id]);
                         }
                     }
-                    $DB->delete_records('event', ['instance' => $planner->id, 'modulename' => 'planner',
-                    'eventtype' => 'user', 'userid' => $userid]);
+                    $DB->delete_records(
+                        'event',
+                        ['instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'user', 'userid' => $userid]
+                    );
                 }
             }
         }

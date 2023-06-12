@@ -48,20 +48,20 @@ class cron_task_datechange extends \core\task\scheduled_task {
     public function execute() {
         global $CFG, $DB;
 
-        $now = time();
-
         mtrace(' processing date change planner cron...');
 
         $plannerid = $DB->get_record('modules', ['name' => 'planner', 'visible' => '1']);
         if ($plannerid) {
-            $allplanners = $DB->get_records_sql("SELECT p.*, cm.instance, cm.id as cmid
-                    FROM {planner} p
-                    JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = ".$plannerid->id.")
-                    WHERE  cm.visible = 1");
+            $allplanners = $DB->get_records_sql(
+                "SELECT p.*, cm.instance, cm.id AS cmid
+                FROM {planner} p
+                JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = ".$plannerid->id.")
+                WHERE  cm.visible = 1"
+            );
 
             if ($allplanners) {
                 $teacherroleid = $DB->get_record('role', ['shortname' => 'editingteacher']);
-                $supportuser = core_user::get_support_user();
+                $supportuser = \core_user::get_support_user();
                 $changedateemailsubject = get_string('changedateemailsubject', 'mod_planner');
                 $changedateemail = get_config('planner', 'changedateemailtemplate');
                 foreach ($allplanners as $planner) {
@@ -79,41 +79,55 @@ class cron_task_datechange extends \core\task\scheduled_task {
 
                         if (($starttime != $planner->timeopen) || ($endtime != $planner->timeclose)) {
                             $courseid = $planner->course;
-                            $course = $DB->get_record('course', ['id' => $courseid]);
-                            $coursecontext = context_course::instance($courseid);
+                            $coursecontext = \context_course::instance($courseid);
                             $teachers = get_role_users($teacherroleid->id, $coursecontext);
 
                             if ($teachers) {
                                 if ($changedateemail) {
                                     $subject = $changedateemailsubject;
                                     foreach ($teachers as $teacher) {
-                                        $changedateemail = str_replace('{$a->firstname}',
-                                        $teacher->firstname, $changedateemail);
-                                        $changedateemail = str_replace('{$a->activityname}',
-                                        format_string($modulename->name), $changedateemail);
-                                        $changedateemail = str_replace('{$a->plannername}',
-                                        format_string($planner->name), $changedateemail);
-                                        $changedateemail = str_replace('{$a->link}',
-                                        $CFG->wwwroot.'/mod/planner/view.php?id='.$planner->cmid, $changedateemail);
-                                        $changedateemail = str_replace('{$a->admin}',
-                                        fullname($supportuser), $changedateemail);
+                                        $changedateemail = str_replace(
+                                            '{$a->firstname}',
+                                            $teacher->firstname,
+                                            $changedateemail
+                                        );
+                                        $changedateemail = str_replace(
+                                            '{$a->activityname}',
+                                            format_string($modulename->name),
+                                            $changedateemail
+                                        );
+                                        $changedateemail = str_replace(
+                                            '{$a->plannername}',
+                                            format_string($planner->name),
+                                            $changedateemail
+                                        );
+                                        $changedateemail = str_replace(
+                                            '{$a->link}',
+                                            $CFG->wwwroot . '/mod/planner/view.php?id=' . $planner->cmid,
+                                            $changedateemail
+                                        );
+                                        $changedateemail = str_replace(
+                                            '{$a->admin}',
+                                            fullname($supportuser),
+                                            $changedateemail
+                                        );
                                         $message = $changedateemail;
                                         $messagehtml = format_text($message, FORMAT_MOODLE);
                                         $messagetext = html_to_text($messagehtml);
 
                                         $eventdata = new \core\message\message();
-                                        $eventdata->courseid         = $courseid;
-                                        $eventdata->modulename       = 'planner';
-                                        $eventdata->userfrom         = $supportuser;
-                                        $eventdata->userto           = $teacher;
-                                        $eventdata->subject          = $subject;
-                                        $eventdata->fullmessage      = $messagetext;
+                                        $eventdata->courseid          = $courseid;
+                                        $eventdata->modulename        = 'planner';
+                                        $eventdata->userfrom          = $supportuser;
+                                        $eventdata->userto            = $teacher;
+                                        $eventdata->subject           = $subject;
+                                        $eventdata->fullmessage       = $messagetext;
                                         $eventdata->fullmessageformat = FORMAT_PLAIN;
-                                        $eventdata->fullmessagehtml  = $messagehtml;
-                                        $eventdata->smallmessage     = $subject;
-                                        $eventdata->name            = 'planner_notification';
-                                        $eventdata->component       = 'mod_planner';
-                                        $eventdata->notification    = 1;
+                                        $eventdata->fullmessagehtml   = $messagehtml;
+                                        $eventdata->smallmessage      = $subject;
+                                        $eventdata->name              = 'planner_notification';
+                                        $eventdata->component         = 'mod_planner';
+                                        $eventdata->notification      = 1;
                                         $customdata = [
                                             'cmid' => $planner->cmid,
                                             'instance' => $planner->instance

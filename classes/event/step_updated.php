@@ -69,8 +69,14 @@ class step_updated extends \core\event\base {
      * @return array
      */
     protected function get_legacy_logdata() {
-        return [$this->courseid, 'planner', 'view', 'view.php?id=' . $this->objectid,
-            $this->other['plannerid'], $this->contextinstanceid];
+        return [
+            $this->courseid,
+            'planner',
+            'view',
+            'view.php?id=' . $this->objectid,
+            $this->other['plannerid'],
+            $this->contextinstanceid
+        ];
     }
 
     /**

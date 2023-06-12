@@ -58,25 +58,32 @@ class cron_task extends \core\task\scheduled_task {
         $upcomingemail = get_config('planner', 'upcomingemail');
         $missedemail = get_config('planner', 'dueemail');
         $frequencyemail = get_config('planner', 'frequencyemail');
-        $nextdate = strtotime("+".$frequencyemail." days", $currentime);
-        $previousdate = strtotime("-".$frequencyemail." days", $currentime);
+        $nextdate = strtotime("+" . $frequencyemail . " days", $currentime);
+        $previousdate = strtotime("-" . $frequencyemail ." days", $currentime);
 
         $plannerid = $DB->get_record('modules', ['name' => 'planner', 'visible' => '1']);
         if ($plannerid) {
 
-            $allplanner = $DB->get_records_sql("SELECT pus.id,pus.stepid,pus.userid,pus.duedate,ps.name,p.course,cm.instance,
-			p.activitycmid,cm.id AS cmid FROM {planner_userstep} pus JOIN {planner_step} ps ON (ps.id = pus.stepid)
-			JOIN {planner} p ON (p.id = ps.plannerid) JOIN {course_modules} cm ON (cm.instance = p.id AND
-			cm.module = ".$plannerid->id.")  WHERE pus.duedate BETWEEN ".$previousdate." AND ".$nextdate." AND
-			pus.completionstatus = 0 AND cm.visible = 1");
+            $allplanner = $DB->get_records_sql(
+                "SELECT pus.id,pus.stepid,pus.userid,pus.duedate,ps.name,p.course,cm.instance,p.activitycmid,cm.id AS cmid
+                FROM {planner_userstep} pus
+                JOIN {planner_step} ps ON (ps.id = pus.stepid)
+			    JOIN {planner} p ON (p.id = ps.plannerid)
+                JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = " . $plannerid->id . ")
+                WHERE pus.duedate BETWEEN ".$previousdate." AND ".$nextdate." AND pus.completionstatus = 0 AND cm.visible = 1"
+            );
             if ($allplanner) {
-                $supportuser = core_user::get_support_user();
+                $supportuser = \core_user::get_support_user();
                 $missedemailsubject = get_string('missedemailsubject', 'mod_planner');
                 $upcomingemailsubject = get_string('upcomingemailsubject', 'mod_planner');
                 foreach ($allplanner as $plannerdata) {
                     $user = $DB->get_record('user', ['id' => $plannerdata->userid]);
-                    $associatemodule = $DB->get_record_sql("SELECT cm.id,m.name AS modulename,cm.instance
-					FROM {course_modules} cm JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$plannerdata->activitycmid."'");
+                    $associatemodule = $DB->get_record_sql(
+                        "SELECT cm.id,m.name AS modulename,cm.instance
+					    FROM {course_modules} cm
+                        JOIN {modules} m ON (m.id = cm.module)
+                        WHERE cm.id = '".$plannerdata->activitycmid."'"
+                    );
                     if ($associatemodule->modulename == 'assign') {
                         $modulename = $DB->get_record('assign', ['id' => $associatemodule->instance]);
                     } else if ($associatemodule->modulename == 'quiz') {
@@ -87,11 +94,17 @@ class cron_task extends \core\task\scheduled_task {
                         $subject = $upcomingemailsubject;
                         $upcomingemail = str_replace('{$a->firstname}', $user->firstname, $upcomingemail);
                         $upcomingemail = str_replace('{$a->stepname}', $plannerdata->name, $upcomingemail);
-                        $upcomingemail = str_replace('{$a->activityname}', format_string($planner->name), $upcomingemail);
-                        $upcomingemail = str_replace('{$a->stepdate}', userdate($plannerdata->duedate,
-                        get_string('strftimedatefullshort')), $upcomingemail);
-                        $upcomingemail = str_replace('{$a->link}',
-                        $CFG->wwwroot.'/mod/planner/view.php?id='.$plannerdata->cmid, $upcomingemail);
+                        $upcomingemail = str_replace('{$a->activityname}', format_string($modulename), $upcomingemail);
+                        $upcomingemail = str_replace(
+                            '{$a->stepdate}',
+                            userdate($plannerdata->duedate,
+                            get_string('strftimedatefullshort')),
+                            $upcomingemail
+                        );
+                        $upcomingemail = str_replace(
+                            '{$a->link}',
+                            $CFG->wwwroot.'/mod/planner/view.php?id='.$plannerdata->cmid, $upcomingemail
+                        );
                         $upcomingemail = str_replace('{$a->admin}', fullname($supportuser), $upcomingemail);
                         $message = $upcomingemail;
                     } else if ($plannerdata->duedate < $currentime ) {
@@ -99,11 +112,18 @@ class cron_task extends \core\task\scheduled_task {
                         $subject = $missedemailsubject;
                         $missedemail = str_replace('{$a->firstname}', $user->firstname, $missedemail);
                         $missedemail = str_replace('{$a->stepname}', $plannerdata->name, $missedemail);
-                        $missedemail = str_replace('{$a->activityname}', format_string($planner->name), $missedemail);
-                        $missedemail = str_replace('{$a->duedate}', userdate($plannerdata->duedate,
-                        get_string('strftimedatefullshort')), $missedemail);
-                        $missedemail = str_replace('{$a->link}',
-                        $CFG->wwwroot.'/mod/planner/view.php?id='.$plannerdata->cmid, $missedemail);
+                        $missedemail = str_replace('{$a->activityname}', format_string($modulename), $missedemail);
+                        $missedemail = str_replace(
+                            '{$a->duedate}',
+                            userdate($plannerdata->duedate,
+                            get_string('strftimedatefullshort')),
+                            $missedemail
+                        );
+                        $missedemail = str_replace(
+                            '{$a->link}',
+                            $CFG->wwwroot . '/mod/planner/view.php?id=' . $plannerdata->cmid,
+                            $missedemail
+                        );
                         $missedemail = str_replace('{$a->admin}', fullname($supportuser), $missedemail);
                         $message = $missedemail;
                     }
@@ -111,18 +131,18 @@ class cron_task extends \core\task\scheduled_task {
                     $messagetext = html_to_text($messagehtml);
 
                     $eventdata = new \core\message\message();
-                    $eventdata->courseid         = $plannerdata->course;
-                    $eventdata->modulename       = 'planner';
-                    $eventdata->userfrom         = $supportuser;
-                    $eventdata->userto           = $user;
-                    $eventdata->subject          = $subject;
-                    $eventdata->fullmessage      = $messagetext;
+                    $eventdata->courseid          = $plannerdata->course;
+                    $eventdata->modulename        = 'planner';
+                    $eventdata->userfrom          = $supportuser;
+                    $eventdata->userto            = $user;
+                    $eventdata->subject           = $subject;
+                    $eventdata->fullmessage       = $messagetext;
                     $eventdata->fullmessageformat = FORMAT_PLAIN;
-                    $eventdata->fullmessagehtml  = $messagehtml;
-                    $eventdata->smallmessage     = $subject;
-                    $eventdata->name            = 'planner_notification';
-                    $eventdata->component       = 'mod_planner';
-                    $eventdata->notification    = 1;
+                    $eventdata->fullmessagehtml   = $messagehtml;
+                    $eventdata->smallmessage      = $subject;
+                    $eventdata->name              = 'planner_notification';
+                    $eventdata->component         = 'mod_planner';
+                    $eventdata->notification      = 1;
                     $customdata = [
                         'cmid' => $plannerdata->cmid,
                         'instance' => $associatemodule->instance

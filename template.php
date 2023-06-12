@@ -55,10 +55,14 @@ $searchform = planner::create_template_search_form($cid);
 $searchclauses = $searchform['searchclauses'];
 $mform = $searchform['mform'];
 
-$pageurl = new moodle_url('/mod/planner/template.php', [
-    'spage' => $spage,
-    'cid' => $cid,
-    'setting' => $searchclauses]);
+$pageurl = new moodle_url(
+    '/mod/planner/template.php',
+    [
+        'spage' => $spage,
+        'cid' => $cid,
+        'setting' => $searchclauses
+    ]
+);
 
 planner::template_crud_handler($action, $id, $confirm, $pageurl, $cid);
 

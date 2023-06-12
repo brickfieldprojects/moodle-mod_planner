@@ -61,8 +61,8 @@ class renderer extends \plugin_renderer_base {
         $printurl = new \moodle_url('/mod/planner/print.php', $params);
         $printtitle = get_string('printerfriendly', 'glossary');
         $printattributes = [
-                    'class' => 'printicon',
-                    'title' => $printtitle
+            'class' => 'printicon',
+            'title' => $printtitle
         ];
         $out .= '<div style="text-align: right">';
         $out .= \html_writer::link($printurl, $printtitle, $printattributes);
@@ -206,8 +206,9 @@ class renderer extends \plugin_renderer_base {
         $out .= $this->output->box_start('generalbox');
 
         $out .= "<div style=display:inline-flex; class=plannerformlayout>";
-        $out .= $this->output->single_button(new \moodle_url('/mod/planner/managetemplate.php',
-        ['cid' => $cid]), get_string('addtemplate', 'planner'));
+        $out .= $this->output->single_button(
+            new \moodle_url('/mod/planner/managetemplate.php', ['cid' => $cid]), get_string('addtemplate', 'planner')
+        );
 
         return $out;
     }
@@ -319,22 +320,38 @@ class renderer extends \plugin_renderer_base {
             } else {
                 $data[] = get_string('disabled', 'planner');
             }
-            $viewlink = \html_writer::link('#', $this->output->pix_icon('t/viewdetails', get_string('view')), [
-                'data-action' => 'viewtemplate',
-                'data-templateid' => $template->id,
-                'id' => 'toggle-template-modal-' . $template->id]);
+            $viewlink = \html_writer::link(
+                '#',
+                $this->output->pix_icon('t/viewdetails', get_string('view')),
+                [
+                    'data-action' => 'viewtemplate',
+                    'data-templateid' => $template->id,
+                    'id' => 'toggle-template-modal-' . $template->id
+                ]
+            );
             if ($template->userid == $USER->id || $isadmin) {
                 if ($template->status == '1') {
-                    $statuslink = $this->output->action_icon($pageurl.'&id='.$template->id.'&action=disable&sesskey='.sesskey(),
-                    new \pix_icon('t/hide', get_string('disabletemplate', 'planner')));
+                    $statuslink = $this->output->action_icon(
+                        $pageurl . '&id=' . $template->id . '&action=disable&sesskey=' . sesskey(),
+                        new \pix_icon('t/hide', get_string('disabletemplate', 'planner'))
+                    );
                 } else {
-                    $statuslink = $this->output->action_icon($pageurl.'&id='.$template->id.'&action=enable&sesskey='.sesskey(),
-                    new \pix_icon('t/show', get_string('enabletemplate', 'planner')));
+                    $statuslink = $this->output->action_icon(
+                        $pageurl . '&id=' . $template->id . '&action=enable&sesskey=' . sesskey(),
+                        new \pix_icon('t/show', get_string('enabletemplate', 'planner'))
+                    );
                 }
-                $editlink = $this->output->action_icon(new \moodle_url('/mod/planner/managetemplate.php',
-                    ['id' => $template->id, 'cid' => $cid]), new \pix_icon('t/edit', get_string('edit')));
-                $deletelink = $this->output->action_icon(new \moodle_url('/mod/planner/template.php', ['id' => $template->id,
-                'action' => 'delete', 'cid' => $cid, 'sesskey' => sesskey()]), new \pix_icon('t/delete', get_string('delete')));
+                $editlink = $this->output->action_icon(
+                    new \moodle_url('/mod/planner/managetemplate.php', ['id' => $template->id, 'cid' => $cid]),
+                    new \pix_icon('t/edit', get_string('edit'))
+                );
+                $deletelink = $this->output->action_icon(
+                    new \moodle_url(
+                        '/mod/planner/template.php',
+                        ['id' => $template->id, 'action' => 'delete', 'cid' => $cid, 'sesskey' => sesskey()]
+                    ),
+                    new \pix_icon('t/delete', get_string('delete'))
+                );
                 $data[] = $viewlink . $statuslink . ' ' . $editlink . '' . $deletelink;
             } else {
                 $data[] = $viewlink . $statuslink;
@@ -365,8 +382,11 @@ class renderer extends \plugin_renderer_base {
         $deleteurl = new \moodle_url($pageurl, $optionsyes);
         $deletebutton = new \single_button($deleteurl, get_string('delete'), 'post');
 
-        $out .= $this->output->confirm(get_string('deletetemplatecheck', 'planner', "'$plannertemplatedata->name'"),
-        $deletebutton, $pageurl);
+        $out .= $this->output->confirm(
+            get_string('deletetemplatecheck', 'planner', "'$plannertemplatedata->name'"),
+            $deletebutton,
+            $pageurl
+        );
         $out .= $this->output->footer();
         echo $out;
         die;

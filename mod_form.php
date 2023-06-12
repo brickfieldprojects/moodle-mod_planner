@@ -73,11 +73,18 @@ class mod_planner_mod_form extends moodleform_mod {
             if ($cm) {
                 $templateid = $cm->instance;
                 $planner = $DB->get_record('planner', ['id' => $templateid]);
-                $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
- JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$planner->activitycmid."'");
+                $cminfoactivity = $DB->get_record_sql(
+                    "SELECT cm.id,cm.instance,cm.module,m.name
+                    FROM {course_modules} cm
+                    JOIN {modules} m ON (m.id = cm.module)
+                    WHERE cm.id = '".$planner->activitycmid."'"
+                );
                 if (!$cminfoactivity) {
-                    throw new moodle_exception('relatedactivitynotexistdelete', 'planner',
-                        new moodle_url("/course/view.php?id=$planner->course"));
+                    throw new moodle_exception(
+                        'relatedactivitynotexistdelete',
+                        'planner',
+                        new moodle_url("/course/view.php?id=$planner->course")
+                    );
                 }
                 $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step}
                 WHERE plannerid = '".$templateid."' ORDER BY id ASC");
@@ -85,9 +92,12 @@ class mod_planner_mod_form extends moodleform_mod {
             }
         }
 
-        $assignments = $DB->get_records_sql("SELECT cm.id,a.name FROM {assign} a
-        JOIN {course_modules} cm ON (cm.instance = a.id AND cm.module = (SELECT id FROM {modules} WHERE name = 'assign'))
-        WHERE a.course = '".$course->id."' AND cm.visible = 1 AND (a.allowsubmissionsfromdate != 0 AND a.duedate != 0)");
+        $assignments = $DB->get_records_sql(
+            "SELECT cm.id,a.name
+            FROM {assign} a
+            JOIN {course_modules} cm ON (cm.instance = a.id AND cm.module = (SELECT id FROM {modules} WHERE name = 'assign'))
+            WHERE a.course = '".$course->id."' AND cm.visible = 1 AND (a.allowsubmissionsfromdate != 0 AND a.duedate != 0)"
+        );
         $activitynames = [];
         $activitynames[0] = '';
         if ($assignments) {
@@ -96,9 +106,12 @@ class mod_planner_mod_form extends moodleform_mod {
             }
         }
 
-        $quizzes = $DB->get_records_sql("SELECT cm.id,q.name FROM {quiz} q
-        JOIN {course_modules} cm ON (cm.instance = q.id AND cm.module = (SELECT id FROM {modules} WHERE name = 'quiz'))
-        WHERE q.course = '".$course->id."' AND cm.visible = 1 AND (q.timeopen != 0 AND q.timeclose != 0)");
+        $quizzes = $DB->get_records_sql(
+            "SELECT cm.id,q.name
+            FROM {quiz} q
+            JOIN {course_modules} cm ON (cm.instance = q.id AND cm.module = (SELECT id FROM {modules} WHERE name = 'quiz'))
+            WHERE q.course = '".$course->id."' AND cm.visible = 1 AND (q.timeopen != 0 AND q.timeclose != 0)"
+        );
         if ($quizzes) {
             foreach ($quizzes as $id => $quiz) {
                 $activitynames[$id] = get_string('quiz', 'planner').' - '.$quiz->name;
@@ -107,8 +120,10 @@ class mod_planner_mod_form extends moodleform_mod {
         $whereplanner = "";
         if ($this->_cm) {
             $whereplanner = "WHERE p.id != ".$cm->instance;
-            $checkalreadycompleted = $DB->count_records_sql("SELECT count(pu.id) FROM {planner_userstep} pu
-            JOIN {planner_step} ps ON (ps.id = pu.stepid) WHERE ps.plannerid = '".$planner->id."'");
+            $checkalreadycompleted = $DB->count_records_sql(
+                "SELECT count(pu.id) FROM {planner_userstep} pu
+                JOIN {planner_step} ps ON (ps.id = pu.stepid)
+                WHERE ps.plannerid = '".$planner->id."'");
         } else {
             $checkalreadycompleted = null;
         }
@@ -215,20 +230,40 @@ class mod_planner_mod_form extends moodleform_mod {
             $repeatno = count($templatestepdata);
             if ($repeatno > 0) {
                 $repeatarray = [];
-                $repeatarray[] = $mform->createElement('text', 'stepname', get_string('stepname', 'planner'),
-                    ['size' => "50", 'selector' => 'planner_stepname']);
-                $repeatarray[] = $mform->createElement('text', 'stepallocation', get_string('steptimeallocation', 'planner'),
-                    ['size' => "3", 'selector' => 'planner_stepallocation']);
-                $repeatarray[] = $mform->createElement('editor', 'stepdescription', get_string('stepdescription', 'planner'),
-                    ['selector' => 'planner_stepdescription']);
+                $repeatarray[] = $mform->createElement(
+                    'text',
+                    'stepname',
+                    get_string('stepname', 'planner'),
+                    ['size' => "50", 'selector' => 'planner_stepname']
+                );
+                $repeatarray[] = $mform->createElement(
+                    'text',
+                    'stepallocation',
+                    get_string('steptimeallocation', 'planner'),
+                    ['size' => "3", 'selector' => 'planner_stepallocation']
+                );
+                $repeatarray[] = $mform->createElement(
+                    'editor',
+                    'stepdescription',
+                    get_string('stepdescription', 'planner'),
+                    ['selector' => 'planner_stepdescription']
+                );
                 $repeatno = count($templatestepdata);
                 $repeateloptions = [];
                 $repeateloptions['stepname']['type'] = PARAM_RAW;
                 $repeateloptions['stepname']['helpbutton'] = ['helpinstruction', 'planner'];
                 $repeateloptions['stepallocation']['type'] = PARAM_INT;
                 $repeateloptions['stepdescription']['type'] = PARAM_RAW;
-                $this->repeat_elements($repeatarray, $repeatno, $repeateloptions, 'option_repeats',
-                'option_add_fields', 1, get_string('addstepstoform', 'planner'), true);
+                $this->repeat_elements(
+                    $repeatarray,
+                    $repeatno,
+                    $repeateloptions,
+                    'option_repeats',
+                    'option_add_fields',
+                    1,
+                    get_string('addstepstoform', 'planner'),
+                    true
+                );
                 $i = 0;
                 foreach ($templatestepdata as $templatestep) {
                     $mform->setDefault('stepname['.$i.']', $templatestep->name);

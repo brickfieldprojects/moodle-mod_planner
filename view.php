@@ -40,7 +40,6 @@ if ($id) {
         throw new moodle_exception('coursemisconf');
     }
 
-
     if (! $planner = planner::create_planner_by_id($cm->instance)) {
         throw new moodle_exception('invalidplanner', 'planner');
     }
