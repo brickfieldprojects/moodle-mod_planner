@@ -569,16 +569,45 @@ class planner {
 
         $time = new stdClass();
         if ($cminfoactivity->name == 'assign') {
+            // Check if the user has overrides for the assignment.
+            if ($overrides = $DB->get_record('assign_overrides', ['assignid' => $modulename->id, 'userid' => $USER->id])) {
+                if ($overrides->allowsubmissionsfromdate) {
+                    $time->defaultstarttime = $overrides->allowsubmissionsfromdate;
+                } else {
+                    $time->defaultstarttime = $modulename->allowsubmissionsfromdate;
+                }
+                if ($overrides->duedate) {
+                    $time->endtime = $overrides->duedate;
+                } else {
+                    $time->endtime = $modulename->duedate;
+                }
+            } else {
+                $time->defaultstarttime = $modulename->allowsubmissionsfromdate;
+                $time->endtime = $modulename->duedate;
+            }
             $time->starttime = $modulename->allowsubmissionsfromdate;
-            $time->endtime = $modulename->duedate;
-            $time->defaultstarttime = $modulename->allowsubmissionsfromdate;
             $time->defaultendtime = $modulename->duedate;
         } else if ($cminfoactivity->name == 'quiz') {
+            // Check if the user has overrides for the quiz.
+            if ($overrides = $DB->get_record('quiz_overrides', ['quiz' => $modulename->id, 'userid' => $USER->id])) {
+                if ($overrides->timeopen) {
+                    $time->defaultstarttime = $overrides->timeopen;
+                } else {
+                    $time->defaultstarttime = $modulename->timeopen;
+                }
+                if ($overrides->timeclose) {
+                    $time->endtime = $overrides->timeclose;
+                } else {
+                    $time->endtime = $modulename->timeclose;
+                }
+            } else {
+                $time->defaultstarttime = $modulename->timeopen;
+                $time->endtime = $modulename->timeclose;
+            }
             $time->starttime = $modulename->timeopen;
-            $time->endtime = $modulename->timeclose;
-            $time->defaultstarttime = $modulename->timeopen;
             $time->defaultendtime = $modulename->timeclose;
         }
+
         $time->userstartdate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps
             ON (ps.id = pu.stepid) WHERE ps.plannerid = '" .
             $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id ASC LIMIT 1");
@@ -743,7 +772,7 @@ class planner {
             'view.php',
             array(
                 'id' => $id, 'startdate' => $time->defaultstarttime,
-                'studentstartime' => $time->starttime, 'enddate' => $time->defaultendtime
+                'studentstartime' => $time->starttime, 'enddate' => $time->endtime,
             )
         );
 
