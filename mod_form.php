@@ -43,7 +43,7 @@ class mod_planner_mod_form extends moodleform_mod {
 
         $mform->addElement('header', 'generalhdr', get_string('general'));
         // Name.
-        $mform->addElement('text', 'name', get_string('name'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('name'), ['size' => '64']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -59,7 +59,7 @@ class mod_planner_mod_form extends moodleform_mod {
         // Introduction.
         $this->standard_intro_elements(get_string('description', 'planner'));
         $mform->setDefault('showdescription', $introformat);
-        $informationitems = array();
+        $informationitems = [];
         $informationitems[0] = get_string('shownothing', 'planner');
         $informationitems[1] = get_string('showitem3', 'planner');
         $informationitems[2] = get_string('showallitems', 'planner');
@@ -72,7 +72,7 @@ class mod_planner_mod_form extends moodleform_mod {
             $cm = $this->_cm;
             if ($cm) {
                 $templateid = $cm->instance;
-                $planner = $DB->get_record('planner', array('id' => $templateid));
+                $planner = $DB->get_record('planner', ['id' => $templateid]);
                 $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
  JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$planner->activitycmid."'");
                 if (!$cminfoactivity) {
@@ -81,14 +81,14 @@ class mod_planner_mod_form extends moodleform_mod {
                 }
                 $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step}
                 WHERE plannerid = '".$templateid."' ORDER BY id ASC");
-                $mform->setDefault('disclaimer', array('text' => $planner->disclaimer));
+                $mform->setDefault('disclaimer', ['text' => $planner->disclaimer]);
             }
         }
 
         $assignments = $DB->get_records_sql("SELECT cm.id,a.name FROM {assign} a
         JOIN {course_modules} cm ON (cm.instance = a.id AND cm.module = (SELECT id FROM {modules} WHERE name = 'assign'))
         WHERE a.course = '".$course->id."' AND cm.visible = 1 AND (a.allowsubmissionsfromdate != 0 AND a.duedate != 0)");
-        $activitynames = array();
+        $activitynames = [];
         $activitynames[0] = '';
         if ($assignments) {
             foreach ($assignments as $id => $assignment) {
@@ -130,14 +130,14 @@ class mod_planner_mod_form extends moodleform_mod {
             }
         }
 
-        $enabledoptions = array(
+        $enabledoptions = [
             'multiple' => false,
             'noselectionstring' => get_string('selectactivity', 'planner')
-        );
-        $disabledoptions = array(
+        ];
+        $disabledoptions = [
             'disabled' => 'disabled',
             'style' => 'width:200px; background:none;'
-        );
+        ];
         if ($checkalreadycompleted == 0 || $checkalreadycompleted == null) {
             if (count($activitynames) > 1) {
                 $mform->addElement('autocomplete', 'activitycmid',
@@ -176,7 +176,7 @@ class mod_planner_mod_form extends moodleform_mod {
             if (!$isadmin) {
                 $whereteacher .= "AND ((userid = '".$USER->id."' AND personal = 1) OR (personal = 0))  ";
             }
-            $templates = array();
+            $templates = [];
             $templates[0] = '';
             $alltemplates = $DB->get_records_sql("SELECT id,name,disclaimer,personal FROM {plannertemplate}  $whereteacher");
             if ($alltemplates) {
@@ -185,15 +185,15 @@ class mod_planner_mod_form extends moodleform_mod {
                 }
             }
 
-            $enabledoptions = array(
+            $enabledoptions = [
                 'multiple' => false,
                 'noselectionstring' => get_string('selecttemplate', 'planner'),
                 'onchange' => 'this.form.submit()'
-            );
-            $disabledoptions = array(
+            ];
+            $disabledoptions = [
                 'disabled' => 'disabled',
                 'style' => 'width:200px; background:none;'
-            );
+            ];
             $mform->disable_form_change_checker();
             if (count($templates) > 1) {
                 $mform->addElement('autocomplete', 'templateid', get_string('template', 'planner'), $templates, $enabledoptions);
@@ -208,13 +208,13 @@ class mod_planner_mod_form extends moodleform_mod {
                 $mform->setDefault('templateid', $templateid);
                 $templatestepdata = $DB->get_records_sql("SELECT * FROM {plannertemplate_step}
                 WHERE plannerid = '".$templateid."' ORDER BY id ASC");
-                $mform->setDefault('disclaimer', array('text' => $alltemplates[$templateid]->disclaimer));
+                $mform->setDefault('disclaimer', ['text' => $alltemplates[$templateid]->disclaimer]);
             }
         }
         if ($templateid) {
             $repeatno = count($templatestepdata);
             if ($repeatno > 0) {
-                $repeatarray = array();
+                $repeatarray = [];
                 $repeatarray[] = $mform->createElement('text', 'stepname', get_string('stepname', 'planner'),
                     ['size' => "50", 'selector' => 'planner_stepname']);
                 $repeatarray[] = $mform->createElement('text', 'stepallocation', get_string('steptimeallocation', 'planner'),
@@ -222,9 +222,9 @@ class mod_planner_mod_form extends moodleform_mod {
                 $repeatarray[] = $mform->createElement('editor', 'stepdescription', get_string('stepdescription', 'planner'),
                     ['selector' => 'planner_stepdescription']);
                 $repeatno = count($templatestepdata);
-                $repeateloptions = array();
+                $repeateloptions = [];
                 $repeateloptions['stepname']['type'] = PARAM_RAW;
-                $repeateloptions['stepname']['helpbutton'] = array('helpinstruction', 'planner');
+                $repeateloptions['stepname']['helpbutton'] = ['helpinstruction', 'planner'];
                 $repeateloptions['stepallocation']['type'] = PARAM_INT;
                 $repeateloptions['stepdescription']['type'] = PARAM_RAW;
                 $this->repeat_elements($repeatarray, $repeatno, $repeateloptions, 'option_repeats',
@@ -233,7 +233,7 @@ class mod_planner_mod_form extends moodleform_mod {
                 foreach ($templatestepdata as $templatestep) {
                     $mform->setDefault('stepname['.$i.']', $templatestep->name);
                     $mform->setDefault('stepallocation['.$i.']', $templatestep->timeallocation);
-                    $mform->setDefault('stepdescription['.$i.']', array('text' => $templatestep->description));
+                    $mform->setDefault('stepdescription['.$i.']', ['text' => $templatestep->description]);
                     $i++;
                 }
                 $mform->addElement('editor', 'disclaimer', get_string('disclaimer', 'planner'));
@@ -245,7 +245,7 @@ class mod_planner_mod_form extends moodleform_mod {
             } else {
                 $personal = 0;
             }
-            $PAGE->requires->js_call_amd('mod_planner/savenewtemplate', 'init', array($personal));
+            $PAGE->requires->js_call_amd('mod_planner/savenewtemplate', 'init', [$personal]);
         }
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();

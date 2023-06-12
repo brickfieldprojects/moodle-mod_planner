@@ -60,7 +60,7 @@ class step_pending extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/planner/view.php', array('id' => $this->contextinstanceid));
+        return new \moodle_url('/mod/planner/view.php', ['id' => $this->contextinstanceid]);
     }
 
     /**
@@ -69,8 +69,8 @@ class step_pending extends \core\event\base {
      * @return array
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'planner', 'view', 'view.php?id=' . $this->objectid,
-            $this->other['plannerid'], $this->contextinstanceid);
+        return [$this->courseid, 'planner', 'view', 'view.php?id=' . $this->objectid,
+            $this->other['plannerid'], $this->contextinstanceid];
     }
 
     /**

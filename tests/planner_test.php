@@ -95,16 +95,16 @@ class planner_test extends \advanced_testcase {
     }
 
     /**
-     * Test the planner_crud_handler function.
+     * Test the crud_handler function.
      */
     public function test_planner_crud_handler() {
         $this->resetAfterTest();
         $data = $this->setup_test_data();
-        $redirecturl = new \moodle_url('/mod/planner/view.php', array('id' => $data->cm->id));
+        $redirecturl = new \moodle_url('/mod/planner/view.php', ['id' => $data->cm->id]);
         $object = $data->planner;
 
         // Test with empty action.
-        $output = $object->planner_crud_handler('', $redirecturl, $data->context, $data->cm);
+        $output = $object->crud_handler('', $redirecturl, $data->context, $data->cm);
         $output->templatestepdata = array_values($output->templatestepdata);
         $this->assertIsObject($output);
         $this->assertEquals($output->templatestepdata[0]->name, 'Step 1');
@@ -113,7 +113,7 @@ class planner_test extends \advanced_testcase {
 
         // Test with 'recalculatesteps' action.
         try {
-            $output = $object->planner_crud_handler('recalculatesteps', $redirecturl, $data->context, $data->cm);
+            $output = $object->crud_handler('recalculatesteps', $redirecturl, $data->context, $data->cm);
         } catch (\exception $e) {
             // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
             $this->assertInstanceOf(\moodle_exception::class, $e);
@@ -134,7 +134,7 @@ class planner_test extends \advanced_testcase {
 
         // Test with 'studentsteps' action.
         try {
-            $output = $object->planner_crud_handler('studentsteps', $redirecturl, $data->context, $data->cm);
+            $output = $object->crud_handler('studentsteps', $redirecturl, $data->context, $data->cm);
         } catch (\exception $e) {
             // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
             $this->assertInstanceOf(\moodle_exception::class, $e);
@@ -155,7 +155,7 @@ class planner_test extends \advanced_testcase {
 
         // Test with 'stepsubmit' action.
         try {
-             $output = $object->planner_crud_handler('stepsubmit', $redirecturl, $data->context, $data->cm);
+             $output = $object->crud_handler('stepsubmit', $redirecturl, $data->context, $data->cm);
         } catch (\exception $e) {
             // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
             $this->assertInstanceOf(\moodle_exception::class, $e);
@@ -181,11 +181,11 @@ class planner_test extends \advanced_testcase {
     public function test_create_planner_user_form() {
         $this->resetAfterTest();
         $testdata = $this->setup_test_data();
-        $redirecturl = new \moodle_url('/mod/planner/view.php', array('id' => $testdata->cm->id));
+        $redirecturl = new \moodle_url('/mod/planner/view.php', ['id' => $testdata->cm->id]);
         $object = $testdata->planner;
-        $data = $object->planner_crud_handler('', $redirecturl, $testdata->context, $testdata->cm);
+        $data = $object->crud_handler('', $redirecturl, $testdata->context, $testdata->cm);
         try {
-            $data = $object->planner_crud_handler('recalculatesteps', $redirecturl, $testdata->context, $testdata->cm);
+            $data = $object->crud_handler('recalculatesteps', $redirecturl, $testdata->context, $testdata->cm);
         } catch (\exception $e) {
             // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
             $this->assertInstanceOf(\moodle_exception::class, $e);
@@ -266,12 +266,12 @@ class planner_test extends \advanced_testcase {
      */
     private function setup_test_data() {
         // Create a course, quiz, template, and planner.
-        $course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
         $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id,
             'grade' => 100.0, 'sumgrades' => 2, 'layout' => '1,2,0,3,4,0,5,6,0', 'navmethod' => 'free']);
         $templateid = $this->getDataGenerator()->get_plugin_generator('mod_planner')->create_template();
         $planner = $this->getDataGenerator()->create_module('planner',
-            array('course' => $course->id, 'activitycmid' => $quiz->cmid, 'templateid' => $templateid));
+            ['course' => $course->id, 'activitycmid' => $quiz->cmid, 'templateid' => $templateid]);
         $planner = planner::create_planner_by_id($planner->id);
         $cm = get_coursemodule_from_instance('planner', $planner->id, $course->id, false, MUST_EXIST);
         $context = \context_module::instance($cm->id);
@@ -282,9 +282,9 @@ class planner_test extends \advanced_testcase {
         $student2 = $this->getDataGenerator()->create_user();
         $this->getDataGenerator()->enrol_user($student1->id, $course->id, 'student');
         $this->getDataGenerator()->enrol_user($student2->id, $course->id, 'student');
-        $group = $this->getDataGenerator()->create_group(array('courseid' => $course->id, 'name' => 'Test Group'));
-        $this->getDataGenerator()->create_group_member(array('groupid' => $group->id, 'userid' => $student1->id));
-        $this->getDataGenerator()->create_group_member(array('groupid' => $group->id, 'userid' => $student2->id));
+        $group = $this->getDataGenerator()->create_group(['courseid' => $course->id, 'name' => 'Test Group']);
+        $this->getDataGenerator()->create_group_member(['groupid' => $group->id, 'userid' => $student1->id]);
+        $this->getDataGenerator()->create_group_member(['groupid' => $group->id, 'userid' => $student2->id]);
 
         $data = new \stdClass();
         $data->course = $course;
@@ -322,12 +322,12 @@ class planner_test extends \advanced_testcase {
      * @return \flexible_table
      */
     private function create_test_table() {
-        $pageurl = new \moodle_url('/mod/planner/template.php', array(
+        $pageurl = new \moodle_url('/mod/planner/template.php', [
             'spage' => 0,
             'cid' => 0,
-            'setting' => ''));
-        $tablecolumns = array();
-        $tableheaders = array();
+            'setting' => '']);
+        $tablecolumns = [];
+        $tableheaders = [];
         $tablecolumns[] = 'name';
         $tablecolumns[] = 'fullname';
         $tablecolumns[] = 'personal';
@@ -360,14 +360,14 @@ class planner_test extends \advanced_testcase {
         $table->set_attribute('id', 'dashboard');
         $table->set_attribute('class', 'generaltable generalbox');
 
-        $table->set_control_variables(array(
+        $table->set_control_variables([
             TABLE_VAR_SORT => 'ssort',
             TABLE_VAR_HIDE => 'shide',
             TABLE_VAR_SHOW => 'sshow',
             TABLE_VAR_IFIRST => 'sifirst',
             TABLE_VAR_ILAST => 'silast',
             TABLE_VAR_PAGE => 'spage'
-        ));
+        ]);
 
         $table->initialbars(false);
 

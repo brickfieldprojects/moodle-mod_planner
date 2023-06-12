@@ -50,7 +50,7 @@ class cron_task_deletedactivity extends \core\task\scheduled_task {
 
         mtrace(' processing delete activity planner cron ...');
 
-        $plannerid = $DB->get_record('modules', array('name' => 'planner', 'visible' => '1'));
+        $plannerid = $DB->get_record('modules', ['name' => 'planner', 'visible' => '1']);
         if ($plannerid) {
             $allplanners = $DB->get_records_sql("SELECT p.*, cm.instance, cm.id as cmid
                     FROM {planner} p
@@ -58,8 +58,8 @@ class cron_task_deletedactivity extends \core\task\scheduled_task {
                     WHERE  cm.visible = 1");
 
             if ($allplanners) {
-                $studentroleid = $DB->get_record('role', array('shortname' => 'student'));
-                $teacherroleid = $DB->get_record('role', array('shortname' => 'editingteacher'));
+                $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
+                $teacherroleid = $DB->get_record('role', ['shortname' => 'editingteacher']);
                 $supportuser = \core_user::get_support_user();
                 $deletedactivityemailsubject = get_string('deletedactivityemailsubject', 'mod_planner');
                 $deletedactivitystudentsubject = get_string('deletedactivitystudentsubject', 'mod_planner');
@@ -67,11 +67,11 @@ class cron_task_deletedactivity extends \core\task\scheduled_task {
                 $deletedactivitystudentemail = get_config('planner', 'deletedactivitystudentemail');
 
                 foreach ($allplanners as $planner) {
-                    $cminfo = $DB->get_record('course_modules', array('id' => $planner->activitycmid));
+                    $cminfo = $DB->get_record('course_modules', ['id' => $planner->activitycmid]);
                     if ((!$cminfo) || ($cminfo->deletioninprogress == '1')) {
 
                         $courseid = $planner->course;
-                        $course = $DB->get_record('course', array('id' => $courseid));
+                        $course = $DB->get_record('course', ['id' => $courseid]);
                         $coursecontext = \context_course::instance($courseid);
                         $teachers = get_role_users($teacherroleid->id, $coursecontext);
 

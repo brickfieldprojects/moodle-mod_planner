@@ -61,7 +61,7 @@ class cron_task extends \core\task\scheduled_task {
         $nextdate = strtotime("+".$frequencyemail." days", $currentime);
         $previousdate = strtotime("-".$frequencyemail." days", $currentime);
 
-        $plannerid = $DB->get_record('modules', array('name' => 'planner', 'visible' => '1'));
+        $plannerid = $DB->get_record('modules', ['name' => 'planner', 'visible' => '1']);
         if ($plannerid) {
 
             $allplanner = $DB->get_records_sql("SELECT pus.id,pus.stepid,pus.userid,pus.duedate,ps.name,p.course,cm.instance,
@@ -74,13 +74,13 @@ class cron_task extends \core\task\scheduled_task {
                 $missedemailsubject = get_string('missedemailsubject', 'mod_planner');
                 $upcomingemailsubject = get_string('upcomingemailsubject', 'mod_planner');
                 foreach ($allplanner as $plannerdata) {
-                    $user = $DB->get_record('user', array('id' => $plannerdata->userid));
+                    $user = $DB->get_record('user', ['id' => $plannerdata->userid]);
                     $associatemodule = $DB->get_record_sql("SELECT cm.id,m.name AS modulename,cm.instance
 					FROM {course_modules} cm JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$plannerdata->activitycmid."'");
                     if ($associatemodule->modulename == 'assign') {
-                        $modulename = $DB->get_record('assign', array('id' => $associatemodule->instance));
+                        $modulename = $DB->get_record('assign', ['id' => $associatemodule->instance]);
                     } else if ($associatemodule->modulename == 'quiz') {
-                        $modulename = $DB->get_record('quiz', array('id' => $associatemodule->instance));
+                        $modulename = $DB->get_record('quiz', ['id' => $associatemodule->instance]);
                     }
                     if ($plannerdata->duedate > $currentime ) {
                         // Upcoming notification.

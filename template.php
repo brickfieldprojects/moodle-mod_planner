@@ -35,14 +35,14 @@ $id           = optional_param('id', null, PARAM_INT);
 $cid           = optional_param('cid', 0, PARAM_INT);
 
 if ($cid) {
-    if (! $course = $DB->get_record("course", array("id" => $cid))) {
+    if (! $course = $DB->get_record("course", ["id" => $cid])) {
         throw new moodle_exception('coursemisconf');
     }
     require_login($course);
     $context = context_course::instance($course->id);
-    navigation_node::override_active_url(new moodle_url('/mod/planner/template.php', array('cid' => $cid)));
+    navigation_node::override_active_url(new moodle_url('/mod/planner/template.php', ['cid' => $cid]));
     $PAGE->set_heading($course->fullname);
-    $PAGE->set_url(new moodle_url('/mod/planner/template.php', array('cid' => $cid)));
+    $PAGE->set_url(new moodle_url('/mod/planner/template.php', ['cid' => $cid]));
     $PAGE->set_context($context);
 
 } else {
@@ -55,10 +55,10 @@ $searchform = planner::create_template_search_form($cid);
 $searchclauses = $searchform['searchclauses'];
 $mform = $searchform['mform'];
 
-$pageurl = new moodle_url('/mod/planner/template.php', array(
+$pageurl = new moodle_url('/mod/planner/template.php', [
     'spage' => $spage,
     'cid' => $cid,
-    'setting' => $searchclauses));
+    'setting' => $searchclauses]);
 
 planner::template_crud_handler($action, $id, $confirm, $pageurl, $cid);
 

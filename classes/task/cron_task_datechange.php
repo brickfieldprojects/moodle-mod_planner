@@ -52,7 +52,7 @@ class cron_task_datechange extends \core\task\scheduled_task {
 
         mtrace(' processing date change planner cron...');
 
-        $plannerid = $DB->get_record('modules', array('name' => 'planner', 'visible' => '1'));
+        $plannerid = $DB->get_record('modules', ['name' => 'planner', 'visible' => '1']);
         if ($plannerid) {
             $allplanners = $DB->get_records_sql("SELECT p.*, cm.instance, cm.id as cmid
                     FROM {planner} p
@@ -60,7 +60,7 @@ class cron_task_datechange extends \core\task\scheduled_task {
                     WHERE  cm.visible = 1");
 
             if ($allplanners) {
-                $teacherroleid = $DB->get_record('role', array('shortname' => 'editingteacher'));
+                $teacherroleid = $DB->get_record('role', ['shortname' => 'editingteacher']);
                 $supportuser = core_user::get_support_user();
                 $changedateemailsubject = get_string('changedateemailsubject', 'mod_planner');
                 $changedateemail = get_config('planner', 'changedateemailtemplate');
@@ -68,7 +68,7 @@ class cron_task_datechange extends \core\task\scheduled_task {
                     $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
                      JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$planner->activitycmid."'");
                     if ($cminfoactivity) {
-                        $modulename = $DB->get_record($cminfoactivity->name, array('id' => $cminfoactivity->instance));
+                        $modulename = $DB->get_record($cminfoactivity->name, ['id' => $cminfoactivity->instance]);
                         if ($cminfoactivity->name == 'assign') {
                             $starttime = $modulename->allowsubmissionsfromdate;
                             $endtime = $modulename->duedate;
@@ -79,7 +79,7 @@ class cron_task_datechange extends \core\task\scheduled_task {
 
                         if (($starttime != $planner->timeopen) || ($endtime != $planner->timeclose)) {
                             $courseid = $planner->course;
-                            $course = $DB->get_record('course', array('id' => $courseid));
+                            $course = $DB->get_record('course', ['id' => $courseid]);
                             $coursecontext = context_course::instance($courseid);
                             $teachers = get_role_users($teacherroleid->id, $coursecontext);
 

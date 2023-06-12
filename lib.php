@@ -71,7 +71,7 @@ function planner_add_instance($planner) {
     $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
     JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$planner->activitycmid."'");
     if ($cminfoactivity) {
-        $modulename = $DB->get_record($cminfoactivity->name, array('id' => $cminfoactivity->instance));
+        $modulename = $DB->get_record($cminfoactivity->name, ['id' => $cminfoactivity->instance]);
     } else {
         throw new moodle_exception('relatedactivitynotexistdelete', 'planner',
             new moodle_url("/course/view.php?id=$planner->course"));
@@ -87,7 +87,7 @@ function planner_add_instance($planner) {
     $id = $DB->insert_record("planner", $planner);
     if ($id) {
         // Increase template counter.
-        $template = $DB->get_record("plannertemplate", array('id' => $planner->templateid));
+        $template = $DB->get_record("plannertemplate", ['id' => $planner->templateid]);
         $updatetemplate = new stdClass();
         $updatetemplate->id = $template->id;
         if (!isset($template->copied)) {
@@ -135,7 +135,7 @@ function planner_update_instance($planner) {
     $planner->timemodified = time();
     $planner->id = $planner->instance;
 
-    $oldplannersteps = $DB->get_records('planner_step', array('plannerid' => $planner->id));
+    $oldplannersteps = $DB->get_records('planner_step', ['plannerid' => $planner->id]);
     $createnewsteps = false;
     if ($oldplannersteps) {
         $oldtimeallocations = array_values($oldplannersteps);
@@ -159,12 +159,12 @@ function planner_update_instance($planner) {
     \core_completion\api::update_completion_date_event($planner->coursemodule, 'planner', $planner->id, $completiontimeexpected);
 
     if ($createnewsteps) {
-        if ($stepsdata = $DB->get_records("planner_step", array("plannerid" => $planner->id))) {
+        if ($stepsdata = $DB->get_records("planner_step", ["plannerid" => $planner->id])) {
             foreach ($stepsdata as $step) {
-                $DB->delete_records('planner_userstep', array('stepid' => $step->id));
+                $DB->delete_records('planner_userstep', ['stepid' => $step->id]);
             }
-            $DB->delete_records('planner_step', array('plannerid' => $planner->id));
-            $DB->delete_records('event', array('instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'user'));
+            $DB->delete_records('planner_step', ['plannerid' => $planner->id]);
+            $DB->delete_records('event', ['instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'user']);
         }
 
         for ($i = 0; $i < $planner->option_repeats; $i++) {
@@ -211,28 +211,28 @@ function planner_update_instance($planner) {
 function planner_delete_instance($id) {
     global $DB;
 
-    if (! $planner = $DB->get_record("planner", array("id" => $id))) {
+    if (! $planner = $DB->get_record("planner", ["id" => $id])) {
         return false;
     }
 
     $result = true;
 
-    if ($stepsdata = $DB->get_records("planner_step", array("plannerid" => $planner->id))) {
+    if ($stepsdata = $DB->get_records("planner_step", ["plannerid" => $planner->id])) {
         foreach ($stepsdata as $step) {
-            $DB->delete_records('planner_userstep', array('stepid' => $step->id));
+            $DB->delete_records('planner_userstep', ['stepid' => $step->id]);
         }
     }
 
     $cm = get_coursemodule_from_instance('planner', $id);
     \core_completion\api::update_completion_date_event($cm->id, 'planner', $planner->id, null);
 
-    if (! $DB->delete_records("planner_step", array("plannerid" => $planner->id))) {
+    if (! $DB->delete_records("planner_step", ["plannerid" => $planner->id])) {
         $result = false;
     }
 
-    $DB->delete_records('event', array('instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'user'));
+    $DB->delete_records('event', ['instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'user']);
 
-    if (! $DB->delete_records("planner", array("id" => $planner->id))) {
+    if (! $DB->delete_records("planner", ["id" => $planner->id])) {
         $result = false;
     }
     return $result;
@@ -272,7 +272,7 @@ function planner_extend_settings_navigation(settings_navigation $settings, navig
     }
 
     if (has_capability('mod/planner:manageplanner', $cm->context)) {
-        $link = new moodle_url('/mod/planner/report.php', array('id' => $cm->id));
+        $link = new moodle_url('/mod/planner/report.php', ['id' => $cm->id]);
         $linkname = get_string('report', 'planner');
         $node = $navref->add($linkname, $link, navigation_node::TYPE_SETTING);
     }
@@ -289,7 +289,7 @@ function mod_planner_extend_navigation_course($navigation, $course, $context) {
     global $CFG;
 
     if (has_capability('mod/planner:managetemplates', $context)) {
-        $url = new moodle_url('/mod/planner/template.php', array('cid' => $course->id));
+        $url = new moodle_url('/mod/planner/template.php', ['cid' => $course->id]);
         $navigation->add(get_string('manage_templates', 'planner'), $url,
             navigation_node::TYPE_CUSTOM, get_string('manage_templates', 'planner'));
     }
@@ -392,7 +392,7 @@ function planner_reset_userdata($data) {
     // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
     // See MDL-9367.
 
-    return array();
+    return [];
 }
 
 /**
@@ -447,8 +447,8 @@ function planner_supports($feature) {
  * @return stdClass an object with the different type of areas indicating if they were updated or not
  * @since Moodle 3.2
  */
-function planner_check_updates_since(cm_info $cm, $from, $filter = array()) {
-    $updates = course_check_module_updates_since($cm, $from, array(), $filter);
+function planner_check_updates_since(cm_info $cm, $from, $filter = []) {
+    $updates = course_check_module_updates_since($cm, $from, [], $filter);
     return $updates;
 }
 

@@ -45,12 +45,12 @@ class template_form extends \moodleform {
         if ($templatedata) {
             $mform->setDefault('name', $templatedata->name);
             $mform->setDefault('personal', $templatedata->personal);
-            $mform->setDefault('disclaimer', array('text' => $templatedata->disclaimer));
+            $mform->setDefault('disclaimer', ['text' => $templatedata->disclaimer]);
         } else {
             $mform->setDefault('personal', 0);
         }
 
-        $templatetypes = array();
+        $templatetypes = [];
         $templatetypes[0] = get_string('global', 'planner');
         $templatetypes[1] = get_string('personal', 'planner');
 
@@ -64,14 +64,14 @@ class template_form extends \moodleform {
 
         $repeatno = $totalsteps;
         if ($repeatno > 0) {
-            $repeatarray = array();
+            $repeatarray = [];
             $repeatarray[] = $mform->createElement('text', 'stepname', get_string('stepname', 'planner'), 'size="50" ');
             $repeatarray[] = $mform->createElement('text', 'stepallocation', get_string('steptimeallocation', 'planner'),
             'size="3" ');
             $repeatarray[] = $mform->createElement('editor', 'stepdescription', get_string('stepdescription', 'planner'));
-            $repeateloptions = array();
+            $repeateloptions = [];
             $repeateloptions['stepname']['type'] = PARAM_RAW;
-            $repeateloptions['stepname']['helpbutton'] = array('helpinstruction', 'planner');
+            $repeateloptions['stepname']['helpbutton'] = ['helpinstruction', 'planner'];
             $repeateloptions['stepallocation']['type'] = PARAM_INT;
             $repeateloptions['stepdescription']['type'] = PARAM_RAW;
             $this->repeat_elements($repeatarray, $repeatno,
@@ -81,7 +81,7 @@ class template_form extends \moodleform {
                 foreach ($templatestepdata as $templatestep) {
                     $mform->setDefault('stepname['.$i.']', $templatestep->name);
                     $mform->setDefault('stepallocation['.$i.']', $templatestep->timeallocation);
-                    $mform->setDefault('stepdescription['.$i.']', array('text' => $templatestep->description));
+                    $mform->setDefault('stepdescription['.$i.']', ['text' => $templatestep->description]);
                     $i++;
                 }
             } else {
@@ -89,7 +89,7 @@ class template_form extends \moodleform {
                 for ($i = 0; $i < 6; $i++) {
                     $mform->setDefault('stepname['.$i.']', get_config('planner', 'step'.$j.'name'));
                     $mform->setDefault('stepallocation['.$i.']', get_config('planner', 'step'.$j.'timeallocation'));
-                    $mform->setDefault('stepdescription['.$i.']', array('text' => get_config('planner', 'step'.$j.'description')));
+                    $mform->setDefault('stepdescription['.$i.']', ['text' => get_config('planner', 'step'.$j.'description')]);
                     $j++;
                 }
             }
@@ -145,7 +145,7 @@ class template_form extends \moodleform {
                     $errors['stepname[0]'] = get_string('required');
                 }
                 $name = $data['name'];
-                $nameunique = $DB->get_records('plannertemplate', array('name' => $name));
+                $nameunique = $DB->get_records('plannertemplate', ['name' => $name]);
                 if ($nameunique) {
                     $errors['name'] = get_string('templatenameunique', 'planner');
                 }
