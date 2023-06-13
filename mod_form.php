@@ -73,12 +73,12 @@ class mod_planner_mod_form extends moodleform_mod {
             if ($cm) {
                 $templateid = $cm->instance;
                 $planner = $DB->get_record('planner', ['id' => $templateid]);
-                $cminfoactivity = $DB->get_record_sql(
-                    "SELECT cm.id,cm.instance,cm.module,m.name
-                    FROM {course_modules} cm
-                    JOIN {modules} m ON (m.id = cm.module)
-                    WHERE cm.id = '".$planner->activitycmid."'"
-                );
+                $sql = 'SELECT cm.id,cm.instance,cm.module,m.name
+                        FROM {course_modules} cm
+                        JOIN {modules} m ON (m.id = cm.module)
+                        WHERE cm.id = :cmid';
+                $cminfoactivity = $DB->get_record_sql($sql, ['cmid' => $planner->activitycmid]);
+
                 if (!$cminfoactivity) {
                     throw new moodle_exception(
                         'relatedactivitynotexistdelete',
@@ -86,18 +86,18 @@ class mod_planner_mod_form extends moodleform_mod {
                         new moodle_url("/course/view.php?id=$planner->course")
                     );
                 }
-                $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step}
-                WHERE plannerid = '".$templateid."' ORDER BY id ASC");
+                $templatestepdata = mod_planner\planner::get_all_steps($templateid);
                 $mform->setDefault('disclaimer', ['text' => $planner->disclaimer]);
             }
         }
 
-        $assignments = $DB->get_records_sql(
-            "SELECT cm.id,a.name
-            FROM {assign} a
-            JOIN {course_modules} cm ON (cm.instance = a.id AND cm.module = (SELECT id FROM {modules} WHERE name = 'assign'))
-            WHERE a.course = '".$course->id."' AND cm.visible = 1 AND (a.allowsubmissionsfromdate != 0 AND a.duedate != 0)"
-        );
+        $sql = 'SELECT cm.id,a.name
+                  FROM {assign} a
+                  JOIN {course_modules} cm
+                    ON (cm.instance = a.id AND cm.module = (SELECT id FROM {modules} WHERE name = :assignname))
+                 WHERE a.course = :courseid AND cm.visible = 1 AND (a.allowsubmissionsfromdate != 0 AND a.duedate != 0)';
+        $params = ['assignname' => 'assign', 'courseid' => $course->id];
+        $assignments = $DB->get_records_sql($sql, $params);
         $activitynames = [];
         $activitynames[0] = '';
         if ($assignments) {
@@ -106,29 +106,33 @@ class mod_planner_mod_form extends moodleform_mod {
             }
         }
 
-        $quizzes = $DB->get_records_sql(
-            "SELECT cm.id,q.name
-            FROM {quiz} q
-            JOIN {course_modules} cm ON (cm.instance = q.id AND cm.module = (SELECT id FROM {modules} WHERE name = 'quiz'))
-            WHERE q.course = '".$course->id."' AND cm.visible = 1 AND (q.timeopen != 0 AND q.timeclose != 0)"
-        );
+        $sql = 'SELECT cm.id,q.name
+                  FROM {quiz} q
+                  JOIN {course_modules} cm ON (cm.instance = q.id AND cm.module = (SELECT id FROM {modules} WHERE name = :quizname))
+                 WHERE q.course = :courseid AND cm.visible = 1 AND (q.timeopen != 0 AND q.timeclose != 0)';
+        $params = ['quizname' => 'quiz', 'courseid' => $course->id];
+        $quizzes = $DB->get_records_sql($sql, $params);
         if ($quizzes) {
             foreach ($quizzes as $id => $quiz) {
                 $activitynames[$id] = get_string('quiz', 'planner').' - '.$quiz->name;
             }
         }
-        $whereplanner = "";
+
         if ($this->_cm) {
-            $whereplanner = "WHERE p.id != ".$cm->instance;
-            $checkalreadycompleted = $DB->count_records_sql(
-                "SELECT count(pu.id) FROM {planner_userstep} pu
-                JOIN {planner_step} ps ON (ps.id = pu.stepid)
-                WHERE ps.plannerid = '".$planner->id."'");
+            $whereplanner = "id != ?";
+            $params = [$cm->instance];
+            $sql = 'SELECT count(pu.id)
+                      FROM {planner_userstep} pu
+                      JOIN {planner_step} ps ON (ps.id = pu.stepid)
+                     WHERE ps.plannerid = :plannerid';
+            $checkalreadycompleted = $DB->count_records_sql($sql, ['plannerid' => $planner->id]);
         } else {
             $checkalreadycompleted = null;
+            $whereplanner = '';
+            $params = [];
         }
 
-        $newplanner = $DB->get_records_sql("SELECT p.id, p.activitycmid, p.name FROM {planner} p $whereplanner ");
+        $newplanner = $DB->get_records_select('planner', $whereplanner, $params, '', 'id,activitycmid,name');
         $modinfo = get_fast_modinfo($course);
 
         if ($newplanner) {
@@ -221,8 +225,7 @@ class mod_planner_mod_form extends moodleform_mod {
             $mform->addRule('templateid', $strrequired, 'required', null, 'server');
             if ($templateid) {
                 $mform->setDefault('templateid', $templateid);
-                $templatestepdata = $DB->get_records_sql("SELECT * FROM {plannertemplate_step}
-                WHERE plannerid = '".$templateid."' ORDER BY id ASC");
+                $templatestepdata = $DB->get_records('plannertemplate_step', ['plannerid' => $templateid], 'id ASC');
                 $mform->setDefault('disclaimer', ['text' => $alltemplates[$templateid]->disclaimer]);
             }
         }

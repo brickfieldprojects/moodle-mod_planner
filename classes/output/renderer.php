@@ -174,17 +174,24 @@ class renderer extends \plugin_renderer_base {
             if (($time->starttime != $planner->timeopen) || ($time->endtime != $planner->timeclose)) {
                 $out .= '<br/>';
                 $out .= '<div style="text-align:center">';
-                $out .= $this->output->single_button(new \moodle_url('view.php',
-                    ['id' => $id, 'action' => 'recalculatesteps']), get_string('recalculatestudentsteps', 'planner'));
+                $out .= $this->output->single_button(
+                    new \moodle_url('view.php', ['id' => $id, 'action' => 'recalculatesteps']),
+                    get_string('recalculatestudentsteps', 'planner')
+                );
                 $out .= '</div>';
             } else {
-                $checkalreadycompleted = $DB->count_records_sql("SELECT count(pu.id) FROM {planner_userstep} pu
-                JOIN {planner_step} ps ON (ps.id = pu.stepid) WHERE ps.plannerid = '".$planner->id."'");
+                $sql = 'SELECT count(pu.id)
+                          FROM {planner_userstep} pu
+                          JOIN {planner_step} ps ON (ps.id = pu.stepid)
+                         WHERE ps.plannerid = :plannerid';
+                $checkalreadycompleted = $DB->count_records_sql($sql, ['plannerid' => $planner->id]);
                 if ($checkalreadycompleted == 0) {
                     $out .= '<br/>';
                     $out .= '<div style="text-align:center">';
-                    $out .= $this->output->single_button(new \moodle_url('view.php',
-                        ['id' => $id, 'action' => 'studentsteps']), get_string('calculatestudentsteps', 'planner'));
+                    $out .= $this->output->single_button(
+                        new \moodle_url('view.php', ['id' => $id, 'action' => 'studentsteps']),
+                        get_string('calculatestudentsteps', 'planner')
+                    );
                     $out .= '</div>';
                 }
             }
@@ -404,17 +411,17 @@ class renderer extends \plugin_renderer_base {
 
         // Get necessary data.
         $time = $planner->get_planner_times($cm);
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '".
-                                                 $planner->id."' ORDER BY id ASC");
-        $userstartdate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)
-            WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC LIMIT 1");
-        $userenddate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps ON (ps.id = pu.stepid)
-            WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id DESC LIMIT 1");
+        $templatestepdata = planner::get_all_steps($planner->id);
+        $sql = 'SELECT pu.*
+                  FROM {planner_userstep} pu
+                  JOIN {planner_step} ps ON (ps.id = pu.stepid)
+                 WHERE ps.plannerid = :plannerid AND pu.userid = :userid ORDER BY pu.id ';
+        $userstartdate = $DB->get_record_sql($sql . 'ASC', ['plannerid' => $cm->instance, 'userid' => $USER->id]);
+        $userenddate = $DB->get_record_sql($sql . 'DESC', ['plannerid' => $cm->instance, 'userid' => $USER->id]);
+
         $datediff = $time->endtime - $time->starttime;
         $days = round($datediff / (60 * 60 * 24));
-        $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-            JOIN {planner_step} ps ON (ps.id = pu.stepid)
-            WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC ");
+        $templateuserstepdata = planner::get_all_usersteps($cm->instance, $USER->id);
         if ($userstartdate) {
             if ($userstartdate->timestart) {
                 $time->starttime = $userstartdate->timestart;
@@ -617,9 +624,7 @@ class renderer extends \plugin_renderer_base {
             $table->setup();
             if ($students) {
                 foreach ($students as $studentdata) {
-                    $getusersteps = $DB->get_records_sql("SELECT pus.*  FROM {planner_userstep} pus
-                    JOIN {planner_step} ps ON (ps.id = pus.stepid) WHERE ps.plannerid = '".$planner->id."'
-                    AND pus.userid = '".$studentdata->id."' ORDER BY pus.stepid ASC");
+                    $usersteps = planner::get_all_usersteps($planner->id, $studentdata->id);
                     $data = [];
                     $params = ['id' => $studentdata->id];
                     $params['course'] = $course->id;
@@ -629,7 +634,7 @@ class renderer extends \plugin_renderer_base {
                         $data[] = \html_writer::link(new \moodle_url("/user/view.php", $params), fullname($studentdata));
                     }
                     $data[] = $studentdata->email;
-                    foreach ($getusersteps as $step) {
+                    foreach ($usersteps as $step) {
                         if ($step->completionstatus == '1') {
                             $data[] = get_string('completed', 'planner');
                         } else {

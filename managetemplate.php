@@ -57,7 +57,7 @@ if ($id) {
     if (!$templatedata = $DB->get_record('plannertemplate', ['id' => $id])) {
         throw new moodle_exception('invalidtemplate', 'planner');
     }
-    $templatestepdata = $DB->get_records_sql("SELECT * FROM {plannertemplate_step} WHERE plannerid = '".$id."' ORDER BY id ASC");
+    $templatestepdata = $DB->get_records('plannertemplate_step', ['plannerid' => $id], 'id ASC');
 }
 
 if ($id) {

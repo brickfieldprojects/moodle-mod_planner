@@ -509,8 +509,7 @@ class observer {
                         if ($endtime > time()) {
                             require_once($CFG->dirroot . '/mod/planner/lib.php');
                             require_once($CFG->dirroot.'/calendar/lib.php');
-                            $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE
-                            plannerid = '".$planner->id."' ORDER BY id ASC");
+                            $templatestepdata = planner::get_all_steps($planner->id);
                             $templateuserstepdata = $DB->get_records_sql(
                                 "SELECT pu.*,ps.name,ps.description
                                 FROM {planner_userstep} pu

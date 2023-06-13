@@ -140,11 +140,8 @@ class planner {
     public function create_user_step(int $userid, int $starttime, int $endtime): void {
         global $DB;
 
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" .
-            $this->id . "' ORDER BY id ASC");
-        $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-        JOIN {planner_step} ps ON (ps.id = pu.stepid)
-        WHERE ps.plannerid = '" . $this->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
+        $templatestepdata = $this->get_all_steps($this->id);
+        $templateuserstepdata = $this->get_all_usersteps($this->id, $userid);
         $totaltime = $endtime - $starttime;
         $exsitingsteptime = $starttime;
         $stepsdata = [];
@@ -198,11 +195,8 @@ class planner {
     public function update_user_step(int $userid, int $starttime, int $endtime): void {
         global $DB;
 
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" .
-            $this->id . "' ORDER BY id ASC");
-        $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-        JOIN {planner_step} ps ON (ps.id = pu.stepid)
-        WHERE ps.plannerid = '" . $this->id . "' AND pu.userid = '" . $userid . "' ORDER BY pu.id ASC ");
+        $templatestepdata = $this->get_all_steps($this->id);
+        $templateuserstepdata = $this->get_all_usersteps($this->id, $userid);
         $totaltime = $endtime - $starttime;
         $exsitingsteptime = $starttime;
         $stepsdata = [];
@@ -500,10 +494,9 @@ class planner {
 
         // Get the list of users enrolled in the course.
         $sql = "SELECT u.*
-                FROM {user} u
-                JOIN {role_assignments} a ON (a.contextid = :contextid AND a.userid = u.id AND a.roleid = '5')
-                $groupjoin
-            ";
+                  FROM {user} u
+                  JOIN {role_assignments} a ON (a.contextid = :contextid AND a.userid = u.id AND a.roleid = '5')
+                $groupjoin";
         $params['contextid'] = $coursecontext->id;
         $params['courseid'] = $course->id;
 
@@ -544,9 +537,7 @@ class planner {
         $export->add_data($row);
         if ($students) {
             foreach ($students as $studentdata) {
-                $getusersteps = $DB->get_records_sql("SELECT pus.*  FROM {planner_userstep} pus
-                JOIN {planner_step} ps ON (ps.id = pus.stepid) WHERE ps.plannerid = '" . $this->id . "'
-                AND pus.userid = '" . $studentdata->id . "' ORDER BY pus.stepid ASC");
+                $usersteps = planner::get_all_usersteps($this->id, $studentdata->id);
                 $row = [];
                 if ($studentdata->idnumber) {
                     $row[] = fullname($studentdata) . ' (' . $studentdata->idnumber . ')';
@@ -554,7 +545,7 @@ class planner {
                     $row[] = fullname($studentdata);
                 }
                 $row[] = $studentdata->email;
-                foreach ($getusersteps as $step) {
+                foreach ($usersteps as $step) {
                     if ($step->completionstatus == '1') {
                         $row[] = get_string('completed', 'planner');
                     } else {
@@ -575,8 +566,11 @@ class planner {
      */
     public function get_planner_times(object $cm): object {
         global $DB, $USER;
-        $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
-        JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '" . $this->activitycmid . "'");
+        $sql = 'SELECT cm.id,cm.instance,cm.module,m.name
+                  FROM {course_modules} cm
+                  JOIN {modules} m ON (m.id = cm.module)
+                 WHERE cm.id = :cmid';
+        $cminfoactivity = $DB->get_record_sql($sql, ['cmid' => $this->activitycmid]);
 
         $modinfo = get_fast_modinfo($this->courseid);
         foreach ($modinfo->instances as $modname => $modinstances) {
@@ -605,18 +599,18 @@ class planner {
             $time->defaultstarttime = $modulename->timeopen;
             $time->defaultendtime = $modulename->timeclose;
         }
-        $time->userstartdate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps
-            ON (ps.id = pu.stepid) WHERE ps.plannerid = '" .
-            $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id ASC LIMIT 1");
+        $sql = 'SELECT pu.*
+                  FROM {planner_userstep} pu
+                  JOIN {planner_step} ps ON (ps.id = pu.stepid)
+                 WHERE ps.plannerid = :plannerid AND pu.userid = :userid ORDER BY pu.id ';
+        $time->userstartdate = $DB->get_record_sql($sql . 'ASC', ['plannerid' => $cm->instance, 'userid' => $USER->id]);
+        $time->userenddate = $DB->get_record_sql($sql . 'DESC', ['plannerid' => $cm->instance, 'userid' => $USER->id]);
 
         if ($time->userstartdate) {
             if ($time->userstartdate->timestart) {
                 $$time->starttime = $time->userstartdate->timestart;
             }
         }
-        $time->userenddate = $DB->get_record_sql("SELECT pu.* FROM {planner_userstep} pu JOIN {planner_step} ps
-            ON (ps.id = pu.stepid) WHERE ps.plannerid = '" .
-            $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id DESC LIMIT 1");
 
         $datediff = $time->endtime - $time->starttime;
         $time->days = round($datediff / (60 * 60 * 24));
@@ -635,8 +629,8 @@ class planner {
     public function crud_handler(?string $action, string $redirecturl, object $context, object $cm): object {
         global $DB, $USER;
 
-        $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '" .
-            $this->id . "' ORDER BY id ASC");
+        $templatestepdata = $this->get_all_steps($this->id);
+        $templateuserstepdata = $this->get_all_usersteps($cm->instance, $USER->id);
         $time = $this->get_planner_times($cm);
         if (($action == "studentsteps") || ($action == "recalculatesteps")) {
             if ($action == "recalculatesteps") {
@@ -691,8 +685,7 @@ class planner {
             $stepid = required_param('stepid', PARAM_INT);
             $uncheckstep = optional_param('uncheckstep', 0, PARAM_INT);
 
-            $checkexistingstep = $DB->get_record_sql("SELECT * from {planner_userstep}
-            WHERE id = '" . $stepid . "' AND userid = '" . $USER->id . "'");
+            $checkexistingstep = $DB->get_record('planner_userstep', ['id' => $stepid, 'userid' => $USER->id]);
 
             if ($checkexistingstep) {
                 $updateuserstep = new stdClass();
@@ -738,10 +731,6 @@ class planner {
                 }
             }
         }
-
-        $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-         JOIN {planner_step} ps ON (ps.id = pu.stepid)
-         WHERE ps.plannerid = '" . $cm->instance . "' AND pu.userid = '" . $USER->id . "' ORDER BY pu.id ASC ");
 
         $data = new stdClass();
         $data->templateuserstepdata = $templateuserstepdata;
@@ -842,15 +831,15 @@ class planner {
                 break;
             }
         }
-        $select = "SELECT pt.*,u.firstname,u.lastname,u.middlename,u.firstnamephonetic,u.lastnamephonetic,u.alternatename";
-        $from = "FROM {plannertemplate} pt LEFT JOIN {user} u ON (u.id = pt.userid)";
-        $where = "";
-        $params = [];
+        $params = ['userid' => $USER->id];
         $wheres = [];
         $wheresearch = "";
         $whereteacher = "";
+        $where = "";
+        $select = 'SELECT pt.*,u.firstname,u.lastname,u.middlename,u.firstnamephonetic,u.lastnamephonetic,u.alternatename';
+        $from = "FROM {plannertemplate} pt LEFT JOIN {user} u ON (u.id = pt.userid)";
         if (!$isadmin) {
-            $whereteacher = "((pt.userid = '" . $USER->id . "' AND pt.personal = 1) OR (pt.personal = 0))";
+            $whereteacher = "((pt.userid = :userid AND pt.personal = 1) OR (pt.personal = 0))";
         }
         if ($searchclauses) {
             $wheres[] = $DB->sql_like('name', ':search1', false, false);
@@ -862,9 +851,9 @@ class planner {
             $wheresearch = implode(" OR ", $wheres);
         }
         if ($mytemplates && $wheresearch) {
-            $where = "WHERE pt.userid = '" . $USER->id . "' AND " . $wheresearch;
+            $where = "WHERE pt.userid = :userid AND " . $wheresearch;
         } else if ($mytemplates) {
-            $where = "WHERE pt.userid = '" . $USER->id . "'";
+            $where = "WHERE pt.userid = :userid";
         } else if ($whereteacher && $wheresearch) {
             $where = "WHERE " . $whereteacher . " AND " . $wheresearch;
         } else if ($wheresearch) {
@@ -935,5 +924,37 @@ class planner {
             }
         }
         return $errors;
+    }
+
+    /**
+     * Get all planner steps.
+     *
+     * @param int $plannerid
+     * @return array
+     */
+    public static function get_all_steps(int $plannerid): array {
+        global $DB;
+        return $DB->get_records('planner_step', ['plannerid' => $plannerid], 'id ASC');
+    }
+
+    /**
+     * Get all planner steps.
+     *
+     * @param int $plannerid
+     * @param int $userid
+     * @return array
+     */
+    public static function get_all_usersteps(int $plannerid, int $userid): array {
+        global $DB;
+        $sql = 'SELECT pu.*,ps.name,ps.description
+                  FROM {planner_userstep} pu
+                  JOIN {planner_step} ps ON (ps.id = pu.stepid)
+                 WHERE ps.plannerid = :plannerid AND pu.userid = :userid
+              ORDER BY pu.id ASC';
+        $params = [
+            'plannerid' => $plannerid,
+            'userid' => $userid,
+        ];
+        return $DB->get_records_sql($sql, $params);
     }
 }

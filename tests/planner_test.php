@@ -309,9 +309,11 @@ class planner_test extends \advanced_testcase {
      */
     private function get_user_step_data($cm, $student1) {
         global $DB;
-        $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-         JOIN {planner_step} ps ON (ps.id = pu.stepid)
-         WHERE ps.plannerid = '" . $cm->instance . "' AND pu.userid = '" .  $student1->id . "' ORDER BY pu.id ASC ");
+        $templateuserstepdata = $DB->get_records_sql(
+            "SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
+            JOIN {planner_step} ps ON (ps.id = pu.stepid)
+            WHERE ps.plannerid = '" . $cm->instance . "' AND pu.userid = '" .  $student1->id . "' ORDER BY pu.id ASC "
+        );
 
         return $templateuserstepdata;
     }

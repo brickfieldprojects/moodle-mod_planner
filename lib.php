@@ -68,12 +68,11 @@ function planner_add_instance($planner) {
     }
     $planner->timemodified = time();
 
-    $cminfoactivity = $DB->get_record_sql(
-        "SELECT cm.id,cm.instance,cm.module,m.name
-        FROM {course_modules} cm
-        JOIN {modules} m ON (m.id = cm.module)
-        WHERE cm.id = '".$planner->activitycmid."'"
-    );
+    $sql = 'SELECT cm.id,cm.instance,cm.module,m.name
+              FROM {course_modules} cm
+              JOIN {modules} m ON (m.id = cm.module)
+             WHERE cm.id = :cmid';
+    $cminfoactivity = $DB->get_record_sql($sql, ['cmid' => $planner->activitycmid]);
     if ($cminfoactivity) {
         $modulename = $DB->get_record($cminfoactivity->name, ['id' => $cminfoactivity->instance]);
     } else {
@@ -344,13 +343,7 @@ function planner_cm_info_view(cm_info $cm) {
         return false;
     }
     if (($planner->stepview == '1') || ($planner->stepview == '2')) {
-        $templatestepdata = $DB->get_records_sql(
-            "SELECT pu.*,ps.name,ps.description
-            FROM {planner_userstep} pu
-            JOIN {planner_step} ps ON (ps.id = pu.stepid)
-            WHERE ps.plannerid = '".$cm->instance."' AND pu.userid = '".$USER->id."'
-            ORDER BY pu.id ASC "
-        );
+        $templatestepdata = mod_planner\planner::get_all_usersteps($cm->instance, $USER->id);
 
         if ($templatestepdata) {
             $i = 0;

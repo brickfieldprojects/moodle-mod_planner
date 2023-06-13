@@ -65,8 +65,12 @@ class cron_task_datechange extends \core\task\scheduled_task {
                 $changedateemailsubject = get_string('changedateemailsubject', 'mod_planner');
                 $changedateemail = get_config('planner', 'changedateemailtemplate');
                 foreach ($allplanners as $planner) {
-                    $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
-                     JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$planner->activitycmid."'");
+                    $cminfoactivity = $DB->get_record_sql(
+                        "SELECT cm.id,cm.instance,cm.module,m.name
+                        FROM {course_modules} cm
+                        JOIN {modules} m ON (m.id = cm.module)
+                        WHERE cm.id = '".$planner->activitycmid."'"
+                    );
                     if ($cminfoactivity) {
                         $modulename = $DB->get_record($cminfoactivity->name, ['id' => $cminfoactivity->instance]);
                         if ($cminfoactivity->name == 'assign') {
