@@ -88,7 +88,7 @@ const show = async ({ focusOnClose = null } = {}) => {
                 stepallocation: stepAllocation,
                 stepdescription: stepDescription,
                 optionrepeats: names.length,
-                courseid: courseid,
+                courseid: courseId,
             },
             done: (data) => {
                 if (data !== '') {
@@ -116,7 +116,7 @@ const show = async ({ focusOnClose = null } = {}) => {
  */
 export const init = (personal, course) => {
     isPersonal = personal;
-    courseid = course;
+    courseId = course;
     if (!init.initialised) {
         // Event listeners should only be registered once.
         init.initialised = true;
@@ -132,7 +132,7 @@ let isPersonal = '';
 /**
  * The course id.
  */
-const courseid = 0;
+let courseId = 0;
 
 /**
  * Whether the init function was called before.
