@@ -146,8 +146,8 @@ class template_form extends \moodleform {
                 }
                 $name = $data['name'];
                 // Checking that template name is unique, yet allowing an edit.
-                $namesql = 'SELECT * FROM {plannertemplate} WHERE name = ? and id != ?';
-                $nameunique = $DB->get_records_sql($namesql, [$data['name'], $data['id']]);
+                $nameselect = 'name = ? and id != ?';
+                $nameunique = $DB->get_records_select('plannertemplate', $nameselect, [$data['name'], $data['id']]);
                 if ($nameunique) {
                     $errors['name'] = get_string('templatenameunique', 'planner');
                 }
