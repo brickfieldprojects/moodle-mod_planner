@@ -37,7 +37,7 @@ class fetch_template_data extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function execute_parameters() {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'templateid' => new external_value(PARAM_INT, 'The id of the template.', VALUE_REQUIRED),
         ]);
@@ -47,9 +47,9 @@ class fetch_template_data extends external_api {
      * Web service to fetch a template record.
      *
      * @param int $templateid
-     * @return void
+     * @return array
      */
-    public static function execute($templateid) {
+    public static function execute(int $templateid): array {
         $params = self::validate_parameters(
             self::execute_parameters(), [
                 'templateid' => $templateid
@@ -71,8 +71,10 @@ class fetch_template_data extends external_api {
 
     /**
      * Describes the return structure of the service.
+     *
+     * @return external_single_structure
      */
-    public static function execute_returns() {
+    public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'plannertemplate' => new external_single_structure(
                [

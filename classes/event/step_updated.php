@@ -39,7 +39,7 @@ class step_updated extends \core\event\base {
      *
      * @return string
      */
-    public static function get_name() {
+    public static function get_name(): string {
         return get_string('stepupdated', 'mod_planner');
     }
 
@@ -48,7 +48,7 @@ class step_updated extends \core\event\base {
      *
      * @return string
      */
-    public function get_description() {
+    public function get_description(): string {
         return "The user with id '$this->userid' has updated their steps due date with planner
 		id '$this->objectid' updated by the user with id '$this->relateduserid' for the planner
 		with course module id '$this->contextinstanceid'.";
@@ -59,7 +59,7 @@ class step_updated extends \core\event\base {
      *
      * @return \moodle_url
      */
-    public function get_url() {
+    public function get_url(): \moodle_url {
         return new \moodle_url('/mod/planner/view.php', ['id' => $this->contextinstanceid]);
     }
 
@@ -68,7 +68,7 @@ class step_updated extends \core\event\base {
      *
      * @return array
      */
-    protected function get_legacy_logdata() {
+    protected function get_legacy_logdata(): array {
         return [
             $this->courseid,
             'planner',
@@ -85,7 +85,7 @@ class step_updated extends \core\event\base {
      * @throws \coding_exception
      * @return void
      */
-    protected function validate_data() {
+    protected function validate_data(): void {
         parent::validate_data();
 
         if (!isset($this->relateduserid)) {

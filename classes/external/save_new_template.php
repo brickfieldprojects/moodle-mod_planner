@@ -36,7 +36,7 @@ class save_new_template extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function execute_parameters() {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'name' => new external_value(PARAM_TEXT, 'The name of the template.', VALUE_REQUIRED),
             'disclaimer' => new external_value(PARAM_RAW, 'The disclaimer of the template.', VALUE_REQUIRED),
@@ -68,9 +68,17 @@ class save_new_template extends external_api {
      * @param array $stepallocation
      * @param array $stepdescription
      * @param int $optionrepeats
-     * @return void
+     * @return string
      */
-    public static function execute($name, $disclaimer, $personal, $stepname, $stepallocation, $stepdescription, $optionrepeats) {
+    public static function execute(
+        string $name,
+        string $disclaimer,
+        int $personal,
+        array $stepname,
+        array $stepallocation,
+        array $stepdescription,
+        int $optionrepeats
+    ): string {
         $params = self::validate_parameters(
             self::execute_parameters(), [
                 'name' => $name,
@@ -118,8 +126,10 @@ class save_new_template extends external_api {
 
     /**
      * Describes the return structure of the service.
+     *
+     * @return external_value
      */
-    public static function execute_returns() {
+    public static function execute_returns(): external_value {
         return new external_value(PARAM_TEXT, 'An error message if there is one.');
     }
 }

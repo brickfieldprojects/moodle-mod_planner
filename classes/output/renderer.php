@@ -38,7 +38,14 @@ class renderer extends \plugin_renderer_base {
      * @param int $id
      * @return string
      */
-    public function display_planner($planner, $cm, $data, $context, $templateform, $id) {
+    public function display_planner(
+        object $planner,
+        object $cm,
+        object $data,
+        object $context,
+        object $templateform,
+        int $id
+    ): string {
         global $DB;
         $out = '';
         $out .= $this->output->header();
@@ -206,7 +213,7 @@ class renderer extends \plugin_renderer_base {
      * @param int $cid
      * @return string
      */
-    public function setup_template($cid) {
+    public function setup_template(int $cid): string {
         $out = '';
         $out .= $this->output->header();
         $out .= $this->output->heading(get_string('manage_templates', 'planner'));
@@ -229,9 +236,16 @@ class renderer extends \plugin_renderer_base {
      * @param string $searchclauses
      * @param int $perpage
      * @param bool $mytemplates
-     * @return string
+     * @return void
      */
-    public function display_template_table($cid, $mform, $pageurl, $searchclauses, $perpage, $mytemplates = false) {
+    public function display_template_table(
+        int $cid,
+        object $mform,
+        string $pageurl,
+        string $searchclauses,
+        int $perpage,
+        bool $mytemplates = false
+    ): void {
         global $USER;
 
         if ($mytemplates) {
@@ -381,7 +395,7 @@ class renderer extends \plugin_renderer_base {
      * @param int $cid
      * @return string
      */
-    public function display_template_delete_page($plannertemplatedata, $pageurl, $id, $cid) {
+    public function display_template_delete_page(object $plannertemplatedata, string $pageurl, int $id, int $cid): string {
         $out = '';
         $out .= $this->output->header();
         $out .= $this->output->heading(get_string('deletetemplate', 'planner'));
@@ -405,8 +419,9 @@ class renderer extends \plugin_renderer_base {
      * @param object $course
      * @param object $planner
      * @param object $cm
+     * @return string
      */
-    public function display_print_page($course, $planner, $cm) {
+    public function display_print_page(object $course, object $planner, object $cm): string {
         global $DB, $USER;
 
         // Get necessary data.
@@ -541,9 +556,9 @@ class renderer extends \plugin_renderer_base {
      * @param int $groupuserid
      * @param int $group
      * @param object $planner
-     * @return string
+     * @return void
      */
-    public function display_report_group_dropdown($course, $groupuserid, $group, $planner) {
+    public function display_report_group_dropdown(object $course, int $groupuserid, int $group, object $planner): void {
         $out = '';
         $out .= $this->output->header();
         $out .= $this->output->heading(get_string('reportheading', 'planner', $planner->name));
@@ -590,8 +605,15 @@ class renderer extends \plugin_renderer_base {
      * @param int $group
      * @return string
      */
-    public function display_report_table($plannersteps, $planner, $pageurl, $students, $course, $id, $group) {
-        global $DB;
+    public function display_report_table(
+        int $plannersteps,
+        object $planner,
+        string $pageurl,
+        array $students,
+        object $course,
+        int $id,
+        int $group
+    ): string {
         $out = '';
 
         if ($plannersteps) {

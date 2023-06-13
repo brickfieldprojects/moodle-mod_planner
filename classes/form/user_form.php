@@ -33,10 +33,7 @@ class user_form extends \moodleform {
      * Define the form.
      */
     public function definition() {
-        global $CFG;
-
         $mform = $this->_form;
-        $strrequired = get_string('required');
         $id = $this->_customdata['id'];
         $studentstartime = $this->_customdata['studentstartime'];
         $starttime = $this->_customdata['startdate'];

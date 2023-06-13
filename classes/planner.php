@@ -603,8 +603,8 @@ class planner {
                   FROM {planner_userstep} pu
                   JOIN {planner_step} ps ON (ps.id = pu.stepid)
                  WHERE ps.plannerid = :plannerid AND pu.userid = :userid ORDER BY pu.id ';
-        $time->userstartdate = $DB->get_record_sql($sql . 'ASC', ['plannerid' => $cm->instance, 'userid' => $USER->id]);
-        $time->userenddate = $DB->get_record_sql($sql . 'DESC', ['plannerid' => $cm->instance, 'userid' => $USER->id]);
+        $time->userstartdate = $DB->get_record_sql($sql . 'ASC LIMIT 1', ['plannerid' => $cm->instance, 'userid' => $USER->id]);
+        $time->userenddate = $DB->get_record_sql($sql . 'DESC LIMIT 1', ['plannerid' => $cm->instance, 'userid' => $USER->id]);
 
         if ($time->userstartdate) {
             if ($time->userstartdate->timestart) {
