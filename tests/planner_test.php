@@ -260,6 +260,64 @@ class planner_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the get_all_usersteps function.
+     */
+    public function test_get_all_usersteps() {
+        $this->resetAfterTest();
+        $testdata = $this->setup_test_data();
+        $redirecturl = new \moodle_url('/mod/planner/view.php', ['id' => $testdata->cm->id]);
+        $object = $testdata->planner;
+        try {
+            $data = $object->crud_handler('recalculatesteps', $redirecturl, $testdata->context, $testdata->cm);
+        } catch (\exception $e) {
+            // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
+            $this->assertInstanceOf(\moodle_exception::class, $e);
+        } finally {
+            $output = $object->get_all_usersteps($testdata->cm->instance, $testdata->student1->id);
+        }
+        $output = array_values($output);
+        $this->assertIsArray($output);
+        $this->assertEquals($output[0]->name, 'Step 1');
+        $this->assertEquals($output[1]->name, 'Step 2');
+        $this->assertEquals($output[2]->name, 'Step 3');
+    }
+
+    /**
+     * Test the form validation preventing duplicate template names.
+     */
+    public function test_get_template_unique_name() {
+        global $DB;
+        $this->resetAfterTest();
+
+        $templateid1 = $this->getDataGenerator()->get_plugin_generator('mod_planner')->create_template();
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
+
+        // First, test editing the generated template.
+        $data = [];
+        // Params needed for form construction.
+        $data['id'] = $templateid1;
+        $data['cid'] = $course->id;
+        $data['name'] = 'Test planner template';
+        $data['templatedata'] = '';
+        $data['templatestepdata'] = '';
+        // Params needed to enter logic for validation.
+        $data['submitbutton'] = '';
+        $data['stepname'] = '';
+        form\template_form::mock_submit($data, []);
+        $form = new form\template_form('POST', $data);
+        $this->assertTrue($form->is_validated());
+        $formdata = $form->get_data();
+        $this->assertEquals($formdata->name, 'Test planner template');
+
+        // Next, test adding a new template but with same name.
+        $data['id'] = null;
+        $data['name'] = 'Test planner template';
+        form\template_form::mock_submit($data, []);
+        $form = new form\template_form('POST', $data);
+        $this->assertFalse($form->is_validated());
+    }
+
+    /**
      * Creates and returns all the needed test data.
      *
      * @return \stdClass
