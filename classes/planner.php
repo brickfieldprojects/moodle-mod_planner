@@ -537,7 +537,7 @@ class planner {
         $export->add_data($row);
         if ($students) {
             foreach ($students as $studentdata) {
-                $usersteps = planner::get_all_usersteps($this->id, $studentdata->id);
+                $usersteps = $this->get_all_usersteps($this->id, $studentdata->id);
                 $row = [];
                 if ($studentdata->idnumber) {
                     $row[] = fullname($studentdata) . ' (' . $studentdata->idnumber . ')';

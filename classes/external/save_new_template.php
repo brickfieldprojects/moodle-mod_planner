@@ -55,6 +55,7 @@ class save_new_template extends external_api {
                 new external_value(PARAM_RAW, 'The description of the step.'),
             ),
             'optionrepeats' => new external_value(PARAM_INT, 'The number of steps in the template.'),
+            'courseid' => new external_value(PARAM_INT, 'The id of the course.', VALUE_REQUIRED),
         ]);
     }
 
@@ -68,6 +69,7 @@ class save_new_template extends external_api {
      * @param array $stepallocation
      * @param array $stepdescription
      * @param int $optionrepeats
+     * @param int $courseid
      * @return string
      */
     public static function execute(
@@ -77,7 +79,8 @@ class save_new_template extends external_api {
         array $stepname,
         array $stepallocation,
         array $stepdescription,
-        int $optionrepeats
+        int $optionrepeats,
+        int $courseid
     ): string {
         $params = self::validate_parameters(
             self::execute_parameters(), [
@@ -88,8 +91,14 @@ class save_new_template extends external_api {
                 'stepallocation' => $stepallocation,
                 'stepdescription' => $stepdescription,
                 'optionrepeats' => $optionrepeats,
+                'courseid' => $courseid,
             ]
         );
+
+        // Check capability and context.
+        $context = \context_course::instance($params['courseid']);
+        static::validate_context($context);
+        require_capability('mod/planner:managetemplates', $context);
 
         // Create the data array to be passed to the validation function.
         $data = [

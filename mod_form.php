@@ -283,7 +283,7 @@ class mod_planner_mod_form extends moodleform_mod {
             } else {
                 $personal = 0;
             }
-            $PAGE->requires->js_call_amd('mod_planner/savenewtemplate', 'init', [$personal]);
+            $PAGE->requires->js_call_amd('mod_planner/savenewtemplate', 'init', [$personal, $course->id]);
         }
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();

@@ -55,6 +55,10 @@ class fetch_template_data extends external_api {
                 'templateid' => $templateid
             ]
         );
+        // Check capability and context.
+        $context = \context_system::instance();
+        static::validate_context($context);
+        require_capability('mod/planner:managetemplates', $context);
 
         $data = planner::get_planner_template_step($params['templateid']);
         $data['plannertemplate'] = (array) $data['plannertemplate'];
