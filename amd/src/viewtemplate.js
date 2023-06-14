@@ -57,7 +57,6 @@ const show = async (trigger, { focusOnClose = null } = {}) => {
             const modal = await ModalFactory.create({
                 title: data.plannertemplate.name,
                 body: Templates.render('mod_planner/modal_view_template', data),
-                footer: 'This is a footer',
                 large: true,
             });
 

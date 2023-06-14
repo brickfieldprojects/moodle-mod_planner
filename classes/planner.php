@@ -517,8 +517,6 @@ class planner {
      * @return void
      */
     public function export_report_to_csv(int $plannersteps, array $students, object $course): void {
-        global $DB;
-
         $modinfo = get_fast_modinfo($course);
         foreach ($modinfo->instances as $modulename => $modinstances) {
             foreach ($modinstances as $cm) {
