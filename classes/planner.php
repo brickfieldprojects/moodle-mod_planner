@@ -493,12 +493,14 @@ class planner {
         }
 
         // Get the list of users enrolled in the course.
+        $studentrole = $DB->get_record('role', ['archetype' => 'student']);
         $sql = "SELECT u.*
                   FROM {user} u
-                  JOIN {role_assignments} a ON (a.contextid = :contextid AND a.userid = u.id AND a.roleid = '5')
+                  JOIN {role_assignments} a ON (a.contextid = :contextid AND a.userid = u.id AND a.roleid = :roleid)
                 $groupjoin";
         $params['contextid'] = $coursecontext->id;
         $params['courseid'] = $course->id;
+        $params['roleid'] = $studentrole->id;
 
         $userrecords = $DB->get_records_sql($sql, $params);
 
@@ -652,7 +654,7 @@ class planner {
             }
 
             $coursecontext = \context_course::instance($this->courseid);
-            $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
+            $studentroleid = $DB->get_record('role', ['archetype' => 'student']);
             $students = get_role_users($studentroleid->id, $coursecontext);
             if ($students) {
                 foreach ($students as $studentkey => $studentdata) {
@@ -823,14 +825,7 @@ class planner {
     public static function get_templatelist(object $table, string $searchclauses, int $perpage, bool $mytemplates = false): object {
         global $USER, $DB;
 
-        $admins = get_admins();
-        $isadmin = false;
-        foreach ($admins as $admin) {
-            if ($USER->id == $admin->id) {
-                $isadmin = true;
-                break;
-            }
-        }
+        $isadmin = has_capability('moodle/site:config', \context_system::instance());
         $params = ['userid' => $USER->id];
         $wheres = [];
         $wheresearch = "";
