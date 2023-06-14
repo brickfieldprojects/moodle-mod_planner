@@ -260,6 +260,29 @@ class planner_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the get_all_usersteps function.
+     */
+    public function test_get_all_usersteps() {
+        $this->resetAfterTest();
+        $testdata = $this->setup_test_data();
+        $redirecturl = new \moodle_url('/mod/planner/view.php', ['id' => $testdata->cm->id]);
+        $object = $testdata->planner;
+        try {
+            $data = $object->crud_handler('recalculatesteps', $redirecturl, $testdata->context, $testdata->cm);
+        } catch (\exception $e) {
+            // Redirect will be called so we will encounter an unsupported redirect error' moodle_exception.
+            $this->assertInstanceOf(\moodle_exception::class, $e);
+        } finally {
+            $output = $object->get_all_usersteps($testdata->cm->instance, $testdata->student1->id);
+        }
+        $output = array_values($output);
+        $this->assertIsArray($output);
+        $this->assertEquals($output[0]->name, 'Step 1');
+        $this->assertEquals($output[1]->name, 'Step 2');
+        $this->assertEquals($output[2]->name, 'Step 3');
+    }
+
+    /**
      * Creates and returns all the needed test data.
      *
      * @return \stdClass
@@ -309,13 +332,16 @@ class planner_test extends \advanced_testcase {
      */
     private function get_user_step_data($cm, $student1) {
         global $DB;
-        $templateuserstepdata = $DB->get_records_sql(
-            "SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-            JOIN {planner_step} ps ON (ps.id = pu.stepid)
-            WHERE ps.plannerid = '" . $cm->instance . "' AND pu.userid = '" .  $student1->id . "' ORDER BY pu.id ASC "
-        );
-
-        return $templateuserstepdata;
+        $sql = 'SELECT pu.*,ps.name,ps.description
+                  FROM {planner_userstep} pu
+                  JOIN {planner_step} ps ON (ps.id = pu.stepid)
+                 WHERE ps.plannerid = :plannerid AND pu.userid = :userid
+              ORDER BY pu.id ASC';
+        $params = [
+            'plannerid' => $cm->instance,
+            'userid' => $student1->id,
+        ];
+        return $DB->get_records_sql($sql, $params);
     }
 
     /**

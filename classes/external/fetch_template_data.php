@@ -40,6 +40,7 @@ class fetch_template_data extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'templateid' => new external_value(PARAM_INT, 'The id of the template.', VALUE_REQUIRED),
+            'courseid' => new external_value(PARAM_INT, 'The id of the course.', VALUE_REQUIRED)
         ]);
     }
 
@@ -47,18 +48,26 @@ class fetch_template_data extends external_api {
      * Web service to fetch a template record.
      *
      * @param int $templateid
+     * @param int $courseid
      * @return array
      */
-    public static function execute(int $templateid): array {
+    public static function execute(int $templateid, int $courseid): array {
         $params = self::validate_parameters(
             self::execute_parameters(), [
-                'templateid' => $templateid
+                'templateid' => $templateid,
+                'courseid' => $courseid
             ]
         );
         // Check capability and context.
-        $context = \context_system::instance();
-        static::validate_context($context);
-        require_capability('mod/planner:managetemplates', $context);
+        if ($params['courseid'] == 0) {
+            $context = \context_system::instance();
+            static::validate_context($context);
+            require_capability('mod/planner:managetemplates', $context);
+        } else {
+            $context = \context_course::instance($params['courseid']);
+            static::validate_context($context);
+            require_capability('mod/planner:managetemplates', $context);
+        }
 
         $data = planner::get_planner_template_step($params['templateid']);
         $data['plannertemplate'] = (array) $data['plannertemplate'];

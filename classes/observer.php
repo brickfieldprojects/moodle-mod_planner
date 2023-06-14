@@ -46,8 +46,7 @@ class observer {
                 $assignment = $DB->get_record("assign", ["id" => $cm->instance]);
                 $defaultstartdate = $assignment->allowsubmissionsfromdate;
                 $defaultenddate = $assignment->duedate;
-                $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
-                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                     $assignoverrides = $DB->get_record("assign_overrides", ["id" => $event->objectid]);
                     if ($assignoverrides) {
                         if ($assignoverrides->allowsubmissionsfromdate) {
@@ -85,8 +84,7 @@ class observer {
                 $assignment = $DB->get_record("assign", ["id" => $cm->instance]);
                 $defaultstartdate = $assignment->allowsubmissionsfromdate;
                 $defaultenddate = $assignment->duedate;
-                $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
-                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                     $assignoverrides = $DB->get_record("assign_overrides", ["id" => $event->objectid]);
                     if ($assignoverrides) {
                         if ($assignoverrides->allowsubmissionsfromdate) {
@@ -121,8 +119,7 @@ class observer {
         if ( $planner = $DB->get_record("planner", ["activitycmid" => $event->contextinstanceid])) {
             $cm = get_coursemodule_from_id('assign', $event->contextinstanceid);
             if ($cm) {
-                $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
-                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                     $assignment = $DB->get_record("assign", ["id" => $cm->instance]);
                     $starttime = $assignment->allowsubmissionsfromdate;
                     $endtime = $assignment->duedate;
@@ -152,7 +149,6 @@ class observer {
                 $groupmembers = groups_get_members($event->other['groupid'], 'u.id');
                 if ($groupmembers) {
                     $assignoverrides = $DB->get_record("assign_overrides", ["id" => $event->objectid]);
-                    $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
                     if ($assignoverrides) {
                         if ($assignoverrides->allowsubmissionsfromdate) {
                             $starttime = $assignoverrides->allowsubmissionsfromdate;
@@ -167,7 +163,7 @@ class observer {
                         if ($endtime > time()) {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
-                                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                                     $$planner = planner::create_planner_by_id($planner->id);
                                     $planner->create_user_step($userid, $starttime, $endtime);
                                 }
@@ -196,7 +192,6 @@ class observer {
                 $groupmembers = groups_get_members($event->other['groupid'], 'u.id');
                 if ($groupmembers) {
                     $assignoverrides = $DB->get_record("assign_overrides", ["id" => $event->objectid]);
-                    $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
                     if ($assignoverrides) {
                         if ($assignoverrides->allowsubmissionsfromdate) {
                             $starttime = $assignoverrides->allowsubmissionsfromdate;
@@ -211,7 +206,7 @@ class observer {
                         if ($endtime > time()) {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
-                                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                                     $planner = planner::create_planner_by_id($planner->id);
                                     $planner->create_user_step($userid, $starttime, $endtime);
                                 }
@@ -239,11 +234,10 @@ class observer {
                 $endtime = $assignment->duedate;
                 $groupmembers = groups_get_members($event->other['groupid'], 'u.id');
                 if ($groupmembers) {
-                    $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
                     if ($endtime > time()) {
                         foreach ($groupmembers as $groupkey => $user) {
                             $userid = $user->id;
-                            if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                            if (planner::user_has_archetype($userid, 'student', $context->id)) {
                                 $planner = planner::create_planner_by_id($planner->id);
                                 $planner->update_user_step($userid, $starttime, $endtime);
                             }
@@ -269,8 +263,7 @@ class observer {
                 $quiz = $DB->get_record("quiz", ["id" => $cm->instance]);
                 $defaultstartdate = $quiz->timeopen;
                 $defaultenddate = $quiz->timeclose;
-                $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
-                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                     $quizoverrides = $DB->get_record("quiz_overrides", ["id" => $event->objectid]);
                     if ($quizoverrides) {
                         if ($quizoverrides->timeopen) {
@@ -308,8 +301,7 @@ class observer {
                 $quiz = $DB->get_record("quiz", ["id" => $cm->instance]);
                 $defaultstartdate = $quiz->timeopen;
                 $defaultenddate = $quiz->timeclose;
-                $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
-                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                     $quizoverrides = $DB->get_record("quiz_overrides", ["id" => $event->objectid]);
                     if ($quizoverrides) {
                         if ($quizoverrides->timeopen) {
@@ -344,8 +336,7 @@ class observer {
         if ( $planner = $DB->get_record("planner", ["activitycmid" => $event->contextinstanceid])) {
             $cm = get_coursemodule_from_id('quiz', $event->contextinstanceid);
             if ($cm) {
-                $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
-                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                     $quiz = $DB->get_record("quiz", ["id" => $cm->instance]);
                     $starttime = $quiz->timeopen;
                     $endtime = $quiz->timeclose;
@@ -376,7 +367,6 @@ class observer {
                 $groupmembers = groups_get_members($event->other['groupid'], 'u.id');
                 if ($groupmembers) {
                     $quizoverrides = $DB->get_record("quiz_overrides", ["id" => $event->objectid]);
-                    $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
                     if ($quizoverrides) {
                         if ($quizoverrides->timeopen) {
                             $starttime = $quizoverrides->timeopen;
@@ -391,7 +381,7 @@ class observer {
                         if ($endtime > time()) {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
-                                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                                     $planner = planner::create_planner_by_id($planner->id);
                                     $planner->create_user_step($userid, $starttime, $endtime);
                                 }
@@ -420,7 +410,6 @@ class observer {
                 $groupmembers = groups_get_members($event->other['groupid'], 'u.id');
                 if ($groupmembers) {
                     $quizoverrides = $DB->get_record("quiz_overrides", ["id" => $event->objectid]);
-                    $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
                     if ($quizoverrides) {
                         if ($quizoverrides->timeopen) {
                             $starttime = $quizoverrides->timeopen;
@@ -435,7 +424,7 @@ class observer {
                         if ($endtime > time()) {
                             foreach ($groupmembers as $groupkey => $user) {
                                 $userid = $user->id;
-                                if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                                if (planner::user_has_archetype($userid, 'student', $context->id)) {
                                     $planner = planner::create_planner_by_id($planner->id);
                                     $planner->create_user_step($userid, $starttime, $endtime);
                                 }
@@ -463,11 +452,10 @@ class observer {
                 $endtime = $quiz->timeclose;
                 $groupmembers = groups_get_members($event->other['groupid'], 'u.id');
                 if ($groupmembers) {
-                    $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
                     if ($endtime > time()) {
                         foreach ($groupmembers as $groupkey => $user) {
                             $userid = $user->id;
-                            if (user_has_role_assignment($userid, $studentroleid->id, $context->id)) {
+                            if (planner::user_has_archetype($userid, 'student', $context->id)) {
                                 $planner = planner::create_planner_by_id($planner->id);
                                 $planner->update_user_step($userid, $starttime, $endtime);
                             }
@@ -487,8 +475,8 @@ class observer {
     public static function role_assigned(\core\event\role_assigned $event) {
         global $DB, $CFG;
         $userid = $event->relateduserid;
-        $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
-        if ($event->objectid == $studentroleid->id) {
+        $studentroleids = get_archetype_roles('student');
+        if (array_key_exists($event->objectid, $studentroleids)) {
             if ( $planners = $DB->get_records("planner", ["course" => $event->courseid])) {
                 foreach ($planners as $planner) {
                     $cminfoactivity = $DB->get_record_sql(
@@ -554,8 +542,8 @@ class observer {
     public static function role_unassigned(\core\event\role_unassigned $event) {
         global $DB;
         $userid = $event->relateduserid;
-        $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
-        if ($event->objectid == $studentroleid->id) {
+        $studentroleids = get_archetype_roles('student');
+        if (array_key_exists($event->objectid, $studentroleids)) {
             if ( $planners = $DB->get_records("planner", ["course" => $event->courseid])) {
                 foreach ($planners as $planner) {
                     $templateuserstepdata = $DB->get_records_sql(

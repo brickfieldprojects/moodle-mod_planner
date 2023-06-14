@@ -492,18 +492,17 @@ class planner {
             $groupjoin = 'JOIN {groups_members} g ON (g.groupid IN (' . implode(',', $groupidnums) . ') AND g.userid = u.id)';
         }
 
-        // Get the list of users enrolled in the course.
-        $studentrole = $DB->get_record('role', ['archetype' => 'student']);
+        // Get the list of students enrolled in the course.
         $sql = "SELECT u.*
                   FROM {user} u
-                  JOIN {role_assignments} a ON (a.contextid = :contextid AND a.userid = u.id AND a.roleid = :roleid)
+                  JOIN {role_assignments} a ON (a.contextid = :contextid AND a.userid = u.id)
+                  JOIN {role} r ON (r.id = a.roleid AND r.archetype = :archetype)
                 $groupjoin";
         $params['contextid'] = $coursecontext->id;
         $params['courseid'] = $course->id;
-        $params['roleid'] = $studentrole->id;
+        $params['archetype'] = 'student';
 
         $userrecords = $DB->get_records_sql($sql, $params);
-
         $students = array_values($userrecords);
         return $students;
     }
@@ -652,8 +651,12 @@ class planner {
             }
 
             $coursecontext = \context_course::instance($this->courseid);
-            $studentroleid = $DB->get_record('role', ['archetype' => 'student']);
-            $students = get_role_users($studentroleid->id, $coursecontext);
+            $studentroleids = $DB->get_records('role', ['archetype' => 'student']);
+            $students = [];
+            foreach ($studentroleids as $studentroleid) {
+                $students[] = get_role_users($studentroleid->id, $coursecontext);
+            }
+            $students = reset($students);
             if ($students) {
                 foreach ($students as $studentkey => $studentdata) {
                     foreach ($stepsdata as $stepid => $stepval) {
@@ -949,5 +952,24 @@ class planner {
             'userid' => $userid,
         ];
         return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Checks if a user is assigned to a role of a specified archetype.
+     *
+     * @param int $userid
+     * @param string $archetype
+     * @param int $context
+     * @return bool
+     */
+    public static function user_has_archetype(int $userid, string $archetype, int $contextid): bool {
+        $students = get_archetype_roles($archetype);
+        $hasrole = false;
+        foreach ($students as $student) {
+            if (user_has_role_assignment($userid, $student->id, $contextid)) {
+                $hasrole = true;
+            }
+        }
+        return $hasrole;
     }
 }

@@ -219,11 +219,6 @@ class renderer extends \plugin_renderer_base {
         $out .= $this->output->heading(get_string('manage_templates', 'planner'));
         $out .= $this->output->box_start('generalbox');
 
-        $out .= "<div style=display:inline-flex; class=plannerformlayout>";
-        $out .= $this->output->single_button(
-            new \moodle_url('/mod/planner/managetemplate.php', ['cid' => $cid]), get_string('addtemplate', 'planner')
-        );
-
         return $out;
     }
 
@@ -250,7 +245,11 @@ class renderer extends \plugin_renderer_base {
 
         if ($mytemplates) {
             $mform->display();
-            $out = "</div>";
+            $out = "<div style=display:inline-flex; class=plannerformlayout>";
+            $out .= $this->output->single_button(
+                new \moodle_url('/mod/planner/managetemplate.php', ['cid' => $cid]), get_string('addtemplate', 'planner')
+            );
+            $out .= "</div>";
             $out .= '<h3>'.get_string('mytemplates', 'planner').'</h3>';
             echo $out;
             $table = new \flexible_table('my-planner-templates');
@@ -309,6 +308,14 @@ class renderer extends \plugin_renderer_base {
         $table->initialbars(false);
 
         $table->setup();
+
+        // Have to set width after setup() as it unsets the width attribute.
+        $table->column_style('name', 'width', '25%');
+        $table->column_style('fullname', 'width', '25%');
+        $table->column_style('personal', 'width', '15%');
+        $table->column_style('copied', 'width', '10%');
+        $table->column_style('status', 'width', '10%');
+        $table->column_style('action', 'width', '15%');
 
         if ($mytemplates) {
             $templatelist = planner::get_templatelist($table, $searchclauses, $perpage, $mytemplates);

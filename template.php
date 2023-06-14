@@ -68,7 +68,7 @@ planner::template_crud_handler($action, $id, $confirm, $pageurl, $cid);
 
 $PAGE->set_url($pageurl);
 $PAGE->set_title("{$SITE->shortname}: " . get_string('manage_templates', 'planner'));
-$PAGE->requires->js_call_amd('mod_planner/viewtemplate', 'init');
+$PAGE->requires->js_call_amd('mod_planner/viewtemplate', 'init', [$cid]);
 
 $output = $renderer->setup_template($cid);
 echo $output;

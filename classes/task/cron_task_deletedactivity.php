@@ -59,8 +59,8 @@ class cron_task_deletedactivity extends \core\task\scheduled_task {
             $allplanners = $DB->get_records_sql($sql, ['plannerid' => $plannerid->id]);
 
             if ($allplanners) {
-                $studentroleid = $DB->get_record('role', ['archetype' => 'student']);
-                $teacherroleid = $DB->get_record('role', ['archetype' => 'editingteacher']);
+                $studentroleids = $DB->get_records('role', ['archetype' => 'student']);
+                $teacherroleids = $DB->get_records('role', ['archetype' => 'editingteacher']);
                 $supportuser = \core_user::get_support_user();
                 $deletedactivityemailsubject = get_string('deletedactivityemailsubject', 'mod_planner');
                 $deletedactivitystudentsubject = get_string('deletedactivitystudentsubject', 'mod_planner');
@@ -74,8 +74,11 @@ class cron_task_deletedactivity extends \core\task\scheduled_task {
                         $courseid = $planner->course;
                         $course = $DB->get_record('course', ['id' => $courseid]);
                         $coursecontext = \context_course::instance($courseid);
-                        $teachers = get_role_users($teacherroleid->id, $coursecontext);
-
+                        $teachers = [];
+                        foreach ($teacherroleids as $teacherroleid) {
+                            $teachers[] = get_role_users($teacherroleid->id, $coursecontext);
+                        }
+                        $teachers = reset($teachers);
                         if ($teachers) {
                             if ($deletedactivityemail) {
                                 $subject = $deletedactivityemailsubject;
@@ -134,7 +137,11 @@ class cron_task_deletedactivity extends \core\task\scheduled_task {
                             }
                         }
 
-                        $students = get_role_users($studentroleid->id, $coursecontext);
+                        $students = [];
+                        foreach ($studentroleids as $studentroleid) {
+                            $students[] = get_role_users($studentroleid->id, $coursecontext);
+                        }
+                        $students = reset($students);
                         if ($students) {
                             if ($deletedactivitystudentemail) {
                                 $subject = $deletedactivitystudentsubject;
