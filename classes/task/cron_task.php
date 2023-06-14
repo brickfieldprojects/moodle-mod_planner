@@ -63,27 +63,30 @@ class cron_task extends \core\task\scheduled_task {
 
         $plannerid = $DB->get_record('modules', ['name' => 'planner', 'visible' => '1']);
         if ($plannerid) {
-
-            $allplanner = $DB->get_records_sql(
-                "SELECT pus.id,pus.stepid,pus.userid,pus.duedate,ps.name,p.course,cm.instance,p.activitycmid,cm.id AS cmid
-                FROM {planner_userstep} pus
-                JOIN {planner_step} ps ON (ps.id = pus.stepid)
-			    JOIN {planner} p ON (p.id = ps.plannerid)
-                JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = " . $plannerid->id . ")
-                WHERE pus.duedate BETWEEN ".$previousdate." AND ".$nextdate." AND pus.completionstatus = 0 AND cm.visible = 1"
-            );
+            $sql = 'SELECT pus.id, pus.stepid, pus.userid, pus.duedate, ps.name,
+                           p.course, cm.instance, p.activitycmid, cm.id AS cmid
+                      FROM {planner_userstep} pus
+                      JOIN {planner_step} ps ON (ps.id = pus.stepid)
+			          JOIN {planner} p ON (p.id = ps.plannerid)
+                      JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = :plannerid)
+                     WHERE pus.duedate BETWEEN :previousdate AND :nextdate AND pus.completionstatus = 0 AND cm.visible = 1';
+            $params = [
+                'plannerid' => $plannerid->id,
+                'previousdate' => $previousdate,
+                'nextdate' => $nextdate
+            ];
+            $allplanner = $DB->get_records_sql($sql, $params);
             if ($allplanner) {
                 $supportuser = \core_user::get_support_user();
                 $missedemailsubject = get_string('missedemailsubject', 'mod_planner');
                 $upcomingemailsubject = get_string('upcomingemailsubject', 'mod_planner');
                 foreach ($allplanner as $plannerdata) {
-                    $user = $DB->get_record('user', ['id' => $plannerdata->userid]);
-                    $associatemodule = $DB->get_record_sql(
-                        "SELECT cm.id,m.name AS modulename,cm.instance
-					    FROM {course_modules} cm
-                        JOIN {modules} m ON (m.id = cm.module)
-                        WHERE cm.id = '".$plannerdata->activitycmid."'"
-                    );
+                    $user = $user = \core_user::get_user($plannerdata->userid);
+                    $sql = 'SELECT cm.id,m.name AS modulename,cm.instance
+					          FROM {course_modules} cm
+                              JOIN {modules} m ON (m.id = cm.module)
+                             WHERE cm.id = :cmid';
+                    $associatemodule = $DB->get_record_sql($sql, ['cmid' => $plannerdata->activitycmid]);
                     if ($associatemodule->modulename == 'assign') {
                         $modulename = $DB->get_record('assign', ['id' => $associatemodule->instance]);
                     } else if ($associatemodule->modulename == 'quiz') {
@@ -94,7 +97,7 @@ class cron_task extends \core\task\scheduled_task {
                         $subject = $upcomingemailsubject;
                         $upcomingemail = str_replace('{$a->firstname}', $user->firstname, $upcomingemail);
                         $upcomingemail = str_replace('{$a->stepname}', $plannerdata->name, $upcomingemail);
-                        $upcomingemail = str_replace('{$a->activityname}', format_string($modulename), $upcomingemail);
+                        $upcomingemail = str_replace('{$a->activityname}', format_string($modulename->name), $upcomingemail);
                         $upcomingemail = str_replace(
                             '{$a->stepdate}',
                             userdate($plannerdata->duedate,

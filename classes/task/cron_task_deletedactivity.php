@@ -52,16 +52,15 @@ class cron_task_deletedactivity extends \core\task\scheduled_task {
 
         $plannerid = $DB->get_record('modules', ['name' => 'planner', 'visible' => '1']);
         if ($plannerid) {
-            $allplanners = $DB->get_records_sql(
-                "SELECT p.*, cm.instance, cm.id AS cmid
-                FROM {planner} p
-                JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = ".$plannerid->id.")
-                WHERE  cm.visible = 1"
-            );
+            $sql = 'SELECT p.*, cm.instance, cm.id AS cmid
+                      FROM {planner} p
+                      JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = :plannerid)
+                     WHERE  cm.visible = 1';
+            $allplanners = $DB->get_records_sql($sql, ['plannerid' => $plannerid->id]);
 
             if ($allplanners) {
-                $studentroleid = $DB->get_record('role', ['shortname' => 'student']);
-                $teacherroleid = $DB->get_record('role', ['shortname' => 'editingteacher']);
+                $studentroleid = $DB->get_record('role', ['archetype' => 'student']);
+                $teacherroleid = $DB->get_record('role', ['archetype' => 'editingteacher']);
                 $supportuser = \core_user::get_support_user();
                 $deletedactivityemailsubject = get_string('deletedactivityemailsubject', 'mod_planner');
                 $deletedactivitystudentsubject = get_string('deletedactivitystudentsubject', 'mod_planner');
@@ -81,6 +80,7 @@ class cron_task_deletedactivity extends \core\task\scheduled_task {
                             if ($deletedactivityemail) {
                                 $subject = $deletedactivityemailsubject;
                                 foreach ($teachers as $teacher) {
+                                    $teacher = \core_user::get_user($teacher->id);
                                     $deletedactivityemail = str_replace(
                                         '{$a->firstname}',
                                         $teacher->firstname,
@@ -139,6 +139,7 @@ class cron_task_deletedactivity extends \core\task\scheduled_task {
                             if ($deletedactivitystudentemail) {
                                 $subject = $deletedactivitystudentsubject;
                                 foreach ($students as $student) {
+                                    $student = \core_user::get_user($student->id);
                                     $deletedactivitystudentemail = str_replace(
                                         '{$a->firstname}',
                                         $student->firstname,

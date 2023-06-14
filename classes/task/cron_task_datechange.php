@@ -52,25 +52,23 @@ class cron_task_datechange extends \core\task\scheduled_task {
 
         $plannerid = $DB->get_record('modules', ['name' => 'planner', 'visible' => '1']);
         if ($plannerid) {
-            $allplanners = $DB->get_records_sql(
-                "SELECT p.*, cm.instance, cm.id AS cmid
-                FROM {planner} p
-                JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = ".$plannerid->id.")
-                WHERE  cm.visible = 1"
-            );
+            $sql = 'SELECT p.*, cm.instance, cm.id AS cmid
+                      FROM {planner} p
+                      JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = :plannerid)
+                     WHERE  cm.visible = 1';
+            $allplanners = $DB->get_records_sql($sql, ['plannerid' => $plannerid->id]);
 
             if ($allplanners) {
-                $teacherroleid = $DB->get_record('role', ['shortname' => 'editingteacher']);
+                $teacherroleid = $DB->get_record('role', ['archetype' => 'editingteacher']);
                 $supportuser = \core_user::get_support_user();
                 $changedateemailsubject = get_string('changedateemailsubject', 'mod_planner');
                 $changedateemail = get_config('planner', 'changedateemailtemplate');
                 foreach ($allplanners as $planner) {
-                    $cminfoactivity = $DB->get_record_sql(
-                        "SELECT cm.id,cm.instance,cm.module,m.name
-                        FROM {course_modules} cm
-                        JOIN {modules} m ON (m.id = cm.module)
-                        WHERE cm.id = '".$planner->activitycmid."'"
-                    );
+                    $sql = 'SELECT cm.id,cm.instance,cm.module,m.name
+                              FROM {course_modules} cm
+                              JOIN {modules} m ON (m.id = cm.module)
+                             WHERE cm.id = :cmid';
+                    $cminfoactivity = $DB->get_record_sql($sql, ['cmid' => $planner->activitycmid]);
                     if ($cminfoactivity) {
                         $modulename = $DB->get_record($cminfoactivity->name, ['id' => $cminfoactivity->instance]);
                         if ($cminfoactivity->name == 'assign') {
@@ -90,6 +88,7 @@ class cron_task_datechange extends \core\task\scheduled_task {
                                 if ($changedateemail) {
                                     $subject = $changedateemailsubject;
                                     foreach ($teachers as $teacher) {
+                                        $teacher = \core_user::get_user($teacher->id);
                                         $changedateemail = str_replace(
                                             '{$a->firstname}',
                                             $teacher->firstname,
