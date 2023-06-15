@@ -52,7 +52,6 @@ class planner {
     /** @var int The time the planner closes */
     public $timeclose;
 
-
     /**
      * Constructor
      *
@@ -67,18 +66,9 @@ class planner {
      * @param int $stepview
      * @param int $introformat
      */
-    public function __construct(
-        int $id,
-        int $courseid,
-        string $intro,
-        string $name,
-        string $disclaimer,
-        int $activitycmid,
-        int $timeopen,
-        int $timeclose,
-        int $stepview = 0,
-        int $introformat = 1
-    ) {
+    public function __construct(int $id, int $courseid, string $intro, string $name,
+                                string $disclaimer, int $activitycmid, int $timeopen,
+                                int $timeclose, int $stepview = 0, int $introformat = 1) {
         $this->id = $id;
         $this->courseid = $courseid;
         $this->intro = $intro;
@@ -352,8 +342,8 @@ class planner {
         // Check if we have a form submission, or a cached submission.
         $data = ($mform->is_submitted() ? $mform->get_data() : fullclone($cachedata));
         if ($data instanceof stdClass) {
-            if (!empty($data->searchgroup['setting'])) {
-                $searchclauses = $data->searchgroup['setting'];
+            if (!empty($data->planner_searchgroup['setting'])) {
+                $searchclauses = $data->planner_searchgroup['setting'];
             }
             // Cache form submission so that it is preserved while paging through the report.
             unset($data->submitbutton);

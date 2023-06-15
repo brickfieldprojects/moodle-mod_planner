@@ -82,7 +82,6 @@ class cron_task_datechange extends \core\task\scheduled_task {
                         if (($starttime != $planner->timeopen) || ($endtime != $planner->timeclose)) {
                             $courseid = $planner->course;
                             $coursecontext = \context_course::instance($courseid);
-                            $teachers = [];
                             foreach ($teacherroleids as $teacherroleid) {
                                 $teachers[] = get_role_users($teacherroleid->id, $coursecontext);
                             }
@@ -122,18 +121,18 @@ class cron_task_datechange extends \core\task\scheduled_task {
                                         $messagetext = html_to_text($messagehtml);
 
                                         $eventdata = new \core\message\message();
-                                        $eventdata->courseid          = $courseid;
-                                        $eventdata->modulename        = 'planner';
-                                        $eventdata->userfrom          = $supportuser;
-                                        $eventdata->userto            = $teacher;
-                                        $eventdata->subject           = $subject;
-                                        $eventdata->fullmessage       = $messagetext;
+                                        $eventdata->courseid = $courseid;
+                                        $eventdata->modulename = 'planner';
+                                        $eventdata->userfrom = $supportuser;
+                                        $eventdata->userto = $teacher;
+                                        $eventdata->subject = $subject;
+                                        $eventdata->fullmessage = $messagetext;
                                         $eventdata->fullmessageformat = FORMAT_PLAIN;
-                                        $eventdata->fullmessagehtml   = $messagehtml;
-                                        $eventdata->smallmessage      = $subject;
-                                        $eventdata->name              = 'planner_notification';
-                                        $eventdata->component         = 'mod_planner';
-                                        $eventdata->notification      = 1;
+                                        $eventdata->fullmessagehtml = $messagehtml;
+                                        $eventdata->smallmessage = $subject;
+                                        $eventdata->name = 'planner_notification';
+                                        $eventdata->component = 'mod_planner';
+                                        $eventdata->notification = 1;
                                         $customdata = [
                                             'cmid' => $planner->cmid,
                                             'instance' => $planner->instance
