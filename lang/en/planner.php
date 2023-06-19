@@ -178,6 +178,7 @@ $string['personal'] = 'Personal';
 $string['enabled'] = 'Enabled';
 $string['disabled'] = 'Disabled';
 $string['templatename'] = 'Template name';
+$string['templatename_help'] = 'The template name must be unique';
 $string['recalculateschedule'] = 'Re-calculate schedule!';
 $string['startdatewarning1'] = 'Start date should not be less than default start date';
 $string['startdatewarning2'] = 'Start date should not be greater than default end date';

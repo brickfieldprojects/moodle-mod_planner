@@ -41,6 +41,7 @@ class template_form extends \moodleform {
         $mform->addElement('text', 'name', get_string('templatename', 'planner'));
         $mform->addRule('name', $strrequired, 'required', null, 'server');
         $mform->settype('name', PARAM_RAW);
+        $mform->addHelpButton('name', 'templatename', 'planner');
 
         if ($templatedata) {
             $mform->setDefault('name', $templatedata->name);

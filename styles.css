@@ -23,7 +23,7 @@
 .form-autocomplete-suggestions li[data-value="0"],
 #fitem_id_activitycmid .form-autocomplete-suggestions li:nth-child(1),
 #fitem_id_templateid .form-autocomplete-suggestions li:nth-child(1) {
-    display: none !important;
+    display: none;
     /* stylelint-disable-line declaration-no-important */
 }
 

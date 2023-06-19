@@ -29,6 +29,7 @@ require_once($CFG->libdir . '/tablelib.php');
 define('DEFAULT_PAGE_SIZE', 10);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
 $spage = optional_param('spage', 0, PARAM_INT);
+$page = optional_param('page', 0, PARAM_INT);
 $confirm      = optional_param('confirm', '', PARAM_ALPHANUM);
 $action       = optional_param('action', null, PARAM_ALPHANUMEXT);
 $id           = optional_param('id', null, PARAM_INT);
@@ -59,6 +60,7 @@ $pageurl = new moodle_url(
     '/mod/planner/template.php',
     [
         'spage' => $spage,
+        'page' => $page,
         'cid' => $cid,
         'setting' => $searchclauses
     ]

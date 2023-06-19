@@ -949,7 +949,7 @@ class planner {
      *
      * @param int $userid
      * @param string $archetype
-     * @param int $context
+     * @param int $contextid
      * @return bool
      */
     public static function user_has_archetype(int $userid, string $archetype, int $contextid): bool {

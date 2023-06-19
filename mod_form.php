@@ -191,13 +191,16 @@ class mod_planner_mod_form extends moodleform_mod {
                 }
             }
 
+            $sql = 'SELECT id, name, disclaimer, personal FROM {plannertemplate}';
             $whereteacher = " WHERE status = 1 ";
             if (!$isadmin) {
-                $whereteacher .= "AND ((userid = '".$USER->id."' AND personal = 1) OR (personal = 0))  ";
+                $whereteacher .= 'AND ((userid = :userid AND personal = 1) OR (personal = 0))';
             }
             $templates = [];
             $templates[0] = '';
-            $alltemplates = $DB->get_records_sql("SELECT id,name,disclaimer,personal FROM {plannertemplate}  $whereteacher");
+            $sql .= $whereteacher;
+            $sql .= 'ORDER BY name ASC';
+            $alltemplates = $DB->get_records_sql($sql, ['userid' => $USER->id]);
             if ($alltemplates) {
                 foreach ($alltemplates as $id => $template) {
                     $templates[$id] = $template->name;

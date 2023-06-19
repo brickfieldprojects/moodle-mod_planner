@@ -253,11 +253,25 @@ class renderer extends \plugin_renderer_base {
             $out .= '<h3>'.get_string('mytemplates', 'planner').'</h3>';
             echo $out;
             $table = new \flexible_table('my-planner-templates');
-            $table->set_attribute('class', 'mytemplates');
+            $table->set_control_variables([
+                TABLE_VAR_SORT => 'ssort',
+                TABLE_VAR_HIDE => 'shide',
+                TABLE_VAR_SHOW => 'sshow',
+                TABLE_VAR_IFIRST => 'sifirst',
+                TABLE_VAR_ILAST => 'silast',
+                TABLE_VAR_PAGE => 'page'
+            ]);
         } else {
             echo '<h3>'.get_string('alltemplates', 'planner').'</h3>';
             $table = new \flexible_table('all-planner-templates');
-            $table->set_attribute('class', 'alltemplates');
+            $table->set_control_variables([
+                TABLE_VAR_SORT => 'ssort',
+                TABLE_VAR_HIDE => 'shide',
+                TABLE_VAR_SHOW => 'sshow',
+                TABLE_VAR_IFIRST => 'sifirst',
+                TABLE_VAR_ILAST => 'silast',
+                TABLE_VAR_PAGE => 'spage'
+            ]);
         }
         $tablecolumns = [];
         $tableheaders = [];
@@ -295,15 +309,6 @@ class renderer extends \plugin_renderer_base {
         } else {
             $table->set_attribute('class', 'generaltable generalbox alltemplates');
         }
-
-        $table->set_control_variables([
-            TABLE_VAR_SORT => 'ssort',
-            TABLE_VAR_HIDE => 'shide',
-            TABLE_VAR_SHOW => 'sshow',
-            TABLE_VAR_IFIRST => 'sifirst',
-            TABLE_VAR_ILAST => 'silast',
-            TABLE_VAR_PAGE => 'spage'
-        ]);
 
         $table->initialbars(false);
 
