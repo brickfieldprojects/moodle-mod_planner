@@ -254,11 +254,11 @@ class renderer extends \plugin_renderer_base {
             echo $out;
             $table = new \flexible_table('my-planner-templates');
             $table->set_control_variables([
-                TABLE_VAR_SORT => 'ssort',
-                TABLE_VAR_HIDE => 'shide',
-                TABLE_VAR_SHOW => 'sshow',
-                TABLE_VAR_IFIRST => 'sifirst',
-                TABLE_VAR_ILAST => 'silast',
+                TABLE_VAR_SORT => 'sort',
+                TABLE_VAR_HIDE => 'hide',
+                TABLE_VAR_SHOW => 'show',
+                TABLE_VAR_IFIRST => 'ifirst',
+                TABLE_VAR_ILAST => 'ilast',
                 TABLE_VAR_PAGE => 'page'
             ]);
         } else {
@@ -301,6 +301,7 @@ class renderer extends \plugin_renderer_base {
         $table->define_baseurl($pageurl);
 
         $table->no_sorting('action');
+        $table->sortable(true, 'name', SORT_ASC);
 
         $table->set_attribute('cellspacing', '0');
         $table->set_attribute('id', 'dashboard');
@@ -337,64 +338,72 @@ class renderer extends \plugin_renderer_base {
             }
         }
 
-        foreach ($templatelist as $template) {
-            $data = [];
-            $data[] = $template->name;
-            $data[] = fullname($template);
-            $statuslink = '';
-            if ($template->personal == '0') {
-                $data[] = get_string('global', 'planner');
-            } else {
-                $data[] = get_string('personal', 'planner');
-            }
-            $data[] = $template->copied;
-            if ($template->status == '1') {
-                $data[] = get_string('enabled', 'planner');
-            } else {
-                $data[] = get_string('disabled', 'planner');
-            }
-            $viewlink = \html_writer::link(
-                '#',
-                $this->output->pix_icon('t/viewdetails', get_string('view')),
-                [
-                    'data-action' => 'viewtemplate',
-                    'data-templateid' => $template->id,
-                    'id' => 'toggle-template-modal-' . $template->id
-                ]
-            );
-            if ($template->userid == $USER->id || $isadmin) {
-                if ($template->status == '1') {
-                    $statuslink = $this->output->action_icon(
-                        $pageurl . '&id=' . $template->id . '&action=disable&sesskey=' . sesskey(),
-                        new \pix_icon('t/hide', get_string('disabletemplate', 'planner'))
-                    );
+        if ($templatelist->valid()) {
+            foreach ($templatelist as $template) {
+                $data = [];
+                $data[] = $template->name;
+                $data[] = fullname($template);
+                $statuslink = '';
+                if ($template->personal == '0') {
+                    $data[] = get_string('global', 'planner');
                 } else {
-                    $statuslink = $this->output->action_icon(
-                        $pageurl . '&id=' . $template->id . '&action=enable&sesskey=' . sesskey(),
-                        new \pix_icon('t/show', get_string('enabletemplate', 'planner'))
-                    );
+                    $data[] = get_string('personal', 'planner');
                 }
-                $editlink = $this->output->action_icon(
-                    new \moodle_url('/mod/planner/managetemplate.php', ['id' => $template->id, 'cid' => $cid]),
-                    new \pix_icon('t/edit', get_string('edit'))
+                $data[] = $template->copied;
+                if ($template->status == '1') {
+                    $data[] = get_string('enabled', 'planner');
+                } else {
+                    $data[] = get_string('disabled', 'planner');
+                }
+                $viewlink = \html_writer::link(
+                    '#',
+                    $this->output->pix_icon('t/viewdetails', get_string('view')),
+                    [
+                        'data-action' => 'viewtemplate',
+                        'data-templateid' => $template->id,
+                        'id' => 'toggle-template-modal-' . $template->id
+                    ]
                 );
-                $deletelink = $this->output->action_icon(
-                    new \moodle_url(
-                        '/mod/planner/template.php',
-                        ['id' => $template->id, 'action' => 'delete', 'cid' => $cid, 'sesskey' => sesskey()]
-                    ),
-                    new \pix_icon('t/delete', get_string('delete'))
-                );
-                $data[] = $viewlink . $statuslink . ' ' . $editlink . '' . $deletelink;
-            } else {
-                $data[] = $viewlink . $statuslink;
+                if ($template->userid == $USER->id || $isadmin) {
+                    if ($template->status == '1') {
+                        $statuslink = $this->output->action_icon(
+                            $pageurl . '&id=' . $template->id . '&action=disable&sesskey=' . sesskey(),
+                            new \pix_icon('t/hide', get_string('disabletemplate', 'planner'))
+                        );
+                    } else {
+                        $statuslink = $this->output->action_icon(
+                            $pageurl . '&id=' . $template->id . '&action=enable&sesskey=' . sesskey(),
+                            new \pix_icon('t/show', get_string('enabletemplate', 'planner'))
+                        );
+                    }
+                    $editlink = $this->output->action_icon(
+                        new \moodle_url('/mod/planner/managetemplate.php', ['id' => $template->id, 'cid' => $cid]),
+                        new \pix_icon('t/edit', get_string('edit'))
+                    );
+                    $deletelink = $this->output->action_icon(
+                        new \moodle_url(
+                            '/mod/planner/template.php',
+                            ['id' => $template->id, 'action' => 'delete', 'cid' => $cid, 'sesskey' => sesskey()]
+                        ),
+                        new \pix_icon('t/delete', get_string('delete'))
+                    );
+                    $data[] = $viewlink . $statuslink . ' ' . $editlink . '' . $deletelink;
+                } else {
+                    $data[] = $viewlink . $statuslink;
+                }
+                $table->add_data($data);
             }
-            $table->add_data($data);
-        }
-        $table->finish_output();
-        if (!$mytemplates) {
-            echo $this->output->box_end();
-            echo $this->output->footer();
+            $table->finish_output();
+            if (!$mytemplates) {
+                echo $this->output->box_end();
+                echo $this->output->footer();
+            }
+        } else {
+            echo '<h4>' . get_string('nothingtodisplay') . '</h4>';
+            if (!$mytemplates) {
+                echo $this->output->box_end();
+                echo $this->output->footer();
+            }
         }
     }
 
