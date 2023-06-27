@@ -90,13 +90,13 @@ class renderer extends \plugin_renderer_base {
         $out .= '<h3>'.get_string('plannerdefaultstartingon', 'planner').' : '
         .userdate($time->defaultstarttime, get_string('strftimedatefullshort')).'</h3>';
         $out .= '<h3>'.get_string('plannerdefaultendingon', 'planner').' : '.
-                userdate($time->endtime, get_string('strftimedatefullshort')).'</h3>';
+                userdate($time->defaultendtime, get_string('strftimedatefullshort')).'</h3>';
         if (isset($time->userstartdate->timestart)) {
             $out .= '<h3>'.get_string('startingon', 'planner').' : '
             .userdate($time->starttime, get_string('strftimedatefullshort')).'</h3>';
             if (isset($time->userenddate->duedate)) {
                 $out .= '<h3>'.get_string('endingon', 'planner').' : '
-                .userdate($time->userenddate->duedate, get_string('strftimedatefullshort')).'</h3>';
+                .userdate($time->endtime, get_string('strftimedatefullshort')).'</h3>';
             }
         }
 
