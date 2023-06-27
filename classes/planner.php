@@ -597,7 +597,7 @@ class planner {
 
         if ($time->userstartdate) {
             if ($time->userstartdate->timestart) {
-                $$time->starttime = $time->userstartdate->timestart;
+                $time->starttime = $time->userstartdate->timestart;
             }
         }
 
