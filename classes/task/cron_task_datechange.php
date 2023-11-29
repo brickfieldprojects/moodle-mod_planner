@@ -57,9 +57,11 @@ class cron_task_datechange extends \core\task\scheduled_task {
                       JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = :plannerid)
                      WHERE  cm.visible = 1';
             $allplanners = $DB->get_records_sql($sql, ['plannerid' => $plannerid->id]);
+            print_r($allplanners);
 
             if ($allplanners) {
                 $teacherroleids = $DB->get_records('role', ['archetype' => 'editingteacher']);
+                $teachers = [];
                 $supportuser = \core_user::get_support_user();
                 $changedateemailsubject = get_string('changedateemailsubject', 'mod_planner');
                 $changedateemail = get_config('planner', 'changedateemailtemplate');
@@ -83,17 +85,20 @@ class cron_task_datechange extends \core\task\scheduled_task {
                             $courseid = $planner->course;
                             $coursecontext = \context_course::instance($courseid);
                             foreach ($teacherroleids as $teacherroleid) {
-                                $teachers[] = get_role_users($teacherroleid->id, $coursecontext);
+                                $newteachers = get_role_users($teacherroleid->id, $coursecontext);
+                                foreach ($newteachers as $newteacher) {
+                                    $teachers[] = $newteacher;
+                                }
                             }
-                            $teachers = reset($teachers);
                             if ($teachers) {
                                 if ($changedateemail) {
                                     $subject = $changedateemailsubject;
                                     foreach ($teachers as $teacher) {
-                                        $teacher = \core_user::get_user($teacher->id);
+                                        debugging('teacher id is '.$teacher->id.' and cmid is '.$planner->activitycmid);
+                                        $tmpteacher = \core_user::get_user($teacher->id);
                                         $changedateemail = str_replace(
                                             '{$a->firstname}',
-                                            $teacher->firstname,
+                                            $tmpteacher->firstname,
                                             $changedateemail
                                         );
                                         $changedateemail = str_replace(
