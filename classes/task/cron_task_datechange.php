@@ -57,7 +57,6 @@ class cron_task_datechange extends \core\task\scheduled_task {
                       JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = :plannerid)
                      WHERE  cm.visible = 1';
             $allplanners = $DB->get_records_sql($sql, ['plannerid' => $plannerid->id]);
-            print_r($allplanners);
 
             if ($allplanners) {
                 $teacherroleids = $DB->get_records('role', ['archetype' => 'editingteacher']);
@@ -94,7 +93,6 @@ class cron_task_datechange extends \core\task\scheduled_task {
                                 if ($changedateemail) {
                                     $subject = $changedateemailsubject;
                                     foreach ($teachers as $teacher) {
-                                        debugging('teacher id is '.$teacher->id.' and cmid is '.$planner->activitycmid);
                                         $tmpteacher = \core_user::get_user($teacher->id);
                                         $changedateemail = str_replace(
                                             '{$a->firstname}',
@@ -129,7 +127,7 @@ class cron_task_datechange extends \core\task\scheduled_task {
                                         $eventdata->courseid = $courseid;
                                         $eventdata->modulename = 'planner';
                                         $eventdata->userfrom = $supportuser;
-                                        $eventdata->userto = $teacher;
+                                        $eventdata->userto = $tmpteacher;
                                         $eventdata->subject = $subject;
                                         $eventdata->fullmessage = $messagetext;
                                         $eventdata->fullmessageformat = FORMAT_PLAIN;
