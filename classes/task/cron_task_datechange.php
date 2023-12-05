@@ -60,11 +60,15 @@ class cron_task_datechange extends \core\task\scheduled_task {
 
             if ($allplanners) {
                 $teacherroleids = $DB->get_records('role', ['archetype' => 'editingteacher']);
-                $teachers = [];
                 $supportuser = \core_user::get_support_user();
                 $changedateemailsubject = get_string('changedateemailsubject', 'mod_planner');
-                $changedateemail = get_config('planner', 'changedateemailtemplate');
+                $changedateemailtemplate = get_config('planner', 'changedateemailtemplate');
                 foreach ($allplanners as $planner) {
+                    mtrace('planner '.$planner->id.' being processed');
+                    // Reinitialise $teachers array for each planner, needs to be course specific.
+                    $teachers = [];
+                    // Ensure email template is renewed from original for each planner.
+                    $changedateemail = $changedateemailtemplate;
                     $sql = 'SELECT cm.id,cm.instance,cm.module,m.name
                               FROM {course_modules} cm
                               JOIN {modules} m ON (m.id = cm.module)
@@ -79,6 +83,7 @@ class cron_task_datechange extends \core\task\scheduled_task {
                             $starttime = $modulename->timeopen;
                             $endtime = $modulename->timeclose;
                         }
+                        $timemodified = $modulename->timemodified;
 
                         if (($starttime != $planner->timeopen) || ($endtime != $planner->timeclose)) {
                             $courseid = $planner->course;
@@ -93,6 +98,7 @@ class cron_task_datechange extends \core\task\scheduled_task {
                                 if ($changedateemail) {
                                     $subject = $changedateemailsubject;
                                     foreach ($teachers as $teacher) {
+                                        mtrace('sending to teacher id '.$teacher->id.', '.$planner->id.' being processed');
                                         $tmpteacher = \core_user::get_user($teacher->id);
                                         $changedateemail = str_replace(
                                             '{$a->firstname}',
