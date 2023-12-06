@@ -63,8 +63,11 @@ class cron_task_datechange extends \core\task\scheduled_task {
                 $supportuser = \core_user::get_support_user();
                 $changedateemailsubject = get_string('changedateemailsubject', 'mod_planner');
                 $changedateemailtemplate = get_config('planner', 'changedateemailtemplate');
+
+                $task = \core\task\manager::get_scheduled_task('mod_planner\task\cron_task_datechange');
+                $lastruntime = $task->get_last_run_time();
+
                 foreach ($allplanners as $planner) {
-                    mtrace('planner '.$planner->id.' being processed');
                     // Reinitialise $teachers array for each planner, needs to be course specific.
                     $teachers = [];
                     // Ensure email template is renewed from original for each planner.
@@ -85,7 +88,8 @@ class cron_task_datechange extends \core\task\scheduled_task {
                         }
                         $timemodified = $modulename->timemodified;
 
-                        if (($starttime != $planner->timeopen) || ($endtime != $planner->timeclose)) {
+                        if (($timemodified >= $lastruntime)
+                        && (($starttime != $planner->timeopen) || ($endtime != $planner->timeclose))) {
                             $courseid = $planner->course;
                             $coursecontext = \context_course::instance($courseid);
                             foreach ($teacherroleids as $teacherroleid) {
@@ -98,7 +102,6 @@ class cron_task_datechange extends \core\task\scheduled_task {
                                 if ($changedateemail) {
                                     $subject = $changedateemailsubject;
                                     foreach ($teachers as $teacher) {
-                                        mtrace('sending to teacher id '.$teacher->id.', '.$planner->id.' being processed');
                                         $tmpteacher = \core_user::get_user($teacher->id);
                                         $changedateemail = str_replace(
                                             '{$a->firstname}',
