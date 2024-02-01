@@ -80,7 +80,12 @@ class cron_task extends \core\task\scheduled_task {
                 $supportuser = \core_user::get_support_user();
                 $missedemailsubject = get_string('missedemailsubject', 'mod_planner');
                 $upcomingemailsubject = get_string('upcomingemailsubject', 'mod_planner');
+                $deletedactivities = [];
                 foreach ($allplanner as $plannerdata) {
+                    // Skip this user email if activity is in $deletedactivities array.
+                    if (in_array($plannerdata->activitycmid, $deletedactivities)) {
+                        continue;
+                    }
                     // Ensure email templates are renewed from original for each user.
                     $upcomingemail = $upcomingemailtemplate;
                     $missedemail = $missedemailtemplate;
@@ -90,6 +95,12 @@ class cron_task extends \core\task\scheduled_task {
                               JOIN {modules} m ON (m.id = cm.module)
                              WHERE cm.id = :cmid';
                     $associatemodule = $DB->get_record_sql($sql, ['cmid' => $plannerdata->activitycmid]);
+                    // Skip this user email if activity is deleted.
+                    // Also create an array of deleted activities for skipping efficiently.
+                    if (!$associatemodule) {
+                        $deletedactivities[] = $plannerdata->activitycmid;
+                        continue;
+                    }
                     if ($associatemodule->modulename == 'assign') {
                         $modulename = $DB->get_record('assign', ['id' => $associatemodule->instance]);
                     } else if ($associatemodule->modulename == 'quiz') {
