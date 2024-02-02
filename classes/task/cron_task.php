@@ -56,7 +56,7 @@ class cron_task extends \core\task\scheduled_task {
         // Check if there are some planners to switch into the assessment phase.
         $currentime = time();
         $upcomingemailtemplate = get_config('planner', 'upcomingemail');
-        $missedemail = get_config('planner', 'dueemail');
+        $missedemailtemplate = get_config('planner', 'dueemail');
         $frequencyemail = get_config('planner', 'frequencyemail');
         $nextdate = strtotime("+" . $frequencyemail . " days", $currentime);
         $previousdate = strtotime("-" . $frequencyemail ." days", $currentime);
@@ -80,15 +80,27 @@ class cron_task extends \core\task\scheduled_task {
                 $supportuser = \core_user::get_support_user();
                 $missedemailsubject = get_string('missedemailsubject', 'mod_planner');
                 $upcomingemailsubject = get_string('upcomingemailsubject', 'mod_planner');
+                $deletedactivities = [];
                 foreach ($allplanner as $plannerdata) {
-                    // Ensure email template is renewed from original for each user.
+                    // Skip this user email if activity is in $deletedactivities array.
+                    if (in_array($plannerdata->activitycmid, $deletedactivities)) {
+                        continue;
+                    }
+                    // Ensure email templates are renewed from original for each user.
                     $upcomingemail = $upcomingemailtemplate;
+                    $missedemail = $missedemailtemplate;
                     $user = $user = \core_user::get_user($plannerdata->userid);
                     $sql = 'SELECT cm.id,m.name AS modulename,cm.instance
 					          FROM {course_modules} cm
                               JOIN {modules} m ON (m.id = cm.module)
                              WHERE cm.id = :cmid';
                     $associatemodule = $DB->get_record_sql($sql, ['cmid' => $plannerdata->activitycmid]);
+                    // Skip this user email if activity is deleted.
+                    // Also create an array of deleted activities for skipping efficiently.
+                    if (!$associatemodule) {
+                        $deletedactivities[] = $plannerdata->activitycmid;
+                        continue;
+                    }
                     if ($associatemodule->modulename == 'assign') {
                         $modulename = $DB->get_record('assign', ['id' => $associatemodule->instance]);
                     } else if ($associatemodule->modulename == 'quiz') {

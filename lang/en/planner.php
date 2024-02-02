@@ -91,7 +91,7 @@ $string['linkedactivitystudentemailtemplate'] = 'Deleted linked activity student
 $string['linkedactivitystudentemailtemplate_help'] = 'Email template of student for a deleted linked activity from planner';
 $string['linkedactivitystudentemailtemplatedefault'] = 'Hi {$a->firstname},
 
-We request that you to contact your lecturer as activity from \'{$a->plannername}\' has been deleted from the system.
+We request that you contact your lecturer as the activity linked to \'{$a->plannername}\' has been deleted from the system.
 
 If you need help, please contact the site administrator,
 {$a->admin}';
