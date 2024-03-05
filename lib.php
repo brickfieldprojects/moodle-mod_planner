@@ -440,6 +440,8 @@ function planner_supports($feature) {
             return true;
         case FEATURE_CONTROLS_GRADE_VISIBILITY:
             return true;
+        case FEATURE_MOD_PURPOSE:
+            return MOD_PURPOSE_ASSESSMENT;
 
         default:
             return null;
