@@ -21,7 +21,6 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import ModalFactory from 'core/modal_factory';
 import ModalSaveNewTemplate from './modal_save_new_template';
 import PlannerEvents from './events';
 import ModalEvents from 'core/modal_events';
@@ -48,7 +47,8 @@ const registerEventListeners = () => {
  * @param {HTMLElement} focusOnClose The element to focus on when the modal is closed.
  */
 const show = async ({ focusOnClose = null } = {}) => {
-    const modal = await ModalFactory.create({ type: ModalSaveNewTemplate.TYPE });
+    const modal = await ModalSaveNewTemplate.create();
+
     modal.show();
 
     modal.getRoot().on(ModalEvents.hidden, () => {
@@ -66,7 +66,9 @@ const show = async ({ focusOnClose = null } = {}) => {
         // Get value from input field.
         const templateNameElement = document.getElementById('newTemplateName');
         const templateName = templateNameElement.value;
-        const disclaimer = document.getElementById('id_disclaimereditable').innerHTML;
+        const disclaimerIframe = document.getElementById('id_disclaimer_ifr');
+        const innerDoc = disclaimerIframe.contentDocument || disclaimerIframe.contentWindow.document;
+        const disclaimer = innerDoc.querySelector('#tinymce').innerHTML;
         const stepName = [];
         const stepAllocation = [];
         const stepDescription = [];
@@ -76,7 +78,9 @@ const show = async ({ focusOnClose = null } = {}) => {
         for (let i = 0; i < names.length; i++) {
             stepName.push(names[i].value);
             stepAllocation.push(allocs[i].value);
-            stepDescription.push(document.getElementById('id_stepdescription_' + i + 'editable').innerHTML);
+            const stepDescriptionIframe = document.getElementById('id_stepdescription_' + i + '_ifr');
+            const innerDoc = stepDescriptionIframe.contentDocument || stepDescriptionIframe.contentWindow.document;
+            stepDescription.push(innerDoc.querySelector('#tinymce').innerHTML);
         }
         Ajax.call([{
             methodname: 'mod_planner_save_new_template',

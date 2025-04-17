@@ -23,18 +23,18 @@
 
 import $ from 'jquery';
 import Modal from 'core/modal';
-import ModalRegistry from 'core/modal_registry';
 import ModalEvents from 'core/modal_events';
 import PlannerEvents from 'mod_planner/events';
 import CustomEvents from 'core/custom_interaction_events';
 
-let registered = false;
 const SELECTORS = {
     SAVE_BUTTON: '[data-action="saveNewTemplate"]',
     CANCEL_BUTTON: '[data-action="cancel"]',
 };
 
 export default class ModalSaveNewTemplate extends Modal {
+    static TYPE = 'mod_planner-modal_save_new_template';
+    static TEMPLATE = 'mod_planner/modal_save_new_template';
 
     /**
      * Constructor for the Modal.
@@ -75,11 +75,5 @@ export default class ModalSaveNewTemplate extends Modal {
         });
     }
 }
-ModalSaveNewTemplate.TYPE = 'mod_planner-modal_save_new_template';
 
-// Automatically register with the modal registry the first time this module is imported so that you can create modals
-// of this type using the modal factory.
-if (!registered) {
-    ModalRegistry.register(ModalSaveNewTemplate.TYPE, ModalSaveNewTemplate, 'mod_planner/modal_save_new_template');
-    registered = true;
-}
+ModalSaveNewTemplate.registerModalType();
