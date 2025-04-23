@@ -28,7 +28,7 @@ Feature: Test the main planner page
     And I set the field "Template name" to "Template 1"
     And I press "Submit"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Planner" to section "1"
+    And I add a "Planner" to section "1" using the activity chooser
     And I set the field "Name" to "Test planner name"
     And I set the field "Description" to "Test planner description"
     And I select "Task number, title and due date" from the "Information on course page" singleselect
