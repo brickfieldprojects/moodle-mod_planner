@@ -154,7 +154,7 @@ class provider implements
             INNER JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
             INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
             INNER JOIN {planner} p ON p.id = cm.instance
-            INNER JOIN {planner_step} ps ps.plannerid = p.id
+            INNER JOIN {planner_step} ps ON ps.plannerid = p.id
             INNER JOIN {planner_userstep} pu ON pu.stepid = ps.id
                  WHERE c.id {$contextsql}
                        AND pu.userid = :userid
