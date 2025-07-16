@@ -23,7 +23,7 @@ Planner works as follows:
 2023 Onward [Brickfield Education Labs](https://www.brickfield.ie)
 
 ## Version support ##
-This plugin has been developed to work on Moodle releases 4.01, 4.02, 4.03, 4.04, and 4.05.
+This plugin has been developed to work on Moodle releases 4.03, 4.04, and 4.05.
 
 ## Funding credits
 This plugin was funded through Ireland’s Higher Education Authority (HEA) Fund for Students with Disabilities in 2021 and Student Success Fund in 2022. These were delivered via Student Support & Development at Dublin City University (DCU). The idea for this plugin arose with DCU Library, and was realised through a partnership with Student Support & Development, DCU Teaching Enhancement Unit and Brickfield Education Labs.
@@ -32,6 +32,11 @@ This plugin was funded through Ireland’s Higher Education Authority (HEA) Fund
 This plugin has been developed and is maintained by Brickfield Education Labs on behalf of DCU Teaching Enhancement Unit. Brickfield Education Lab is unable to provide support or respond to queries/feature requests for this plugin.
 
 If you have queries, or wish to contribute funding to the ongoing development of features and / or maintenance of the plugin, please contact [DCU Teaching Enhancement Unit](mailto:teaching.enhancement@dcu.ie) with the subject line "Moodle Planner".
+
+## Documentation ##
+All documentation for this plugin is maintained at the [Brickfield planner user guide site](https://docs.brickfield.ie/mod-planner/).
+
+Users are encouraged to browse [shared Planner templates at MoodleNet](https://moodle.net/search?q=planner%20templates), which they can copy and paste into their own templates on their own Moodle. Users are also encouraged to share any templates they create themselves.
 
 ## Important Links
 * [Code repository](https://github.com/brickfieldprojects/moodle-mod_planner)
