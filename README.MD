@@ -23,7 +23,7 @@ Planner works as follows:
 2023 Onward [Brickfield Education Labs](https://www.brickfield.ie)
 
 ## Version support ##
-This plugin has been developed to work on Moodle releases 4.1, 4.2, 4.3, 4.4, and 4.5.
+This plugin has been developed to work on Moodle releases 4.1 and 4.2.
 
 ## Funding credits
 This plugin was mostly funded through Ireland's Higher Education Authority (HEA) Fund for Students with Disabilities in 2021 and Student Success Fund in 2022. These were delivered via Student Support & Development at Dublin City University (DCU). The idea for this plugin arose with DCU Library, and was realised through a partnership with Student Support & Development, DCU Teaching Enhancement Unit and Brickfield Education Labs.
