@@ -22,11 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['planner:addinstance'] = 'Add a new Planner';
+$string['planner:addinstance'] = 'Add a new planner activity';
+$string['planner:manageplanner'] = 'Manage planner activities';
+$string['planner:managetemplates'] = 'Manage planner templates';
 $string['planner:view'] = 'View planner';
 $string['plannertext'] = 'Planner text';
 $string['modulename'] = 'Planner';
-$string['modulename_help'] = 'The planner module can be attached to either a quiz or an assignment for steps.';
+$string['modulename_help'] = 'The planner activity can be attached to either a quiz or an assignment for steps.';
 $string['modulename_link'] = 'mod/planner/view';
 $string['modulenameplural'] = 'Planner';
 $string['privacy:metadata:planner_userstep'] = 'Information about the user\'s steps for a given planner activity';
@@ -89,7 +91,7 @@ $string['linkedactivitystudentemailtemplate'] = 'Deleted linked activity student
 $string['linkedactivitystudentemailtemplate_help'] = 'Email template of student for a deleted linked activity from planner';
 $string['linkedactivitystudentemailtemplatedefault'] = 'Hi {$a->firstname},
 
-We request that you to contact your lecturer as activity from \'{$a->plannername}\' has been deleted from the system.
+We request that you contact your lecturer as the activity linked to \'{$a->plannername}\' has been deleted from the system.
 
 If you need help, please contact the site administrator,
 {$a->admin}';
@@ -119,8 +121,8 @@ $string['step5default'] = 'Create a plan / overall structure';
 $string['step5defaultallocatin'] = '5';
 $string['step6default'] = 'Write, reference, revise and proofread';
 $string['step6defaultallocatin'] = '30';
-$string['planner:manage_templates'] = 'Manage Templates';
-$string['manage_templates'] = 'Manage Templates';
+$string['planner:manage_templates'] = 'Manage planner templates';
+$string['manage_templates'] = 'Manage planner templates';
 $string['addtemplate'] = 'Add new template';
 $string['deletetemplate'] = 'Delete template';
 $string['deletetemplatecheck'] = 'Are you absolutely sure you want to completely delete the template {$a}?';
@@ -138,7 +140,7 @@ $string['missedbefore'] = 'Overdue by {$a} days';
 $string['invalidtemplate'] = 'Invalid template';
 $string['edittemplate'] = 'Edit template';
 $string['newtemplate'] = 'New template';
-$string['successfullyupdated'] = 'Template Updated successfully';
+$string['successfullyupdated'] = 'Template updated successfully';
 $string['successfullyadded'] = 'Template added successfully';
 $string['step'] = 'Step';
 $string['assignment'] = 'Assignment';
@@ -149,25 +151,25 @@ $string['template'] = 'Template';
 $string['disclaimer'] = 'Disclaimer';
 $string['invalidid'] = 'Invalid ID';
 $string['print'] = 'Print';
-$string['plannerdefaultstartingon'] = 'Planner Default Starting On';
-$string['plannerdefaultendingon'] = 'Planner Default Ending On';
-$string['startingon'] = 'Starting On';
-$string['endingon'] = 'Ending On';
+$string['plannerdefaultstartingon'] = 'Planner default starting on';
+$string['plannerdefaultendingon'] = 'Planner default ending on';
+$string['startingon'] = 'Starting on';
+$string['endingon'] = 'Ending on';
 $string['daysinstruction'] = 'According to the dates you have entered, you have {$a} days to finish.';
 $string['step'] = 'Step';
 $string['startdate'] = 'Start date';
 $string['enddate'] = 'End date';
 $string['report'] = 'Report';
 $string['reportheading'] = '{$a} Report';
-$string['studentname'] = 'Student Name';
+$string['studentname'] = 'Student name';
 $string['email'] = 'Email';
 $string['stepnumber'] = 'Step {$a}';
 $string['completed'] = 'Completed';
 $string['pending'] = 'Pending';
 $string['downloadcsv'] = 'Download CSV';
 $string['name'] = 'Name';
-$string['templateowner'] = 'Template Owner';
-$string['templatetype'] = 'Template Type';
+$string['templateowner'] = 'Template owner';
+$string['templatetype'] = 'Template type';
 $string['copy'] = 'Copy';
 $string['status'] = 'Status';
 $string['action'] = 'Action';
@@ -176,11 +178,12 @@ $string['personal'] = 'Personal';
 $string['enabled'] = 'Enabled';
 $string['disabled'] = 'Disabled';
 $string['templatename'] = 'Template name';
-$string['recalculateschedule'] = 'Re-Calculate Schedule!';
+$string['templatename_help'] = 'The template name must be unique';
+$string['recalculateschedule'] = 'Re-calculate schedule!';
 $string['startdatewarning1'] = 'Start date should not be less than default start date';
 $string['startdatewarning2'] = 'Start date should not be greater than default end date';
 $string['studentstepupdated'] = 'Student steps updated';
-$string['recalculatedstudentsteps'] = 'Re-Calculated Student steps';
+$string['recalculatedstudentsteps'] = 'Re-calculated student steps';
 $string['studentstepmarkcompleted'] = 'Step marked as completed';
 $string['studentstepmarkpending'] = 'Step marked as pending';
 $string['stepcompleted'] = 'Step completed';
@@ -193,8 +196,8 @@ $string['markstepaspending'] = 'Mark this step as pending';
 $string['submit'] = 'Submit';
 $string['differentdates'] = 'Want to try a different date?';
 $string['stepsyettobe'] = 'Steps have yet to be configured';
-$string['calculatestudentsteps'] = 'Calculate Student Steps';
-$string['recalculatestudentsteps'] = 'Re-Calculate Student Steps';
+$string['calculatestudentsteps'] = 'Calculate student steps';
+$string['recalculatestudentsteps'] = 'Re-calculate student steps';
 $string['actionnotassociated'] = 'Activity not associated';
 $string['invalidplanner'] = 'Invalid planner';
 $string['relatedactivitynotexistdelete'] = 'Associated activity does not exist, kindly remove this planner.';
@@ -211,6 +214,24 @@ $string['deletedactivityemailsubject'] = 'Linked activity has been deleted email
 $string['deletedactivitystudentsubject'] = 'Linked activity has been deleted email notification';
 $string['changedateemailsubject'] = 'Activity date change email notification for planner';
 $string['addstepstoform'] = 'Add {no} step to the form';
+$string['savenewtemplate'] = 'Save as new template';
+$string['enternewname'] = 'Enter a new name for the template';
+$string['alltemplates'] = 'All planner templates';
+$string['mytemplates'] = 'My planner templates';
+$string['templatenameunique'] = 'The template name must be unique';
+$string['activityname'] = 'Activity name';
+$string['activityname_param'] = 'Activity name: {$a}';
+
+$string['event:stepcompleted'] = 'The user with id "{$a->userid}" has had their step id "{$a->stepid}" and
+		step name "{$a->stepname}" with planner id "{$a->plannerid} completed by the user
+        with id "{$a->relateduserid}" for the planner with course module id "{$a->cmid}"';
+$string['event:steppending'] = 'The user with id "{$a->userid}" has had their step id "{$a->stepid}" and
+		step name "{$a->stepname}" with planner id "{$a->plannerid} marked as pending by the user
+        with id "{$a->relateduserid}" for the planner with course module id "{$a->cmid}"';
+$string['event:stepupdated'] = 'The user with id "{$a->userid}" has updated their steps due date with planner id
+        "{$a->plannerid}"  updated by the user with id "{$a->relateduserid}" for the planner with course module id "{$a->cmid}"';
+$string['event:userexception'] = 'The \'relateduserid\' must be set.';
+$string['event:plannerexception'] = 'The \'plannerid\' must be set in other.';
 
 $string['activitiesenabled'] = 'selecting a activity';
 $string['activitiesenabled_help'] = '* Select an assignment or quiz activity for the planner.';
@@ -223,4 +244,4 @@ $string['templatesenabled_help'] = '* Select a template for the planner.';
 
 $string['templatesdisabled'] = 'selecting a template';
 $string['templatesdisabled_help'] = '* A template must exist to select.
-* To add a template, go to the administration block and click Manage Templates.';
+* To add a template, go to the administration block and click Manage planner templates.';

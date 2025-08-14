@@ -26,16 +26,6 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot.'/calendar/lib.php');
 
 /**
- * Returns the Planner name
- *
- * @param object $planner
- * @return string
- */
-function get_planner_name($planner) {
-    $name = get_string('modulename', 'planner');
-    return $name;
-}
-/**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
  * will create a new instance and return the id number
@@ -45,9 +35,9 @@ function get_planner_name($planner) {
  * @return bool|int
  */
 function planner_add_instance($planner) {
-    global $DB, $CFG, $SESSION;
+    global $DB, $CFG;
 
-    if ((!isset($planner->submitbutton2)) AND (!isset($planner->submitbutton))) {
+    if ((!isset($planner->submitbutton2)) && (!isset($planner->submitbutton))) {
         $url = $CFG->wwwroot.'/course/modedit.php?add=planner&type=';
         $url .= '&course='.$planner->course.'&section='.$planner->section.'&return='.$planner->return.'&sr='.$planner->sr;
         if (isset($planner->activitycmid)) {
@@ -78,13 +68,19 @@ function planner_add_instance($planner) {
     }
     $planner->timemodified = time();
 
-    $cminfoactivity = $DB->get_record_sql("SELECT cm.id,cm.instance,cm.module,m.name FROM {course_modules} cm
-    JOIN {modules} m ON (m.id = cm.module) WHERE cm.id = '".$planner->activitycmid."'");
+    $sql = 'SELECT cm.id,cm.instance,cm.module,m.name
+              FROM {course_modules} cm
+              JOIN {modules} m ON (m.id = cm.module)
+             WHERE cm.id = :cmid';
+    $cminfoactivity = $DB->get_record_sql($sql, ['cmid' => $planner->activitycmid]);
     if ($cminfoactivity) {
-        $modulename = $DB->get_record($cminfoactivity->name, array('id' => $cminfoactivity->instance));
+        $modulename = $DB->get_record($cminfoactivity->name, ['id' => $cminfoactivity->instance]);
     } else {
-        throw new moodle_exception('relatedactivitynotexistdelete', 'planner',
-            new moodle_url("/course/view.php?id=$planner->course"));
+        throw new moodle_exception(
+            'relatedactivitynotexistdelete',
+            'planner',
+            new moodle_url("/course/view.php?id=$planner->course")
+        );
     }
     if ($cminfoactivity->name == 'assign') {
         $planner->timeopen = $modulename->allowsubmissionsfromdate;
@@ -97,7 +93,7 @@ function planner_add_instance($planner) {
     $id = $DB->insert_record("planner", $planner);
     if ($id) {
         // Increase template counter.
-        $template = $DB->get_record("plannertemplate", array('id' => $planner->templateid));
+        $template = $DB->get_record("plannertemplate", ['id' => $planner->templateid]);
         $updatetemplate = new stdClass();
         $updatetemplate->id = $template->id;
         if (!isset($template->copied)) {
@@ -145,7 +141,7 @@ function planner_update_instance($planner) {
     $planner->timemodified = time();
     $planner->id = $planner->instance;
 
-    $oldplannersteps = $DB->get_records('planner_step', array('plannerid' => $planner->id));
+    $oldplannersteps = $DB->get_records('planner_step', ['plannerid' => $planner->id]);
     $createnewsteps = false;
     if ($oldplannersteps) {
         $oldtimeallocations = array_values($oldplannersteps);
@@ -169,12 +165,12 @@ function planner_update_instance($planner) {
     \core_completion\api::update_completion_date_event($planner->coursemodule, 'planner', $planner->id, $completiontimeexpected);
 
     if ($createnewsteps) {
-        if ($stepsdata = $DB->get_records("planner_step", array("plannerid" => $planner->id))) {
+        if ($stepsdata = $DB->get_records("planner_step", ["plannerid" => $planner->id])) {
             foreach ($stepsdata as $step) {
-                $DB->delete_records('planner_userstep', array('stepid' => $step->id));
+                $DB->delete_records('planner_userstep', ['stepid' => $step->id]);
             }
-            $DB->delete_records('planner_step', array('plannerid' => $planner->id));
-            $DB->delete_records('event', array('instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'user'));
+            $DB->delete_records('planner_step', ['plannerid' => $planner->id]);
+            $DB->delete_records('event', ['instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'user']);
         }
 
         for ($i = 0; $i < $planner->option_repeats; $i++) {
@@ -221,28 +217,28 @@ function planner_update_instance($planner) {
 function planner_delete_instance($id) {
     global $DB;
 
-    if (! $planner = $DB->get_record("planner", array("id" => $id))) {
+    if (! $planner = $DB->get_record("planner", ["id" => $id])) {
         return false;
     }
 
     $result = true;
 
-    if ($stepsdata = $DB->get_records("planner_step", array("plannerid" => $planner->id))) {
+    if ($stepsdata = $DB->get_records("planner_step", ["plannerid" => $planner->id])) {
         foreach ($stepsdata as $step) {
-            $DB->delete_records('planner_userstep', array('stepid' => $step->id));
+            $DB->delete_records('planner_userstep', ['stepid' => $step->id]);
         }
     }
 
     $cm = get_coursemodule_from_instance('planner', $id);
     \core_completion\api::update_completion_date_event($cm->id, 'planner', $planner->id, null);
 
-    if (! $DB->delete_records("planner_step", array("plannerid" => $planner->id))) {
+    if (! $DB->delete_records("planner_step", ["plannerid" => $planner->id])) {
         $result = false;
     }
 
-    $DB->delete_records('event', array('instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'user'));
+    $DB->delete_records('event', ['instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'user']);
 
-    if (! $DB->delete_records("planner", array("id" => $planner->id))) {
+    if (! $DB->delete_records("planner", ["id" => $planner->id])) {
         $result = false;
     }
     return $result;
@@ -263,7 +259,7 @@ function planner_extend_settings_navigation(settings_navigation $settings, navig
     $keys = $navref->get_children_key_list();
     $beforekey = null;
     $i = array_search('modedit', $keys);
-    if ($i === false and array_key_exists(0, $keys)) {
+    if ($i === false && array_key_exists(0, $keys)) {
         $beforekey = $keys[0];
     } else if (array_key_exists($i + 1, $keys)) {
         $beforekey = $keys[$i + 1];
@@ -282,7 +278,7 @@ function planner_extend_settings_navigation(settings_navigation $settings, navig
     }
 
     if (has_capability('mod/planner:manageplanner', $cm->context)) {
-        $link = new moodle_url('/mod/planner/report.php', array('id' => $cm->id));
+        $link = new moodle_url('/mod/planner/report.php', ['id' => $cm->id]);
         $linkname = get_string('report', 'planner');
         $node = $navref->add($linkname, $link, navigation_node::TYPE_SETTING);
     }
@@ -299,7 +295,7 @@ function mod_planner_extend_navigation_course($navigation, $course, $context) {
     global $CFG;
 
     if (has_capability('mod/planner:managetemplates', $context)) {
-        $url = new moodle_url('/mod/planner/template.php', array('cid' => $course->id));
+        $url = new moodle_url('/mod/planner/template.php', ['cid' => $course->id]);
         $navigation->add(get_string('manage_templates', 'planner'), $url,
             navigation_node::TYPE_CUSTOM, get_string('manage_templates', 'planner'));
     }
@@ -346,10 +342,8 @@ function planner_cm_info_view(cm_info $cm) {
     if (!$planner = $DB->get_record('planner', $dbparams, $fields)) {
         return false;
     }
-    if (($planner->stepview == '1') OR ($planner->stepview == '2')) {
-        $templatestepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-        JOIN {planner_step} ps ON (ps.id = pu.stepid) WHERE ps.plannerid = '".$cm->instance."'
-        AND pu.userid = '".$USER->id."' ORDER BY pu.id ASC ");
+    if (($planner->stepview == '1') || ($planner->stepview == '2')) {
+        $templatestepdata = mod_planner\planner::get_all_usersteps($cm->instance, $USER->id);
 
         if ($templatestepdata) {
             $i = 0;
@@ -402,163 +396,7 @@ function planner_reset_userdata($data) {
     // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
     // See MDL-9367.
 
-    return array();
-}
-
-/**
- * Creates user steps for planner
- *
- * @param object $planner
- * @param int $userid
- * @param int $starttime
- * @param int $endtime
- * @return void
- */
-function planner_user_step($planner, $userid, $starttime, $endtime) {
-    global $DB;
-
-    $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '".$planner->id."' ORDER BY id ASC");
-    $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-JOIN {planner_step} ps ON (ps.id = pu.stepid)
-WHERE ps.plannerid = '".$planner->id."' AND pu.userid = '".$userid."' ORDER BY pu.id ASC ");
-    $totaltime = $endtime - $starttime;
-    $exsitingsteptime = $starttime;
-    $stepsdata = array();
-    foreach ($templatestepdata as $stepkey => $stepval) {
-        $existingsteptemp = ($totaltime * $stepval->timeallocation) / 100;
-        $exsitingsteptime = $existingsteptemp + $exsitingsteptime;
-        $stepsdata[$stepkey]['name'] = $stepval->name;
-        $stepsdata[$stepkey]['timedue'] = $exsitingsteptime;
-    }
-    if ($templateuserstepdata) {
-        $i = 0;
-        foreach ($templateuserstepdata as $stepid => $stepdata) {
-            $updatestep = new stdClass();
-            $updatestep->id = $stepdata->id;
-            $updatestep->duedate = $stepsdata[$stepdata->stepid]['timedue'];
-            if ($i == 0) {
-                $updatestep->timestart = $starttime;
-            }
-            $updatestep->completionstatus = 0;
-            $updatestep->timemodified = 0;
-            $DB->update_record('planner_userstep', $updatestep);
-            $i++;
-        }
-    } else {
-        $i = 0;
-        foreach ($stepsdata as $stepid => $stepdata) {
-            $insertstep = new stdClass();
-            $insertstep->stepid = $stepid;
-            $insertstep->userid = $userid;
-            $insertstep->duedate = $stepdata['timedue'];
-            if ($i == 0) {
-                $insertstep->timestart = $starttime;
-            }
-            $insertstep->completionstatus = 0;
-            $insertstep->timemodified = 0;
-            $DB->insert_record('planner_userstep', $insertstep);
-            $i++;
-        }
-    }
-    planner_update_events($planner, '', $userid, $stepsdata, false);
-}
-
-/**
- * Deleting a user step for a planner
- *
- * @param object $planner
- * @param int $userid
- * @param int $starttime
- * @param int $endtime
- * @return void
- */
-function planner_user_step_delete ($planner, $userid, $starttime, $endtime) {
-    global $DB;
-
-    $templatestepdata = $DB->get_records_sql("SELECT * FROM {planner_step} WHERE plannerid = '".$planner->id."' ORDER BY id ASC");
-    $templateuserstepdata = $DB->get_records_sql("SELECT pu.*,ps.name,ps.description FROM {planner_userstep} pu
-JOIN {planner_step} ps ON (ps.id = pu.stepid)
-WHERE ps.plannerid = '".$planner->id."' AND pu.userid = '".$userid."' ORDER BY pu.id ASC ");
-    $totaltime = $endtime - $starttime;
-    $exsitingsteptime = $starttime;
-    $stepsdata = array();
-    foreach ($templatestepdata as $stepkey => $stepval) {
-        $existingsteptemp = ($totaltime * $stepval->timeallocation) / 100;
-        $exsitingsteptime = $existingsteptemp + $exsitingsteptime;
-        $stepsdata[$stepkey]['name'] = $stepval->name;
-        $stepsdata[$stepkey]['timedue'] = $exsitingsteptime;
-    }
-    if ($templateuserstepdata) {
-        $i = 0;
-        foreach ($templateuserstepdata as $stepid => $stepdata) {
-            $updatestep = new stdClass();
-            $updatestep->id = $stepdata->id;
-            $updatestep->duedate = $stepsdata[$stepdata->stepid]['timedue'];
-            if ($i == 0) {
-                $updatestep->timestart = null;
-            }
-            $updatestep->completionstatus = 0;
-            $updatestep->timemodified = 0;
-            $DB->update_record('planner_userstep', $updatestep);
-        }
-    }
-    planner_update_events($planner, '', $userid, $stepsdata, false);
-}
-
-/**
- * Updates events for Planner activity
- *
- * @param object $planner
- * @param null $override
- * @param object $students
- * @param object $stepsdata
- * @param boolean $alluser
- * @return void
- */
-function planner_update_events($planner, $override = null, $students, $stepsdata, $alluser = true) {
-    global $DB;
-
-    if ($alluser) {
-        $DB->delete_records('event', array('instance' => $planner->id, 'modulename' => 'planner', 'eventtype' => 'due'));
-
-        foreach ($students as $studentkey => $studentdata) {
-            $i = 1;
-            foreach ($stepsdata as $stepid => $stepval) {
-                $event = new stdClass();
-                $event->name = format_string($planner->name);
-                $event->description = get_string('step', 'planner').' '.$i.' : '.$stepval['name'];
-                $event->format = FORMAT_HTML;
-                $event->userid = $studentkey;
-                $event->modulename = 'planner';
-                $event->instance = $planner->id;
-                $event->type = CALENDAR_EVENT_TYPE_ACTION;
-                $event->eventtype = 'due';
-                $event->timestart = $stepval['timedue'];
-                $event->timesort = $stepval['timedue'];
-                calendar_event::create($event, false);
-                $i++;
-            }
-        }
-    } else {
-        $DB->delete_records('event', array('instance' => $planner->id, 'modulename' => 'planner',
-        'eventtype' => 'due', 'userid' => $students));
-        $i = 1;
-        foreach ($stepsdata as $stepid => $stepval) {
-            $event = new stdClass();
-            $event->name = format_string($planner->name);
-            $event->description = get_string('step', 'planner').' '.$i.' : '.$stepval['name'];
-            $event->format = FORMAT_HTML;
-            $event->userid = $students;
-            $event->modulename = 'planner';
-            $event->instance = $planner->id;
-            $event->type = CALENDAR_EVENT_TYPE_ACTION;
-            $event->eventtype = 'due';
-            $event->timestart = $stepval['timedue'];
-            $event->timesort = $stepval['timedue'];
-            calendar_event::create($event, false);
-            $i++;
-        }
-    }
+    return [];
 }
 
 /**
@@ -569,8 +407,12 @@ function planner_update_events($planner, $override = null, $students, $stepsdata
  * @uses FEATURE_GROUPINGS
  * @uses FEATURE_MOD_INTRO
  * @uses FEATURE_COMPLETION_TRACKS_VIEWS
+ * @uses FEATURE_COMPLETION_HAS_RULES
  * @uses FEATURE_GRADE_HAS_GRADE
  * @uses FEATURE_GRADE_OUTCOMES
+ * @uses FEATURE_BACKUP_MOODLE2
+ * @uses FEATURE_SHOW_DESCRIPTION
+ * @uses FEATURE_CONTROLS_GRADE_VISIBILITY
  * @param string $feature FEATURE_xx constant for requested feature
  * @return bool|null True if module supports feature, false if not, null if doesn't know
  */
@@ -585,11 +427,11 @@ function planner_supports($feature) {
         case FEATURE_MOD_INTRO:
             return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
-            return true;
+            return false;
         case FEATURE_COMPLETION_HAS_RULES:
-            return true;
+            return false;
         case FEATURE_GRADE_HAS_GRADE:
-            return true;
+            return false;
         case FEATURE_GRADE_OUTCOMES:
             return true;
         case FEATURE_BACKUP_MOODLE2:
@@ -598,6 +440,8 @@ function planner_supports($feature) {
             return true;
         case FEATURE_CONTROLS_GRADE_VISIBILITY:
             return true;
+        case FEATURE_MOD_PURPOSE:
+            return MOD_PURPOSE_ASSESSMENT;
 
         default:
             return null;
@@ -613,8 +457,8 @@ function planner_supports($feature) {
  * @return stdClass an object with the different type of areas indicating if they were updated or not
  * @since Moodle 3.2
  */
-function planner_check_updates_since(cm_info $cm, $from, $filter = array()) {
-    $updates = course_check_module_updates_since($cm, $from, array(), $filter);
+function planner_check_updates_since(cm_info $cm, $from, $filter = []) {
+    $updates = course_check_module_updates_since($cm, $from, [], $filter);
     return $updates;
 }
 
@@ -629,9 +473,11 @@ function planner_check_updates_since(cm_info $cm, $from, $filter = array()) {
  * @param int $userid User id to use for all capability checks, etc. Set to 0 for current user (default).
  * @return \core_calendar\local\event\entities\action_interface|null
  */
-function mod_planner_core_calendar_provide_event_action(calendar_event $event,
-                                                      \core_calendar\action_factory $factory,
-                                                      int $userid = 0) {
+function mod_planner_core_calendar_provide_event_action(
+    calendar_event $event,
+    \core_calendar\action_factory $factory,
+    int $userid = 0
+) {
     $cm = get_fast_modinfo($event->courseid, $userid)->instances['planner'][$event->instance];
 
     if (!$cm->uservisible) {

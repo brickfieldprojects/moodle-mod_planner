@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');    // It must be included from a Moodle page.
-}
+namespace mod_planner\form;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/formslib.php');
 
@@ -27,22 +27,23 @@ require_once($CFG->dirroot.'/lib/formslib.php');
  * @package mod_planner
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class user_form extends moodleform  {
+class user_form extends \moodleform {
 
     /**
      * Define the form.
      */
     public function definition() {
-        global $CFG;
-
         $mform = $this->_form;
-        $strrequired = get_string('required');
         $id = $this->_customdata['id'];
         $studentstartime = $this->_customdata['studentstartime'];
         $starttime = $this->_customdata['startdate'];
         $endtime = $this->_customdata['enddate'];
-        $mform->addElement('date_selector', 'userstartdate', get_string('startdate', 'planner'),
-        array('startyear' => userdate($starttime, '%Y'), 'stopyear' => userdate($endtime, '%Y')));
+        $mform->addElement(
+            'date_selector',
+            'userstartdate',
+            get_string('startdate', 'planner'),
+            ['startyear' => userdate($starttime, '%Y'), 'stopyear' => userdate($endtime, '%Y')]
+        );
         if ($studentstartime) {
             $mform->setDefault('userstartdate', $studentstartime);
         } else {
