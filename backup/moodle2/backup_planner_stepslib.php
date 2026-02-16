@@ -60,7 +60,7 @@ class backup_planner_activity_structure_step extends backup_activity_structure_s
                 'stepview',
                 'timeopen',
                 'timeclose',
-                'timemodified'
+                'timemodified',
             ]
         );
 

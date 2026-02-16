@@ -51,5 +51,5 @@ $services = [
         ],
         'restrictedusers' => 0,
         'enabled' => 1,
-    ]
+    ],
 ];

@@ -62,7 +62,7 @@ $pageurl = new moodle_url(
         'spage' => $spage,
         'page' => $page,
         'cid' => $cid,
-        'setting' => $searchclauses
+        'setting' => $searchclauses,
     ]
 );
 

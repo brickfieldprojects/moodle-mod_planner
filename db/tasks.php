@@ -32,7 +32,7 @@ $tasks = [
         'hour' => '0',
         'day' => '*',
         'month' => '*',
-        'dayofweek' => '*'
+        'dayofweek' => '*',
     ],
     [
         'classname' => '\mod_planner\task\cron_task_deletedactivity',
@@ -41,7 +41,7 @@ $tasks = [
         'hour' => '0',
         'day' => '*',
         'month' => '*',
-        'dayofweek' => '*'
+        'dayofweek' => '*',
     ],
     [
         'classname' => '\mod_planner\task\cron_task_datechange',
@@ -50,6 +50,6 @@ $tasks = [
         'hour' => '0',
         'day' => '*',
         'month' => '*',
-        'dayofweek' => '*'
-    ]
+        'dayofweek' => '*',
+    ],
 ];

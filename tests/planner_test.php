@@ -429,7 +429,7 @@ class planner_test extends \advanced_testcase {
             TABLE_VAR_SHOW => 'sshow',
             TABLE_VAR_IFIRST => 'sifirst',
             TABLE_VAR_ILAST => 'silast',
-            TABLE_VAR_PAGE => 'spage'
+            TABLE_VAR_PAGE => 'spage',
         ]);
 
         $table->initialbars(false);
