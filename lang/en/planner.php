@@ -142,7 +142,6 @@ $string['edittemplate'] = 'Edit template';
 $string['newtemplate'] = 'New template';
 $string['successfullyupdated'] = 'Template updated successfully';
 $string['successfullyadded'] = 'Template added successfully';
-$string['step'] = 'Step';
 $string['assignment'] = 'Assignment';
 $string['quiz'] = 'Quiz';
 $string['selectactivity'] = 'Select activity';
