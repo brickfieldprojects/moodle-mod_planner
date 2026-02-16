@@ -237,6 +237,7 @@ $string['activitiesenabled_help'] = '* Select an assignment or quiz activity for
 
 $string['activitiesdisabled'] = 'selecting a activity';
 $string['activitiesdisabled_help'] = '* An assignment or quiz activity must exist in the course to select.';
+$string['associatedactivity'] = 'Associated activity';
 
 $string['templatesenabled'] = 'selecting a template';
 $string['templatesenabled_help'] = '* Select a template for the planner.';
