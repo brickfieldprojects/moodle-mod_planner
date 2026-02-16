@@ -435,7 +435,8 @@ function planner_supports($feature) {
         case FEATURE_GRADE_OUTCOMES:
             return true;
         case FEATURE_BACKUP_MOODLE2:
-            return true;
+            // This is a temporary setting to disable backups/restores.
+            return false;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_CONTROLS_GRADE_VISIBILITY:
