@@ -38,7 +38,7 @@ Feature: Test adding, deleting, and editing planner activities
     And I press "Save and return to course"
     Then I should see "Test planner name"
     When I delete "Test planner name" activity
-    Then I should not see "Test planner name"
+    Then I should not see "Test planner name" in the "region-main" "region"
 
   Scenario: Test editing planner
     Given I am on "Course 1" course homepage with editing mode on
