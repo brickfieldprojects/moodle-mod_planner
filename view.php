@@ -72,6 +72,7 @@ $PAGE->set_context($context);
 $PAGE->set_title($course->shortname.":".format_string($planner->name));
 $PAGE->set_heading($course->fullname);
 $PAGE->requires->jquery_plugin('ui-css');
+$PAGE->add_body_class('limitedwidth');
 
 $renderer = $PAGE->get_renderer('mod_planner');
 

@@ -40,6 +40,7 @@ $strplanners = get_string("modulenameplural", "planner");
 $PAGE->set_title($strplanners);
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add($strplanners);
+$PAGE->add_body_class('limitedwidth');
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strplanners, 2);
 
