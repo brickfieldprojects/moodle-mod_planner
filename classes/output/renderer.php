@@ -69,7 +69,7 @@ class renderer extends \plugin_renderer_base {
         $printtitle = get_string('printerfriendly', 'glossary');
         $printattributes = [
             'class' => 'printicon',
-            'title' => $printtitle
+            'title' => $printtitle,
         ];
         $out .= '<div style="text-align: right">';
         $out .= \html_writer::link($printurl, $printtitle, $printattributes);
@@ -259,7 +259,7 @@ class renderer extends \plugin_renderer_base {
                 TABLE_VAR_SHOW => 'show',
                 TABLE_VAR_IFIRST => 'ifirst',
                 TABLE_VAR_ILAST => 'ilast',
-                TABLE_VAR_PAGE => 'page'
+                TABLE_VAR_PAGE => 'page',
             ]);
         } else {
             echo '<h3>'.get_string('alltemplates', 'planner').'</h3>';
@@ -270,7 +270,7 @@ class renderer extends \plugin_renderer_base {
                 TABLE_VAR_SHOW => 'sshow',
                 TABLE_VAR_IFIRST => 'sifirst',
                 TABLE_VAR_ILAST => 'silast',
-                TABLE_VAR_PAGE => 'spage'
+                TABLE_VAR_PAGE => 'spage',
             ]);
         }
         $tablecolumns = [];
@@ -361,7 +361,7 @@ class renderer extends \plugin_renderer_base {
                     [
                         'data-action' => 'viewtemplate',
                         'data-templateid' => $template->id,
-                        'id' => 'toggle-template-modal-' . $template->id
+                        'id' => 'toggle-template-modal-' . $template->id,
                     ]
                 );
                 if ($template->userid == $USER->id || $isadmin) {

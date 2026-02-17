@@ -73,7 +73,7 @@ class cron_task extends \core\task\scheduled_task {
             $params = [
                 'plannerid' => $plannerid->id,
                 'previousdate' => $previousdate,
-                'nextdate' => $nextdate
+                'nextdate' => $nextdate,
             ];
             $allplanner = $DB->get_records_sql($sql, $params);
             if ($allplanner) {
@@ -162,7 +162,7 @@ class cron_task extends \core\task\scheduled_task {
                     $eventdata->notification      = 1;
                     $customdata = [
                         'cmid' => $plannerdata->cmid,
-                        'instance' => $associatemodule->instance
+                        'instance' => $associatemodule->instance,
                     ];
                     // Check if the userfrom is real and visible.
                     $eventdata->customdata = $customdata;

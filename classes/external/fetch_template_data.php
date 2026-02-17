@@ -44,7 +44,7 @@ class fetch_template_data extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'templateid' => new external_value(PARAM_INT, 'The id of the template.', VALUE_REQUIRED),
-            'courseid' => new external_value(PARAM_INT, 'The id of the course.', VALUE_REQUIRED)
+            'courseid' => new external_value(PARAM_INT, 'The id of the course.', VALUE_REQUIRED),
         ]);
     }
 
@@ -59,7 +59,7 @@ class fetch_template_data extends external_api {
         $params = self::validate_parameters(
             self::execute_parameters(), [
                 'templateid' => $templateid,
-                'courseid' => $courseid
+                'courseid' => $courseid,
             ]
         );
         // Check capability and context.
@@ -115,7 +115,7 @@ class fetch_template_data extends external_api {
                    'description' => new external_value(PARAM_RAW, 'The description of the step.'),
                    'stepnumber' => new external_value(PARAM_INT, 'The number of the step.'),
                 ])
-            )
+            ),
         ]);
     }
 }

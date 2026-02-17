@@ -147,7 +147,7 @@ class cron_task_datechange extends \core\task\scheduled_task {
                                         $eventdata->notification = 1;
                                         $customdata = [
                                             'cmid' => $planner->cmid,
-                                            'instance' => $planner->instance
+                                            'instance' => $planner->instance,
                                         ];
                                         // Check if the userfrom is real and visible.
                                         $eventdata->customdata = $customdata;

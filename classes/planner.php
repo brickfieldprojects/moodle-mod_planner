@@ -251,7 +251,7 @@ class planner {
                 'instance' => $this->id,
                 'modulename' => 'planner',
                 'eventtype' => 'due',
-                'userid' => $userid
+                'userid' => $userid,
             ]);
             $i = 1;
             foreach ($stepsdata as $stepid => $stepval) {
@@ -737,8 +737,8 @@ class planner {
                     'other' => [
                         'plannerid' => $this->id,
                         'stepid' => $checkexistingstep->stepid,
-                        'stepname' => $templatestepdata[$checkexistingstep->stepid]->name
-                    ]
+                        'stepname' => $templatestepdata[$checkexistingstep->stepid]->name,
+                    ],
                 ];
                 if ($uncheckstep == 1) {
                     $event = \mod_planner\event\step_pending::create($params);
@@ -790,7 +790,7 @@ class planner {
                 'id' => $id,
                 'startdate' => $time->defaultstarttime,
                 'studentstartime' => $time->starttime,
-                'enddate' => $time->endtime
+                'enddate' => $time->endtime,
             ]
         );
 
@@ -829,7 +829,7 @@ class planner {
                     'context' => $context,
                     'other' => [
                         'plannerid' => $this->id,
-                    ]
+                    ],
                 ];
                 $event = \mod_planner\event\step_updated::create($params);
                 $event->trigger();

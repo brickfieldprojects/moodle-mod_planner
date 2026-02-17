@@ -21,6 +21,7 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 /**
  * Add planner form
  *
+ * @copyright 2021 Brickfield Education Labs, www.brickfield.ie
  * @package    mod_planner
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -151,11 +152,11 @@ class mod_planner_mod_form extends moodleform_mod {
 
         $enabledoptions = [
             'multiple' => false,
-            'noselectionstring' => get_string('selectactivity', 'planner')
+            'noselectionstring' => get_string('selectactivity', 'planner'),
         ];
         $disabledoptions = [
             'disabled' => 'disabled',
-            'style' => 'width:200px; background:none;'
+            'style' => 'width:200px; background:none;',
         ];
         if ($checkalreadycompleted == 0 || $checkalreadycompleted == null) {
             if (count($activitynames) > 1) {
@@ -210,11 +211,11 @@ class mod_planner_mod_form extends moodleform_mod {
             $enabledoptions = [
                 'multiple' => false,
                 'noselectionstring' => get_string('selecttemplate', 'planner'),
-                'onchange' => 'this.form.submit()'
+                'onchange' => 'this.form.submit()',
             ];
             $disabledoptions = [
                 'disabled' => 'disabled',
-                'style' => 'width:200px; background:none;'
+                'style' => 'width:200px; background:none;',
             ];
             $mform->disable_form_change_checker();
             if (count($templates) > 1) {
@@ -298,7 +299,7 @@ class mod_planner_mod_form extends moodleform_mod {
      * @param array $files
      * @return array $errors
      */
-    public function validation ($data, $files) {
+    public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         if ((isset($data['submitbutton2'])) || (isset($data['submitbutton']))) {
             if ($data['update'] == 0) {
