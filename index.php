@@ -57,9 +57,13 @@ $usesections = course_format_uses_sections($course->format);
 $table = new html_table();
 
 if ($usesections) {
-    $strsectionname = course_get_format($course)->get_generic_section_name();
+    if ($CFG->version < 2025041400) {
+        $strsectionname = get_string('sectionname', 'format_'.$course->format);
+    } else {
+        $strsectionname = course_get_format($course)->get_generic_section_name();
+    }
     $table->head  = [$strsectionname, get_string("name"), get_string("associatedactivity", "planner")];
-    $table->align = ["center", "left", "left"];
+    $table->align = ["left", "left", "left"];
 } else {
     $table->head  = [get_string("name"), get_string("associatedactivity", "planner")];
     $table->align = ["left", "left"];
@@ -72,8 +76,8 @@ foreach ($planners as $planner) {
     if ($usesections) {
         $printsection = "";
         if ($planner->section !== $currentsection) {
-            if ($planner->section) {
-                $printsection = get_section_name($course, $planner->section);
+            if (is_numeric($planner->section)) {
+                $printsection = get_section_name($course->id, $planner->section);
             }
             if ($currentsection !== "") {
                 $table->data[] = 'hr';
