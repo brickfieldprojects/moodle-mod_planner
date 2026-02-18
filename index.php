@@ -89,18 +89,18 @@ foreach ($planners as $planner) {
         $aa = $cm->name;
     }
 
-    //Calculate the href
+    // Calculate the href.
     if (!$planner->visible) {
-        //Show dimmed if the mod is hidden
-        $tt_href = "<a class=\"dimmed\" href=\"view.php?id=$planner->coursemodule\">" . format_string($planner->name,true) . "</a>";
+        // Show dimmed if the mod is hidden.
+        $tthref = "<a class=\"dimmed\" href=\"view.php?id=$planner->coursemodule\">" . format_string($planner->name, true) . "</a>";
     } else {
-        //Show normal if the mod is visible
-        $tt_href = "<a href=\"view.php?id=$planner->coursemodule\">" . format_string($planner->name,true) . "</a>";
+        // Show normal if the mod is visible.
+        $tthref = "<a href=\"view.php?id=$planner->coursemodule\">" . format_string($planner->name, true) . "</a>";
     }
     if ($usesections) {
-        $table->data[] = [$printsection, $tt_href, $aa];
+        $table->data[] = [$printsection, $tthref, $aa];
     } else {
-        $table->data[] = [$tt_href, $aa];
+        $table->data[] = [$tthref, $aa];
     }
 }
 echo "<br />";

@@ -101,7 +101,6 @@ class renderer extends \plugin_renderer_base {
         $out .= '<br>'.get_string('plannerdefaultendingon', 'planner').' : '.
                 userdate($time->defaultendtime, get_string('strftimedatefullshort')).'</p>';
 
-
         $out .= '<br/>';
         $out .= '<p><b>'.get_string('daysinstruction', 'planner', $time->days).'</b></p>';
 
