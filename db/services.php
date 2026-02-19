@@ -41,6 +41,14 @@ $functions = [
         'ajax'        => true,
         'capabilities' => 'mod/planner:managetemplates',
     ],
+    'mod_planner_update_student_notifications' => [
+        'classname'   => 'mod_planner\external\update_student_notifications',
+        'methodname'  => 'execute',
+        'description' => 'Update a students own notification preference for a specific planner',
+        'type'        => 'write',
+        'ajax'        => true,
+        'capabilities' => 'mod/planner:managetemplates',
+    ],
 ];
 
 $services = [
@@ -48,6 +56,7 @@ $services = [
         'functions' => [
             'mod_planner_save_new_template',
             'mod_planner_fetch_template_data',
+            'mod_planner_update_student_notifications',
         ],
         'restrictedusers' => 0,
         'enabled' => 1,

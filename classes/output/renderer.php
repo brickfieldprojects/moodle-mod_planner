@@ -46,7 +46,7 @@ class renderer extends \plugin_renderer_base {
         object $templateform,
         int $id
     ): string {
-        global $DB;
+        global $DB, $USER;
         $out = '';
         $out .= $this->output->header();
         $out .= $this->output->heading($planner->name);
@@ -74,6 +74,15 @@ class renderer extends \plugin_renderer_base {
         $out .= '<div style="text-align: right">';
         $out .= \html_writer::link($printurl, $printtitle, $printattributes);
         $out .= '</div>';
+
+        // Add notification toggle if notifications enable and student has calculated steps.
+        if ($DB->get_field('planner', 'notifications', ['id' => $planner->id]) == 2 && !empty($data->templateuserstepdata)) {
+            $out .= '<div style="text-align: right">';
+            $out .= \html_writer::checkbox('togglenotify', 1, reset($data->templateuserstepdata)->notify,
+                                        get_string('notification:toggle', 'planner'),
+                                        ['id' => 'togglenotify', 'data-userid' => $USER->id, 'data-plannerid' => $planner->id]);
+            $out .= '</div>';
+        }
 
         $j = 0;
         if ($data->templateuserstepdata) {

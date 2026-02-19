@@ -69,7 +69,8 @@ class cron_task extends \core\task\scheduled_task {
                       JOIN {planner_step} ps ON (ps.id = pus.stepid)
 			          JOIN {planner} p ON (p.id = ps.plannerid)
                       JOIN {course_modules} cm ON (cm.instance = p.id AND cm.module = :plannerid)
-                     WHERE pus.duedate BETWEEN :previousdate AND :nextdate AND pus.completionstatus = 0 AND cm.visible = 1';
+                     WHERE pus.duedate BETWEEN :previousdate AND :nextdate AND pus.completionstatus = 0
+                           AND pus.notify = 1 AND cm.visible = 1';
             $params = [
                 'plannerid' => $plannerid->id,
                 'previousdate' => $previousdate,

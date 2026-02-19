@@ -90,6 +90,13 @@ function planner_add_instance($planner) {
         $planner->timeclose = $modulename->timeclose;
     }
 
+    $planner->notifications = 1;
+    if ($planner->disablenotifications == "1") {
+        $planner->notifications = 0;
+    } else if ($planner->studentnotifications == "1") {
+        $planner->notifications = 2;
+    }
+
     $id = $DB->insert_record("planner", $planner);
     if ($id) {
         // Increase template counter.
@@ -165,8 +172,8 @@ function planner_update_instance($planner) {
     \core_completion\api::update_completion_date_event($planner->coursemodule, 'planner', $planner->id, $completiontimeexpected);
 
     if ($createnewsteps) {
-        if ($stepsdata = $DB->get_records("planner_step", ["plannerid" => $planner->id])) {
-            foreach ($stepsdata as $step) {
+        if ($oldplannersteps) {
+            foreach ($oldplannersteps as $step) {
                 $DB->delete_records('planner_userstep', ['stepid' => $step->id]);
             }
             $DB->delete_records('planner_step', ['plannerid' => $planner->id]);
@@ -203,6 +210,29 @@ function planner_update_instance($planner) {
             }
         }
     }
+
+    $newnotify = 1;
+    if ($planner->disablenotifications === "1") {
+        $newnotify = 0;
+    } else if ($planner->studentnotifications === "1") {
+        $newnotify = 2;
+    }
+
+    $oldnotify = $DB->get_field('planner', 'notifications', ['id' => $planner->id]);
+
+    if ($oldnotify != $newnotify) {
+        $planner->notifications = $newnotify;
+
+        // When necessary update all users notify settings.
+        if ($oldnotify == 0 || $newnotify == 0 || $newnotify == 1) {
+            $steps = $DB->get_records('planner_step', ['plannerid' => $planner->id]);
+            $studentnotify = $newnotify == 0 ? 0 : 1;
+            foreach ($steps as $step) {
+                $DB->set_field('planner_userstep', 'notify', $studentnotify, ['stepid' => $step->id]);
+            }
+        }
+    }
+
     return $DB->update_record("planner", $planner);
 }
 
