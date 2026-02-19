@@ -79,6 +79,12 @@ class mod_planner_generator extends testing_module_generator {
         if (!isset($record->option_repeats)) {
             $record->option_repeats = 3;
         }
+        if (!isset($record->disablenotifications)) {
+            $record->disablenotifications = 0;
+        }
+        if (!isset($record->studentnotifications)) {
+            $record->studentnotifications = 0;
+        }
 
         return parent::create_instance($record, (array)$options);
     }
