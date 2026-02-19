@@ -87,18 +87,19 @@ class renderer extends \plugin_renderer_base {
 
         $this->page->requires->js_call_amd('mod_planner/planner', 'initialise', [$j]);
 
-        $out .= '<h3>'.get_string('plannerdefaultstartingon', 'planner').' : '
-        .userdate($time->defaultstarttime, get_string('strftimedatefullshort')).'</h3>';
-        $out .= '<h3>'.get_string('plannerdefaultendingon', 'planner').' : '.
-                userdate($time->defaultendtime, get_string('strftimedatefullshort')).'</h3>';
         if (isset($time->userstartdate->timestart)) {
-            $out .= '<h3>'.get_string('startingon', 'planner').' : '
-            .userdate($time->starttime, get_string('strftimedatefullshort')).'</h3>';
+            $out .= '<p>'.get_string('startingon', 'planner').' : '
+            .userdate($time->starttime, get_string('strftimedatefullshort'));
             if (isset($time->userenddate->duedate)) {
-                $out .= '<h3>'.get_string('endingon', 'planner').' : '
-                .userdate($time->endtime, get_string('strftimedatefullshort')).'</h3>';
+                $out .= '<br>'.get_string('endingon', 'planner').' : '
+                .userdate($time->endtime, get_string('strftimedatefullshort'));
             }
+            $out .= '</p>';
         }
+        $out .= '<p>'.get_string('plannerdefaultstartingon', 'planner').' : '
+        .userdate($time->defaultstarttime, get_string('strftimedatefullshort'));
+        $out .= '<br>'.get_string('plannerdefaultendingon', 'planner').' : '.
+                userdate($time->defaultendtime, get_string('strftimedatefullshort')).'</p>';
 
         $out .= '<br/>';
         $out .= '<p><b>'.get_string('daysinstruction', 'planner', $time->days).'</b></p>';
@@ -129,8 +130,11 @@ class renderer extends \plugin_renderer_base {
             $out .= '</div>';
         } else {
             if ($data->templateuserstepdata) {
-                $html = '<div class="row"><div class="col-md-7">';
-                $html .= '<div id="accordion">';
+                $html = '<div class="row">';
+                $out .= '<div class="col-md-12"><h3>'.get_string('differentdates', 'planner').'</h3>';
+                $out .= $templateform->render();
+                $out .= '</div>';
+                $html .= '<div class="col-md-12"><div id="accordion">';
                 $i = 1;
                 foreach ($data->templateuserstepdata as $stepdata) {
                     $html .= '<h3 class="step-header">'. '<div class="stepname">' .
@@ -165,9 +169,7 @@ class renderer extends \plugin_renderer_base {
                 }
                 $out .= $html;
                 $out .= '<br/>';
-                $out .= '</div></div><div class="col-md-5"><h2>'.get_string('differentdates', 'planner').'</h2>';
-                $out .= $templateform->render();
-                $out .= '</div>';
+                $out .= '</div></div>';
                 $out .= '</div>';
             } else {
                 $out .= '<h3 style="text-align:center;">'.get_string('stepsyettobe', 'planner').'</h3>';
