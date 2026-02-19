@@ -25,6 +25,7 @@
 $string['planner:addinstance'] = 'Add a new planner activity';
 $string['planner:manageplanner'] = 'Manage planner activities';
 $string['planner:managetemplates'] = 'Manage planner templates';
+$string['planner:togglenotifications'] = 'Toggle planner notifications';
 $string['planner:view'] = 'View planner';
 $string['plannertext'] = 'Planner text';
 $string['modulename'] = 'Planner';

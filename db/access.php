@@ -57,6 +57,15 @@ $capabilities = [
         ],
         'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
+    'mod/planner:togglenotifications' => [
+        'riskbitmask' => RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => [
+            'user' => CAP_ALLOW,
+        ],
+    ],
     'mod/planner:view' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,

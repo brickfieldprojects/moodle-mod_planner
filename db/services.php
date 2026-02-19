@@ -47,7 +47,7 @@ $functions = [
         'description' => 'Update a students own notification preference for a specific planner',
         'type'        => 'write',
         'ajax'        => true,
-        'capabilities' => 'mod/planner:managetemplates',
+        'capabilities' => 'mod/planner:togglenotifications',
     ],
 ];
 
