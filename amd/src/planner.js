@@ -1,4 +1,4 @@
-define(['jquery','jqueryui'], function($) {
+define(['jquery','core/ajax','jqueryui'], function($, Ajax) {
     return {
         initialise: function(args) {
             var selectedid = args;
@@ -31,6 +31,19 @@ define(['jquery','jqueryui'], function($) {
 
                 return false; // Cancels the default action
             }});
+
+            // Listen for changes to notifcation checkbox and then update student records.
+            $("#togglenotify").change(function() {
+                var toggled = this.checked ? 1 : 0;
+                Ajax.call([{
+                    methodname: 'mod_planner_update_student_notifications',
+                    args: {
+                        plannerid: this.getAttribute('data-plannerid'),
+                        userid: this.getAttribute('data-userid'),
+                        value: toggled
+                    },
+                }]);
+            });
         }
     };
 });

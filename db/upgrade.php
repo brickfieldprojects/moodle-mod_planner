@@ -50,6 +50,7 @@
  */
 function xmldb_planner_upgrade($oldversion) {
     global $DB;
+    $dbman = $DB->get_manager();
 
     // Check for duplicate template names and append a number to the end of the name if there are duplicates.
     if ($oldversion < 2023041701.06) {
@@ -80,6 +81,30 @@ function xmldb_planner_upgrade($oldversion) {
             }
         }
         upgrade_plugin_savepoint(true, 2023041701.06, 'mod', 'planner');
+    }
+
+    if ($oldversion < 2023041704.01) {
+        global $DB;
+
+        // Add new notifications field to planner.
+        $table = new xmldb_table('planner');
+        $field = new xmldb_field('notifications', XMLDB_TYPE_INTEGER, '1', XMLDB_NOTNULL, null, 0, 1, 'stepview');
+
+        // Conditionally launch add field exception.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add new notify field to user steps.
+        $table = new xmldb_table('planner_userstep');
+        $field = new xmldb_field('notify', XMLDB_TYPE_INTEGER, '1', XMLDB_NOTNULL, null, 0, 1, 'completionstatus');
+
+        // Conditionally launch add field exception.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2023041704.01, 'mod', 'planner');
     }
 
     return true;

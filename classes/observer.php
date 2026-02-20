@@ -567,12 +567,18 @@ class observer {
                                 $stepsdata[$stepkey]['timedue'] = $exsitingsteptime;
                             }
                             if (!$templateuserstepdata) {
+                                // If notifications are not disabled, set to on by default for each user.
+                                $usernotify = 1;
+                                if ($planner->notifications == PLANNER::NOTIFICATIONS_DISABLED) {
+                                    $usernotify = 0;
+                                }
                                 foreach ($stepsdata as $stepid => $stepdata) {
                                     $insertstep = new \stdClass();
                                     $insertstep->stepid = $stepid;
                                     $insertstep->userid = $userid;
                                     $insertstep->duedate = $stepdata['timedue'];
                                     $insertstep->completionstatus = 0;
+                                    $insertstep->notify = $usernotify;
                                     $insertstep->timemodified = 0;
                                     $DB->insert_record('planner_userstep', $insertstep);
                                 }

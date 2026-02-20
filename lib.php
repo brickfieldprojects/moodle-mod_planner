@@ -25,6 +25,8 @@
 defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot.'/calendar/lib.php');
 
+use mod_planner\planner;
+
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
@@ -88,6 +90,13 @@ function planner_add_instance($planner) {
     } else if ($cminfoactivity->name == 'quiz') {
         $planner->timeopen = $modulename->timeopen;
         $planner->timeclose = $modulename->timeclose;
+    }
+
+    $planner->notifications = PLANNER::NOTIFICATIONS_ENABLED;
+    if ($planner->disablenotifications == "1") {
+        $planner->notifications = PLANNER::NOTIFICATIONS_DISABLED;
+    } else if ($planner->studentnotifications == "1") {
+        $planner->notifications = PLANNER::NOTIFICATIONS_CUSTOM;
     }
 
     $id = $DB->insert_record("planner", $planner);
@@ -165,8 +174,8 @@ function planner_update_instance($planner) {
     \core_completion\api::update_completion_date_event($planner->coursemodule, 'planner', $planner->id, $completiontimeexpected);
 
     if ($createnewsteps) {
-        if ($stepsdata = $DB->get_records("planner_step", ["plannerid" => $planner->id])) {
-            foreach ($stepsdata as $step) {
+        if ($oldplannersteps) {
+            foreach ($oldplannersteps as $step) {
                 $DB->delete_records('planner_userstep', ['stepid' => $step->id]);
             }
             $DB->delete_records('planner_step', ['plannerid' => $planner->id]);
@@ -203,6 +212,30 @@ function planner_update_instance($planner) {
             }
         }
     }
+
+    $newnotify = PLANNER::NOTIFICATIONS_ENABLED;
+    if ($planner->disablenotifications === "1") {
+        $newnotify = PLANNER::NOTIFICATIONS_DISABLED;
+    } else if ($planner->studentnotifications === "1") {
+        $newnotify = PLANNER::NOTIFICATIONS_CUSTOM;
+    }
+
+    $oldnotify = $DB->get_field('planner', 'notifications', ['id' => $planner->id]);
+
+    if ($oldnotify != $newnotify) {
+        $planner->notifications = $newnotify;
+
+        // When necessary update all users notify settings.
+        if ($oldnotify == PLANNER::NOTIFICATIONS_DISABLED || $newnotify == PLANNER::NOTIFICATIONS_DISABLED
+                || $newnotify == PLANNER::NOTIFICATIONS_ENABLED) {
+            $steps = $DB->get_records('planner_step', ['plannerid' => $planner->id]);
+            $studentnotify = $newnotify == PLANNER::NOTIFICATIONS_DISABLED ? 0 : 1;
+            foreach ($steps as $step) {
+                $DB->set_field('planner_userstep', 'notify', $studentnotify, ['stepid' => $step->id]);
+            }
+        }
+    }
+
     return $DB->update_record("planner", $planner);
 }
 

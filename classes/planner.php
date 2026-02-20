@@ -31,6 +31,13 @@ require_once("{$CFG->libdir}/csvlib.class.php");
  */
 class planner {
 
+    /** @var int Define all planner notifications disabled. */
+    const NOTIFICATIONS_DISABLED = 0;
+    /** @var int Define all planner notifications enabled. */
+    const NOTIFICATIONS_ENABLED = 1;
+    /** @var int Define planner notifications customisable by students. */
+    const NOTIFICATIONS_CUSTOM = 2;
+
     /** @var int The id of the planner */
     public $id;
     /** @var int The id of the course the planner belongs to */
@@ -157,6 +164,11 @@ class planner {
             }
         } else {
             $i = 0;
+            // If notifications are not disabled, set to on by default for each user.
+            $usernotify = 1;
+            if ($DB->get_field('planner', 'notifications', ['id' => $this->id]) == self::NOTIFICATIONS_DISABLED) {
+                $usernotify = 0;
+            }
             foreach ($stepsdata as $stepid => $stepdata) {
                 $insertstep = new stdClass();
                 $insertstep->stepid = $stepid;
@@ -166,6 +178,7 @@ class planner {
                     $insertstep->timestart = $starttime;
                 }
                 $insertstep->completionstatus = 0;
+                $insertstep->notify = $usernotify;
                 $insertstep->timemodified = 0;
                 $DB->insert_record('planner_userstep', $insertstep);
                 $i++;
@@ -687,6 +700,7 @@ class planner {
             if ($students) {
                 foreach ($students as $studentkey => $studentdata) {
                     foreach ($stepsdata as $stepid => $stepval) {
+                        $usernotify = $DB->get_field('planner_userstep', 'notify', ['stepid' => $stepid, 'userid' => $studentkey]);
                         $DB->delete_records('planner_userstep', ['stepid' => $stepid, 'userid' => $studentkey]);
 
                         $insertstudentstep = new stdClass();
@@ -694,6 +708,7 @@ class planner {
                         $insertstudentstep->duedate = round($stepval['timedue']);
                         $insertstudentstep->userid = $studentkey;
                         $insertstudentstep->completionstatus = 0;
+                        $insertstudentstep->notify = $usernotify;
                         $DB->insert_record('planner_userstep', $insertstudentstep);
                     }
                 }

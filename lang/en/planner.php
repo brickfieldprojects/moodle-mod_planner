@@ -25,6 +25,7 @@
 $string['planner:addinstance'] = 'Add a new planner activity';
 $string['planner:manageplanner'] = 'Manage planner activities';
 $string['planner:managetemplates'] = 'Manage planner templates';
+$string['planner:togglenotifications'] = 'Toggle planner notifications';
 $string['planner:view'] = 'View planner';
 $string['plannertext'] = 'Planner text';
 $string['modulename'] = 'Planner';
@@ -245,3 +246,10 @@ $string['templatesenabled_help'] = '* Select a template for the planner.';
 $string['templatesdisabled'] = 'selecting a template';
 $string['templatesdisabled_help'] = '* A template must exist to select.
 * To add a template, go to the administration block and click Manage planner templates.';
+
+// New notification option strings.
+$string['notification:disable'] = 'Disable all student notifications.';
+$string['notification:options'] = 'Notification Options';
+$string['notification:options_help'] = 'By default notifications are turned on for all students. Select option one to disable notifications for all students. Select option two to allow students to disable their own notifications.';
+$string['notification:studentdisable'] = 'Allow students to disable their own notifications.';
+$string['notification:toggle'] = 'Receive notifications';

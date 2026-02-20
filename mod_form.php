@@ -18,6 +18,8 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 
+use mod_planner\planner;
+
 /**
  * Add planner form
  *
@@ -89,6 +91,12 @@ class mod_planner_mod_form extends moodleform_mod {
                 }
                 $templatestepdata = mod_planner\planner::get_all_steps($templateid);
                 $mform->setDefault('disclaimer', ['text' => $planner->disclaimer]);
+
+                if ($planner->notifications == PLANNER::NOTIFICATIONS_DISABLED) {
+                    $mform->setDefault('disablenotifications', 1);
+                } else if ($planner->notifications == PLANNER::NOTIFICATIONS_CUSTOM) {
+                    $mform->setDefault('studentnotifications', 1);
+                }
             }
         }
 
@@ -289,6 +297,18 @@ class mod_planner_mod_form extends moodleform_mod {
             }
             $PAGE->requires->js_call_amd('mod_planner/savenewtemplate', 'init', [$personal, $course->id]);
         }
+
+        $mform->addElement('group', 'notifications', get_string('notification:options', 'planner'));
+        $mform->addHelpButton('notifications', 'notification:options', 'mod_planner');
+
+        $mform->addElement('advcheckbox', 'disablenotifications', get_string('notification:disable', 'planner'),
+                            null, ['group' => 'notifications']);
+        $mform->addElement('advcheckbox', 'studentnotifications', get_string('notification:studentdisable', 'planner'),
+                            null, ['group' => 'notifications']);
+
+        $mform->disabledIf('disablenotifications', 'studentnotifications', 'checked');
+        $mform->disabledIf('studentnotifications', 'disablenotifications', 'checked');
+
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }
