@@ -25,6 +25,8 @@
 defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot.'/calendar/lib.php');
 
+use mod_planner\planner;
+
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
@@ -90,11 +92,11 @@ function planner_add_instance($planner) {
         $planner->timeclose = $modulename->timeclose;
     }
 
-    $planner->notifications = 1;
+    $planner->notifications = PLANNER::NOTIFICATIONS_ENABLED;
     if ($planner->disablenotifications == "1") {
-        $planner->notifications = 0;
+        $planner->notifications = PLANNER::NOTIFICATIONS_DISABLED;
     } else if ($planner->studentnotifications == "1") {
-        $planner->notifications = 2;
+        $planner->notifications = PLANNER::NOTIFICATIONS_CUSTOM;
     }
 
     $id = $DB->insert_record("planner", $planner);
@@ -211,11 +213,11 @@ function planner_update_instance($planner) {
         }
     }
 
-    $newnotify = 1;
+    $newnotify = PLANNER::NOTIFICATIONS_ENABLED;
     if ($planner->disablenotifications === "1") {
-        $newnotify = 0;
+        $newnotify = PLANNER::NOTIFICATIONS_DISABLED;
     } else if ($planner->studentnotifications === "1") {
-        $newnotify = 2;
+        $newnotify = PLANNER::NOTIFICATIONS_CUSTOM;
     }
 
     $oldnotify = $DB->get_field('planner', 'notifications', ['id' => $planner->id]);
@@ -224,9 +226,10 @@ function planner_update_instance($planner) {
         $planner->notifications = $newnotify;
 
         // When necessary update all users notify settings.
-        if ($oldnotify == 0 || $newnotify == 0 || $newnotify == 1) {
+        if ($oldnotify == PLANNER::NOTIFICATIONS_DISABLED || $newnotify == PLANNER::NOTIFICATIONS_DISABLED
+                || $newnotify == PLANNER::NOTIFICATIONS_ENABLED) {
             $steps = $DB->get_records('planner_step', ['plannerid' => $planner->id]);
-            $studentnotify = $newnotify == 0 ? 0 : 1;
+            $studentnotify = $newnotify == PLANNER::NOTIFICATIONS_DISABLED ? 0 : 1;
             foreach ($steps as $step) {
                 $DB->set_field('planner_userstep', 'notify', $studentnotify, ['stepid' => $step->id]);
             }

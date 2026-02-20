@@ -18,6 +18,8 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 
+use mod_planner\planner;
+
 /**
  * Add planner form
  *
@@ -90,9 +92,9 @@ class mod_planner_mod_form extends moodleform_mod {
                 $templatestepdata = mod_planner\planner::get_all_steps($templateid);
                 $mform->setDefault('disclaimer', ['text' => $planner->disclaimer]);
 
-                if ($planner->notifications == 0) {
+                if ($planner->notifications == PLANNER::NOTIFICATIONS_DISABLED) {
                     $mform->setDefault('disablenotifications', 1);
-                } else if ($planner->notifications == 2) {
+                } else if ($planner->notifications == PLANNER::NOTIFICATIONS_CUSTOM) {
                     $mform->setDefault('studentnotifications', 1);
                 }
             }

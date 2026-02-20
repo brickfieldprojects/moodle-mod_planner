@@ -76,7 +76,8 @@ class renderer extends \plugin_renderer_base {
         $out .= '</div>';
 
         // Add notification toggle if notifications enable and student has calculated steps.
-        if ($DB->get_field('planner', 'notifications', ['id' => $planner->id]) == 2 && !empty($data->templateuserstepdata)) {
+        if ($DB->get_field('planner', 'notifications', ['id' => $planner->id]) == PLANNER::NOTIFICATIONS_CUSTOM
+                && !empty($data->templateuserstepdata)) {
             $out .= '<div style="text-align: right">';
             $out .= \html_writer::checkbox('togglenotify', 1, reset($data->templateuserstepdata)->notify,
                                         get_string('notification:toggle', 'planner'),

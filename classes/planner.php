@@ -31,6 +31,13 @@ require_once("{$CFG->libdir}/csvlib.class.php");
  */
 class planner {
 
+    /** @var int Define all planner notifications disabled. */
+    const NOTIFICATIONS_DISABLED = 0;
+    /** @var int Define all planner notifications enabled. */
+    const NOTIFICATIONS_ENABLED = 1;
+    /** @var int Define planner notifications customisable by students. */
+    const NOTIFICATIONS_CUSTOM = 2;
+
     /** @var int The id of the planner */
     public $id;
     /** @var int The id of the course the planner belongs to */
@@ -159,7 +166,7 @@ class planner {
             $i = 0;
             // If notifications are not disabled, set to on by default for each user.
             $usernotify = 1;
-            if ($DB->get_field('planner', 'notifications', ['id' => $this->id]) == 0) {
+            if ($DB->get_field('planner', 'notifications', ['id' => $this->id]) == self::NOTIFICATIONS_DISABLED) {
                 $usernotify = 0;
             }
             foreach ($stepsdata as $stepid => $stepdata) {

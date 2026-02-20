@@ -569,7 +569,7 @@ class observer {
                             if (!$templateuserstepdata) {
                                 // If notifications are not disabled, set to on by default for each user.
                                 $usernotify = 1;
-                                if ($planner->notifications == 0) {
+                                if ($planner->notifications == PLANNER::NOTIFICATIONS_DISABLED) {
                                     $usernotify = 0;
                                 }
                                 foreach ($stepsdata as $stepid => $stepdata) {
