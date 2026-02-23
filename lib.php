@@ -25,9 +25,6 @@
 defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot.'/calendar/lib.php');
 
-use mod_planner\form\upload_template_form;
-
-
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function

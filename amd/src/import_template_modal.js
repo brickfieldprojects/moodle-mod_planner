@@ -22,6 +22,7 @@
  */
 
 import ModalForm from 'core_form/modalform';
+import {get_string as getString} from 'core/str';
 
 export const init = (courseid) => {
     const btn = document.getElementById('mod-planner-import-template-btn');
@@ -36,7 +37,7 @@ export const init = (courseid) => {
             formClass: 'mod_planner\\form\\import_template_form',
             args: {courseid},
             modalConfig: {
-                title: 'Upload template',
+                title: getString('uploadtemplate', 'mod_planner'),
                 large: true,
             },
             returnFocus: btn,

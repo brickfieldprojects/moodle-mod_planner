@@ -52,21 +52,15 @@ $PAGE->set_title("{$SITE->shortname}");
 $redirecturl = new moodle_url("/mod/planner/template.php", ['cid' => $cid]);
 $form = new upload_template_form(null, ['cid' => $cid]);
 
-
-// $progress = new \core\progress\display();
-
 if ($data = $form->get_data()) {
-    // $progress->start_progress('', 10);
     $templatedata = json_decode($form->get_file_content('file'));
     planner::create_template_from_json($templatedata);
     redirect($redirecturl, get_string('successfullyadded', 'planner'), null, \core\output\notification::NOTIFY_SUCCESS);
 } else if ($form->is_cancelled()) {
     redirect($redirecturl);
 }
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('uploadtemplate', 'planner'));
 $form->display();
-if ($progressed) {
-    // $progress->end_progress();
-}
 echo $OUTPUT->footer();
