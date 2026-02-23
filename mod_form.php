@@ -18,6 +18,8 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 
+use mod_planner\planner;
+
 /**
  * Add planner form
  *
@@ -40,6 +42,7 @@ class mod_planner_mod_form extends moodleform_mod {
         $templateid = optional_param('templateid', '', PARAM_INT);
         $activitytitle = optional_param('name', '', PARAM_TEXT);
         $introformat = optional_param('introformat', '', PARAM_INT);
+        $file = optional_param('file', '', PARAM_FILE);
         $strrequired = get_string('required');
 
         $mform->addElement('header', 'generalhdr', get_string('general'));
@@ -227,6 +230,20 @@ class mod_planner_mod_form extends moodleform_mod {
                 $mform->addHelpButton('templateid', 'templatesdisabled', 'mod_planner');
             }
             $mform->addRule('templateid', $strrequired, 'required', null, 'server');
+
+            if (!$file) {
+                $mform->addElement('button', 'importtemplatebtn',
+                    get_string('uploadtemplate', 'mod_planner'),
+                    ['id' => 'mod-planner-import-template-btn', 'class' => 'btn btn-secondary']
+                );
+                $context = $this->context;
+                $PAGE->requires->js_call_amd('mod_planner/import_template_modal', 'init', [$course->id, $context->id]);
+                // $mform->addElement('filepicker', 'file', get_string('uploadtemplate', 'mod_planner'), null, ['class' => 'bfplus_template_filepicker']);
+                // $mform->setDefault('templateid')
+            } else {
+                $templatedata = json_decode($this->get_file_content('file'));
+                $templateid = planner::create_template_from_json($templatedata);
+            }
             if ($templateid) {
                 $mform->setDefault('templateid', $templateid);
                 $templatestepdata = $DB->get_records('plannertemplate_step', ['plannerid' => $templateid], 'id ASC');

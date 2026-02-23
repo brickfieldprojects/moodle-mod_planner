@@ -251,6 +251,9 @@ class renderer extends \plugin_renderer_base {
             $out .= $this->output->single_button(
                 new \moodle_url('/mod/planner/managetemplate.php', ['cid' => $cid]), get_string('addtemplate', 'planner')
             );
+            $out .= $this->output->single_button(
+                new \moodle_url('/mod/planner/uploadtemplate.php', ['cid' => $cid]), get_string('uploadtemplate', 'planner')
+            );
             $out .= "</div>";
             $out .= '<h3>'.get_string('mytemplates', 'planner').'</h3>';
             echo $out;
@@ -389,7 +392,14 @@ class renderer extends \plugin_renderer_base {
                         ),
                         new \pix_icon('t/delete', get_string('delete'))
                     );
-                    $data[] = $viewlink . $statuslink . ' ' . $editlink . '' . $deletelink;
+                    $downloadlink = $this->output->action_icon(
+                        new \moodle_url(
+                            '/mod/planner/template.php',
+                            ['id' => $template->id, 'action' => 'download', 'cid' => $cid, 'sesskey' => sesskey()]
+                        ),
+                        new \pix_icon('t/download', get_string('download'))
+                    );
+                    $data[] = $viewlink . $statuslink . ' ' . $editlink . '' . $deletelink . $downloadlink;
                 } else {
                     $data[] = $viewlink . $statuslink;
                 }

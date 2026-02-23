@@ -25,6 +25,9 @@
 defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot.'/calendar/lib.php');
 
+use mod_planner\form\upload_template_form;
+
+
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
@@ -500,4 +503,22 @@ function mod_planner_core_calendar_provide_event_action(
         1,
         true
     );
+}
+
+function mod_planner_output_fragment_import_template_form($args) {
+    global $USER;
+
+    $args = (object)$args;
+
+    // $context = \context::instance_by_id($args->contextid);
+    // \external_api::validate_context($context);
+
+    // $cmid = isset($args->cmid) ? (int)$args->cmid : 0;
+
+    // Action posts to import endpoint that will redirect back to mod_form page.
+    // $action = new \moodle_url('/mod/planner/import_template.php', ['cmid' => $cmid]);
+
+    $mform = new upload_template_form(null, ['cid' => $args->courseid]);
+
+    return $mform->render();
 }
