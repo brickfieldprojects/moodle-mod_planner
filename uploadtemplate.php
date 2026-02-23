@@ -27,6 +27,7 @@ use mod_planner\planner;
 
 define('NO_OUTPUT_BUFFERING', true);
 require(__DIR__.'/../../config.php');
+require_once($CFG->libdir . '/adminlib.php');
 $cid = optional_param('cid', 0, PARAM_INT);
 $progressed = optional_param('progressed', 0, PARAM_BOOL);
 
