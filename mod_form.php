@@ -234,15 +234,9 @@ class mod_planner_mod_form extends moodleform_mod {
             if (!$file) {
                 $mform->addElement('button', 'importtemplatebtn',
                     get_string('uploadtemplate', 'mod_planner'),
-                    ['id' => 'mod-planner-import-template-btn', 'class' => 'btn btn-secondary']
+                    ['id' => 'mod-planner-import-template-btn']
                 );
-                $context = $this->context;
-                $PAGE->requires->js_call_amd('mod_planner/import_template_modal', 'init', [$course->id, $context->id]);
-                // $mform->addElement('filepicker', 'file', get_string('uploadtemplate', 'mod_planner'), null, ['class' => 'bfplus_template_filepicker']);
-                // $mform->setDefault('templateid')
-            } else {
-                $templatedata = json_decode($this->get_file_content('file'));
-                $templateid = planner::create_template_from_json($templatedata);
+                $PAGE->requires->js_call_amd('mod_planner/import_template_modal', 'init', [$course->id]);
             }
             if ($templateid) {
                 $mform->setDefault('templateid', $templateid);

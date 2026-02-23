@@ -21,83 +21,39 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import SaveCancelModal from 'core/modal_save_cancel';
-import Fragment from 'core/fragment';
-import Templates from 'core/templates';
-import Notification from 'core/notification';
+import ModalForm from 'core_form/modalform';
 
-export const init = (courseid, contextid) => {
-    const btn = document.getElementById('fitem_mod-planner-import-template-btn');
+export const init = (courseid) => {
+    const btn = document.getElementById('mod-planner-import-template-btn');
     if (!btn) {
         return;
     }
 
-    btn.addEventListener('click', async (e) => {
+    btn.addEventListener('click', (e) => {
         e.preventDefault();
 
-        try {
-            console.log('temp');
-            const modal = await SaveCancelModal.create({
-                title: 'test',
-                // body: await Templates.render('mod_planner/import_template_modal', {
-                //     formhtml:  await Fragment.loadFragment(
-                //         'mod_planner',
-                //         'import_template_form',
-                //         contextid,
-                //         {courseid: courseid, contextid: contextid}
-                //     ),
-                //     test1: 'test1',
-                //     test2: 'test2',
-                // }),
+        const modalForm = new ModalForm({
+            formClass: 'mod_planner\\form\\import_template_form',
+            args: {courseid},
+            modalConfig: {
+                title: 'Upload template',
                 large: true,
-            });
+            },
+            returnFocus: btn,
+        });
 
-            modal.show();
+        modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (event) => {
+            const data = event.detail;
 
-                        // Load the form fragment AFTER the modal is in the DOM.
-            const formhtml = await Fragment.loadFragment(
-                'mod_planner',
-                'import_template_form',
-                contextid,
-                {courseid, contextid}
-            );
-
-            const rendered = await Templates.render('mod_planner/import_template_modal', {
-                formhtml,
-                test1: 'test1',
-                test2: 'test2',
-            });
-
-            modal.setBody(rendered);
-
-            try {
-                const filepicker = await import('core_filepicker');
-                const api = filepicker.default ?? filepicker;
-
-                if (api?.init) {
-                    api.init(root);
-                } else if (api?.enhance) {
-                    api.enhance(root);
-                }
-            } catch (initErr) {
-                // If this triggers, check the console for the right module path for your Moodle version.
-                console.warn('Filepicker init failed:', initErr);
+            if (data && data.templateid) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('templateid', data.templateid);
+                window.location.href = url.toString();
+            } else {
+                window.location.reload();
             }
+        });
 
-            // If your mustache uses {{#js}} blocks, switch to renderForPromise + runTemplateJS.
-            // await Templates.runTemplateJS(rendered);
-
-        // 4) On submit, let it POST normally; server will redirect back to mod_form page.
-            const root = modal.getRoot()[0];
-            const form = root.querySelector('form');
-            if (form) {
-                form.addEventListener('submit', () => {
-                    // Optional: you can hide immediately to feel snappier.
-                    modal.hide();
-                });
-            }
-        } catch (err) {
-            Notification.exception(err);
-        }
+        modalForm.show();
     });
 };

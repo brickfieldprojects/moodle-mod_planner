@@ -1,47 +1,80 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 namespace mod_planner\form;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/lib/formslib.php');
-/**
- * Templates form class for planner module
- *
- * @copyright 2021 Brickfield Education Labs, www.brickfield.ie
- * @package   mod_planner
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class upload_template_form extends \moodleform {
+use core_form\dynamic_form;
+use mod_planner\planner;
+use context;
+use moodle_url;
+
+class import_template_form extends dynamic_form {
+
     /**
-     * Define the form.
+     * Form definition.
      */
-    public function definition() {
+    protected function definition() {
         $mform = $this->_form;
-        $cid = $this->_customdata['cid'];
+
         $mform->addElement('filepicker', 'file', get_string('uploadtemplate', 'mod_planner'), null, [
             'accepted_types' => '*.json',
         ]);
         $mform->addRule('file', get_string('required'), 'required');
-        $mform->addElement('hidden', 'cid', $cid);
-        $mform->settype('cid', PARAM_INT);
-        $mform->addElement('hidden', 'progressed', true);
-        $mform->settype('progressed', PARAM_BOOL);
-        $this->add_action_buttons(true, get_string('submit'));
+
+        $mform->addElement('hidden', 'courseid');
+        $mform->setType('courseid', PARAM_INT);
+    }
+
+    /**
+     * Returns context where this form is used.
+     *
+     * @return context
+     */
+    protected function get_context_for_dynamic_submission(): context {
+        $courseid = (int)($this->optional_param('courseid', 0, PARAM_INT));
+        return \context_course::instance($courseid);
+    }
+
+    /**
+     * Checks if current user has access to this form, otherwise throws exception.
+     */
+    protected function check_access_for_dynamic_submission(): void {
+        $context = $this->get_context_for_dynamic_submission();
+        require_login(null, false, null, false, true);
+        require_capability('moodle/course:update', $context);
+    }
+
+    /**
+     * Load in existing data as form defaults.
+     */
+    public function set_data_for_dynamic_submission(): void {
+        $this->set_data([
+            'courseid' => (int)($this->optional_param('courseid', 0, PARAM_INT)),
+        ]);
+    }
+
+    /**
+     * Process the form submission.
+     *
+     * @return array
+     */
+    public function process_dynamic_submission(): array {
+        // Handle uploaded file.
+        $templatedata = json_decode($this->get_file_content('file'));
+        $templateid = planner::create_template_from_json($templatedata);
+
+        return ['templateid' => $templateid];
+    }
+
+    /**
+     * Returns url to set in $PAGE->set_url() when form is being rendered or submitted via AJAX.
+     *
+     * @return moodle_url
+     */
+    public function get_page_url_for_dynamic_submission(): moodle_url {
+        return new moodle_url('/mod/planner/mod_form.php', [
+            'course' => $this->optional_param('courseid', 0, PARAM_INT),
+        ]);
     }
 
     /**
