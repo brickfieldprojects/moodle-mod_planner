@@ -296,7 +296,7 @@ class planner {
      * @return void
      */
     public static function template_crud_handler(?string $action, ?int $id, string $confirm, string $pageurl, int $cid): void {
-        global $DB, $PAGE;
+        global $DB, $PAGE, $SITE;
 
         $plannertemplatedata = $DB->get_record('plannertemplate', ['id' => $id]);
         $renderer = $PAGE->get_renderer('mod_planner');
@@ -331,6 +331,25 @@ class planner {
                 $updatestatus->id = $id;
                 $updatestatus->status = 0;
                 $DB->update_record('plannertemplate', $updatestatus);
+            }
+        } else if (($action == 'download') && confirm_sesskey()) {
+            $plannertemplatedata = self::get_planner_template_step($id);
+            if ($plannertemplatedata) {
+                $date = date('y/m/d', time());
+                $payload = $plannertemplatedata['plannertemplate'];
+                $payload->plannertemplatesteps = $plannertemplatedata['plannertemplatesteps'];
+                $payload->sitename = $SITE->fullname;
+                $payload->date = $date;
+
+                // Encode JSON.
+                $json = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                // Stream as a download.
+                $filename = "{$SITE->fullname}-{$date}-template{$id}.json";
+                header('Content-Type: application/json; charset=utf-8');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+                header('X-Content-Type-Options: nosniff');
+                echo $json;
+                die;
             }
         }
     }
@@ -439,6 +458,36 @@ class planner {
                 }
             }
         }
+    }
+
+    /**
+     * Creates a planner template from a JSON file.
+     *
+     * @param object $templatedata
+     * @return int
+     */
+    public static function create_template_from_json(object $templatedata): int {
+        global $DB, $USER;
+
+        $inserttemplate = new stdClass();
+        $inserttemplate->userid = $USER->id;
+        $inserttemplate->name = $templatedata->name;
+        $inserttemplate->disclaimer = $templatedata->disclaimer;
+        $inserttemplate->status = 1;
+        $inserttemplate->personal = 1;
+        $inserttemplate->timecreated = time();
+        if ($insertedtemplateid = $DB->insert_record('plannertemplate', $inserttemplate)) {
+            foreach ($templatedata->plannertemplatesteps as $step) {
+                $insertrecord = new stdClass();
+                $insertrecord->plannerid = $insertedtemplateid;
+                $insertrecord->name = $step->name;
+                $insertrecord->timeallocation = $step->timeallocation;
+                $insertrecord->description = $step->description;
+                $DB->insert_record('plannertemplate_step', $insertrecord);
+            }
+            return $insertedtemplateid;
+        }
+        return 0;
     }
 
     /**

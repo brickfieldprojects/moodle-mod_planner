@@ -125,6 +125,10 @@ $string['step6defaultallocatin'] = '30';
 $string['planner:manage_templates'] = 'Manage planner templates';
 $string['manage_templates'] = 'Manage planner templates';
 $string['addtemplate'] = 'Add new template';
+$string['invalidjson'] = 'The uploaded file is not valid JSON or does not match the expected template structure.';
+$string['missingkey'] = 'Missing required key(s): {$a}';
+$string['invalidkeytype'] = 'Key "{$a}" must be an object/array';
+$string['uploadtemplate'] = 'Upload template';
 $string['deletetemplate'] = 'Delete template';
 $string['deletetemplatecheck'] = 'Are you absolutely sure you want to completely delete the template {$a}?';
 $string['deletednottemplate'] = 'Could not delete {$a} !';
@@ -239,6 +243,10 @@ $string['activitiesenabled_help'] = '* Select an assignment or quiz activity for
 $string['activitiesdisabled'] = 'selecting a activity';
 $string['activitiesdisabled_help'] = '* An assignment or quiz activity must exist in the course to select.';
 $string['associatedactivity'] = 'Associated activity';
+
+$string['importtemplatehelp'] = 'Import a template';
+$string['importtemplatehelp_help'] = 'Import a JSON file of a template. This will create a new template entry and populate this form with the template details.';
+$string['importtemplate_warning'] = 'Please note: uploading a new template will reset this form, and empty all fields, including Name and Description.';
 
 $string['templatesenabled'] = 'selecting a template';
 $string['templatesenabled_help'] = '* Select a template for the planner.';

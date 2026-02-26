@@ -42,6 +42,7 @@ class mod_planner_mod_form extends moodleform_mod {
         $templateid = optional_param('templateid', '', PARAM_INT);
         $activitytitle = optional_param('name', '', PARAM_TEXT);
         $introformat = optional_param('introformat', '', PARAM_INT);
+        $file = optional_param('file', '', PARAM_FILE);
         $strrequired = get_string('required');
 
         $mform->addElement('header', 'generalhdr', get_string('general'));
@@ -235,6 +236,16 @@ class mod_planner_mod_form extends moodleform_mod {
                 $mform->addHelpButton('templateid', 'templatesdisabled', 'mod_planner');
             }
             $mform->addRule('templateid', $strrequired, 'required', null, 'server');
+
+            if (!$file) {
+                $mform->addElement('button', 'importtemplatebtn',
+                    get_string('uploadtemplate', 'mod_planner'),
+                    ['id' => 'mod-planner-import-template-btn']
+                );
+                $mform->addHelpButton('importtemplatebtn', 'importtemplatehelp', 'mod_planner');
+                $mform->addElement('static', 'importtemplatewarning', '', get_string('importtemplate_warning', 'mod_planner'));
+                $PAGE->requires->js_call_amd('mod_planner/import_template_modal', 'init', [$course->id]);
+            }
             if ($templateid) {
                 $mform->setDefault('templateid', $templateid);
                 $templatestepdata = $DB->get_records('plannertemplate_step', ['plannerid' => $templateid], 'id ASC');
