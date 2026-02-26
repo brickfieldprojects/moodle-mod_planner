@@ -245,6 +245,7 @@ $string['associatedactivity'] = 'Associated activity';
 
 $string['importtemplatehelp'] = 'Import a template';
 $string['importtemplatehelp_help'] = 'Import a JSON file of a template. This will create a new template entry and populate this form with the template details.';
+$string['importtemplate_warning'] = 'Please note: uploading a new template will reset this form, and empty all fields, including Name and Description.';
 
 $string['templatesenabled'] = 'selecting a template';
 $string['templatesenabled_help'] = '* Select a template for the planner.';

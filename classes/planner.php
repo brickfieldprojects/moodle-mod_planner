@@ -461,7 +461,7 @@ class planner {
         $inserttemplate->name = $templatedata->name;
         $inserttemplate->disclaimer = $templatedata->disclaimer;
         $inserttemplate->status = 1;
-        $inserttemplate->personal = $templatedata->personal;
+        $inserttemplate->personal = 1;
         $inserttemplate->timecreated = time();
         if ($insertedtemplateid = $DB->insert_record('plannertemplate', $inserttemplate)) {
             foreach ($templatedata->plannertemplatesteps as $step) {

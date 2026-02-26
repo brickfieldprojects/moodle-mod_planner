@@ -237,6 +237,7 @@ class mod_planner_mod_form extends moodleform_mod {
                     ['id' => 'mod-planner-import-template-btn']
                 );
                 $mform->addHelpButton('importtemplatebtn', 'importtemplatehelp', 'mod_planner');
+                $mform->addElement('static', 'importtemplatewarning', '', get_string('importtemplate_warning', 'mod_planner'));
                 $PAGE->requires->js_call_amd('mod_planner/import_template_modal', 'init', [$course->id]);
             }
             if ($templateid) {

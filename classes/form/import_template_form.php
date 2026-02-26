@@ -38,6 +38,7 @@ class import_template_form extends dynamic_form {
     protected function definition() {
         $mform = $this->_form;
 
+        $mform->addElement('static', 'importtemplatewarning', '', get_string('importtemplate_warning', 'mod_planner'));
         $mform->addElement('filepicker', 'file', get_string('uploadtemplate', 'mod_planner'), null, [
             'accepted_types' => '*.json',
         ]);
