@@ -85,6 +85,9 @@ class mod_planner_generator extends testing_module_generator {
         if (!isset($record->studentnotifications)) {
             $record->studentnotifications = 0;
         }
+        if (!isset($record->allowstepspastenddate)) {
+            $record->allowstepspastenddate = 0;
+        }
 
         return parent::create_instance($record, (array)$options);
     }

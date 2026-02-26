@@ -101,8 +101,13 @@ class renderer extends \plugin_renderer_base {
             $out .= '<p>'.get_string('startingon', 'planner').' : '
             .userdate($time->starttime, get_string('strftimedatefullshort'));
             if (isset($time->userenddate->duedate)) {
+                $tmpendtime = $time->userenddate->duedate ?? $time->endtime;
                 $out .= '<br>'.get_string('endingon', 'planner').' : '
-                .userdate($time->endtime, get_string('strftimedatefullshort'));
+                    .userdate($tmpendtime, get_string('strftimedatefullshort'));
+                if ($tmpendtime > $time->endtime) {
+                    $out .= '<br>'.get_string('alertstepspastenddate', 'planner',
+                        userdate($time->endtime, get_string('strftimedatefullshort'))).'<br>';
+                }
             }
             $out .= '</p>';
         }

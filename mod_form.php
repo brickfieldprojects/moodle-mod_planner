@@ -320,6 +320,9 @@ class mod_planner_mod_form extends moodleform_mod {
         $mform->disabledIf('disablenotifications', 'studentnotifications', 'checked');
         $mform->disabledIf('studentnotifications', 'disablenotifications', 'checked');
 
+        $mform->addElement('advcheckbox', 'allowstepspastenddate', get_string('calculation:options', 'planner'),
+                            get_string('allowstepspastenddate', 'planner'), null);
+
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }
