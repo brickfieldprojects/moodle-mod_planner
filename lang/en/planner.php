@@ -186,6 +186,7 @@ $string['templatename_help'] = 'The template name must be unique';
 $string['recalculateschedule'] = 'Re-calculate schedule!';
 $string['startdatewarning1'] = 'Start date should not be less than default start date';
 $string['startdatewarning2'] = 'Start date should not be greater than default end date';
+$string['startdatewarning3'] = 'Start date should not be greater than end date';
 $string['studentstepupdated'] = 'Student steps updated';
 $string['recalculatedstudentsteps'] = 'Re-calculated student steps';
 $string['studentstepmarkcompleted'] = 'Step marked as completed';
@@ -257,7 +258,12 @@ $string['templatesdisabled_help'] = '* A template must exist to select.
 
 // New notification option strings.
 $string['notification:disable'] = 'Disable all student notifications.';
-$string['notification:options'] = 'Notification Options';
+$string['notification:options'] = 'Notification options';
 $string['notification:options_help'] = 'By default notifications are turned on for all students. Select option one to disable notifications for all students. Select option two to allow students to disable their own notifications.';
 $string['notification:studentdisable'] = 'Allow students to disable their own notifications.';
 $string['notification:toggle'] = 'Receive notifications';
+$string['calculation:options'] = 'Calculation options';
+$string['allowstepspastenddate'] = 'Allow students to calculate steps past their end date';
+$string['alertstepspastenddate'] = '(Please note: your calculated end date is past your allocated end date of {$a}.)';
+$string['descstepspastenddate'] = 'Any recalculations past my allocated end date of {$a} are for my own planning purposes; any specific deadlines issued by a lecturer are what\'s important.';
+$string['agreewarning'] = 'You must acknowledge this before calculating steps beyond your allocated end date.';

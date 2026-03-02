@@ -38,6 +38,11 @@ class planner {
     /** @var int Define planner notifications customisable by students. */
     const NOTIFICATIONS_CUSTOM = 2;
 
+    /** @var int Define students being able to calculate their planner steps past enddate disabled. */
+    const PASTENDDATE_DISABLED = 0;
+    /** @var int Define students being able to calculate their planner steps past enddate enabled. */
+    const PASTENDDATE_ENABLED = 1;
+
     /** @var int The id of the planner */
     public $id;
     /** @var int The id of the course the planner belongs to */
@@ -55,6 +60,8 @@ class planner {
     /** @var int The step view setting for the planner */
     public $stepview;
     /** @var int The time the planner opens */
+    public $allowstepspastenddate;
+    /** @var int The status of the allowstepspastenddate value */
     public $timeopen;
     /** @var int The time the planner closes */
     public $timeclose;
@@ -72,10 +79,12 @@ class planner {
      * @param int $timeclose
      * @param int $stepview
      * @param int $introformat
+     * @param int $allowstepspastenddate
      */
     public function __construct(int $id, int $courseid, string $intro, string $name,
                                 string $disclaimer, int $activitycmid, int $timeopen,
-                                int $timeclose, int $stepview = 0, int $introformat = 1) {
+                                int $timeclose, int $stepview = 0, int $introformat = 1,
+                                int $allowstepspastenddate = 0) {
         $this->id = $id;
         $this->courseid = $courseid;
         $this->intro = $intro;
@@ -84,6 +93,7 @@ class planner {
         $this->disclaimer = $disclaimer;
         $this->activitycmid = $activitycmid;
         $this->stepview = $stepview;
+        $this->allowstepspastenddate = $allowstepspastenddate;
         $this->timeopen = $timeopen;
         $this->timeclose = $timeclose;
     }
@@ -108,7 +118,8 @@ class planner {
                 $record->timeopen,
                 $record->timeclose,
                 $record->stepview,
-                $record->introformat
+                $record->introformat,
+                $record->allowstepspastenddate,
             );
         } else {
             $planner = null;
@@ -699,8 +710,16 @@ class planner {
                 $time->starttime = $time->userstartdate->timestart;
             }
         }
+        if ($time->userenddate) {
+            if ($time->userenddate->duedate) {
+                $time->calcuatedstarttime = $time->userenddate->duedate;
+            }
+        }
 
         $datediff = $time->endtime - $time->starttime;
+        if (isset($time->calcuatedstarttime)) {
+            $datediff = $time->calcuatedstarttime - $time->starttime;
+        }
         $time->days = round($datediff / (60 * 60 * 24));
         return $time;
     }
@@ -855,12 +874,16 @@ class planner {
                 'startdate' => $time->defaultstarttime,
                 'studentstartime' => $time->starttime,
                 'enddate' => $time->endtime,
+                'allowstepspastenddate' => $this->allowstepspastenddate,
             ]
         );
 
         if ($templatedata = $templateform->get_data()) {
             $plannerid = $templatedata->id;
             $starttime = $templatedata->userstartdate;
+            if (isset($templatedata->userenddate)) {
+                $time->endtime = $templatedata->userenddate;
+            }
             $totaltime = $time->endtime - $starttime;
             $exsitingsteptime = $starttime;
             $stepsdata = [];

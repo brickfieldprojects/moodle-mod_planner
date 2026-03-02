@@ -49,6 +49,19 @@ class user_form extends \moodleform {
         } else {
             $mform->setDefault('userstartdate', $starttime);
         }
+        // Only display enddate, if allowed for this planner instance.
+        if ($this->_customdata['allowstepspastenddate']) {
+            $mform->addElement(
+                'date_selector',
+                'userenddate',
+                get_string('enddate', 'planner'),
+                ['startyear' => userdate($endtime, '%Y'), 'stopyear' => userdate($endtime, '%Y')]
+            );
+            $mform->setDefault('userenddate', $endtime);
+            $tmpenddate = userdate($endtime, get_string('strftimedatefullshort'));
+            $mform->addElement('advcheckbox', 'agreestepspastenddate', '',
+                get_string('descstepspastenddate', 'planner', $tmpenddate));
+        }
         $mform->addElement('hidden', 'id', $id);
         $mform->settype('id', PARAM_INT);
 
@@ -74,6 +87,14 @@ class user_form extends \moodleform {
             $errors['userstartdate'] = get_string('startdatewarning1', 'planner');
         } else if ($data['userstartdate'] > $endtime) {
             $errors['userstartdate'] = get_string('startdatewarning2', 'planner');
+        }
+        if (isset($data['userenddate'])) {
+            if (($data['userenddate'] > $endtime)
+                && ($data['agreestepspastenddate'] == 0)) {
+                $errors['agreestepspastenddate'] = get_string('agreewarning', 'planner');
+            } else if ($data['userenddate'] < $data['userstartdate']) {
+                $errors['userstartdate'] = get_string('startdatewarning3', 'planner');
+            }
         }
 
         return $errors;

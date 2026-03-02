@@ -107,5 +107,20 @@ function xmldb_planner_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023041704.01, 'mod', 'planner');
     }
 
+    if ($oldversion < 2023041704.02) {
+        global $DB;
+
+        // Add new allowstepspastenddate field to planner.
+        $table = new xmldb_table('planner');
+        $field = new xmldb_field('allowstepspastenddate', XMLDB_TYPE_INTEGER, '1', XMLDB_NOTNULL, null, 0, 0, 'notifications');
+
+        // Conditionally launch add field allowstepspastenddate.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2023041704.02, 'mod', 'planner');
+    }
+
     return true;
 }
