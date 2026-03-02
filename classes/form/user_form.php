@@ -88,10 +88,13 @@ class user_form extends \moodleform {
         } else if ($data['userstartdate'] > $endtime) {
             $errors['userstartdate'] = get_string('startdatewarning2', 'planner');
         }
-        if (isset($data['userenddate'])
-            && ($data['userenddate'] > $endtime)
-            && ($data['agreestepspastenddate'] == 0)) {
-            $errors['agreestepspastenddate'] = get_string('agreewarning', 'planner');
+        if (isset($data['userenddate'])) {
+            if (($data['userenddate'] > $endtime)
+                && ($data['agreestepspastenddate'] == 0)) {
+                $errors['agreestepspastenddate'] = get_string('agreewarning', 'planner');
+            } else if ($data['userenddate'] < $data['userstartdate']) {
+                $errors['userstartdate'] = get_string('startdatewarning3', 'planner');
+            }
         }
 
         return $errors;

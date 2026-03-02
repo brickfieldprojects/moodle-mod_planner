@@ -186,6 +186,7 @@ $string['templatename_help'] = 'The template name must be unique';
 $string['recalculateschedule'] = 'Re-calculate schedule!';
 $string['startdatewarning1'] = 'Start date should not be less than default start date';
 $string['startdatewarning2'] = 'Start date should not be greater than default end date';
+$string['startdatewarning3'] = 'Start date should not be greater than end date';
 $string['studentstepupdated'] = 'Student steps updated';
 $string['recalculatedstudentsteps'] = 'Re-calculated student steps';
 $string['studentstepmarkcompleted'] = 'Step marked as completed';
